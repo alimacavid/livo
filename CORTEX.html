@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CORTEX</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -63,7 +63,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 /* STAT CARDS */
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:20px 22px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
 .stat-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
-.stat-value{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1.5px;color:var(--text);line-height:1}
+.stat-value{font-family:'Instrument Serif',serif;font-size:38px;letter-spacing:-1px;color:var(--text);line-height:1}
 .stat-unit{font-size:12px;color:var(--t2);margin-top:4px}
 
 /* TABS */
@@ -149,7 +149,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .phase-card.active::before{background:var(--amber)}
 .phase-card.upcoming::before{background:var(--border2)}
 .phase-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.phase-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--border2)}
+.phase-num{font-family:'Instrument Serif',serif;font-size:34px;color:var(--border2)}
 .phase-card.active .phase-num{color:var(--amber)}
 .phase-card.done .phase-num{color:var(--green)}
 .phase-title{font-weight:600;font-size:16px;color:var(--text)}
@@ -478,7 +478,12 @@ const DIVISIONS = {
       {name:'Gorilla Power Washing',notes:'Local Vancouver operator — tracked',threat:6},
       {name:'Mayan Cleaning Services',notes:'(604) 816-9722 · mayancleaning.com · Residential & commercial: carpet, floor, window, pressure washing',threat:5},
     ],
-    learning:['Soft wash (low pressure + surfactants) is safer for stucco, vinyl siding, and painted surfaces.','BCSA Regulation Part 11 governs rope access and elevated window cleaning in BC.','Moss treatment is a strong upsell in Metro Vancouver — charge $0.10–0.15/sqft after wash.','Lancelot Janitorial (Vancouver) is primary local supplier for commercial window equipment.']
+    learning:[
+      {text:'Soft wash (low pressure + surfactants) is safer for stucco, vinyl siding, and painted surfaces.',video:'https://www.youtube.com/results?search_query=soft+wash+vs+pressure+wash+tutorial'},
+      {text:'BCSA Regulation Part 11 governs rope access and elevated window cleaning in BC.',video:''},
+      {text:'Moss treatment is a strong upsell in Metro Vancouver — charge $0.10–0.15/sqft after wash.',video:'https://www.youtube.com/results?search_query=moss+treatment+roof+cleaning+tutorial'},
+      {text:'Lancelot Janitorial (Vancouver) is primary local supplier for commercial window equipment.',video:''},
+    ]
   },
   moving:{
     key:'moving',id:'d-moving',name:'Moving',color:'#f59e0b',
@@ -503,7 +508,12 @@ const DIVISIONS = {
       {name:'Small Moves Vancouver',notes:'Local operator focused on small/apartment moves',threat:5},
       {name:'Jim\'s Moving',notes:'Jim\'s Group franchise — tracked',threat:5},
     ],
-    learning:['You Move Me charges hourly but does not publish rates — mystery shop is priority intel.','O2E Brands (parent) uses franchise model — watch for new Lower Mainland territory entries.','Small moves (studio, 1-BR) are quick wins: 2–3 hr jobs, low complexity, high repeat rate.','Corporate relocation has higher margins but longer sales cycles.']
+    learning:[
+      {text:'You Move Me charges hourly but does not publish rates — mystery shop is priority intel.',video:''},
+      {text:'O2E Brands (parent) uses franchise model — watch for new Lower Mainland territory entries.',video:'https://www.youtube.com/results?search_query=moving+company+business+operations'},
+      {text:'Small moves (studio, 1-BR) are quick wins: 2–3 hr jobs, low complexity, high repeat rate.',video:'https://www.youtube.com/results?search_query=small+moving+company+startup+tips'},
+      {text:'Corporate relocation has higher margins but longer sales cycles.',video:''},
+    ]
   },
   carpet:{
     key:'carpet',id:'d-carpet',name:'Carpet Cleanup',color:'#92400e',
@@ -528,7 +538,12 @@ const DIVISIONS = {
       {name:'COIT Carpet Care',notes:'National franchise — strong brand presence in Vancouver',threat:7},
       {name:'Mayan Cleaning Services',notes:'Also offers carpet cleaning — (604) 816-9722 · mayancleaning.com',threat:5},
     ],
-    learning:['Hot water extraction (steam) is industry gold standard — removes 98%+ of bacteria.','Truck-mounts produce best results; portable units adequate for startup phase.','Pet urine requires enzyme treatment + UV light inspection — strong visible upsell.','Dwell time on pre-treatment chemicals: 5–10 min before agitation and extraction.']
+    learning:[
+      {text:'Hot water extraction (steam) is industry gold standard — removes 98%+ of bacteria.',video:'https://www.youtube.com/results?search_query=hot+water+extraction+carpet+cleaning+tutorial'},
+      {text:'Truck-mounts produce best results; portable units adequate for startup phase.',video:'https://www.youtube.com/results?search_query=mytee+carpet+extractor+tutorial'},
+      {text:'Pet urine requires enzyme treatment + UV light inspection — strong visible upsell.',video:'https://www.youtube.com/results?search_query=pet+urine+carpet+cleaning+enzyme+treatment'},
+      {text:'Dwell time on pre-treatment chemicals: 5–10 min before agitation and extraction.',video:'https://www.youtube.com/results?search_query=carpet+cleaning+pre+treatment+technique'},
+    ]
   },
   duct:{
     key:'duct',id:'d-duct',name:'Duct Cleanup',color:'#6366f1',
@@ -548,7 +563,12 @@ const DIVISIONS = {
       {service:'Commercial HVAC',low:800,high:2500,unit:'quoted'},
     ],
     competitors:[],
-    learning:['NADCA certification adds credibility and justifies premium pricing.','Never use negative pressure without sealing all vents except the one being cleaned.','Dryer vent cleaning reduces fire risk — strong safety narrative for marketing.','Post-reno duct purge is a direct tie-in with LandEx demolition/remediation clients.']
+    learning:[
+      {text:'NADCA certification adds credibility and justifies premium pricing.',video:'https://www.youtube.com/results?search_query=NADCA+air+duct+cleaning+certification'},
+      {text:'Never use negative pressure without sealing all vents except the one being cleaned.',video:'https://www.youtube.com/results?search_query=air+duct+cleaning+negative+pressure+technique'},
+      {text:'Dryer vent cleaning reduces fire risk — strong safety narrative for marketing.',video:'https://www.youtube.com/results?search_query=dryer+vent+cleaning+tutorial+professional'},
+      {text:'Post-reno duct purge is a direct tie-in with LandEx demolition/remediation clients.',video:''},
+    ]
   },
   crawlspace:{
     key:'crawlspace',id:'d-crawlspace',name:'Crawl Space Cleanup',color:'#854d0e',
@@ -568,7 +588,12 @@ const DIVISIONS = {
       {service:'Full Crawl Space Reno',low:2500,high:6000,unit:'quoted'},
     ],
     competitors:[],
-    learning:['Rodent waste cleanup requires biohazard protocol — refer to or collaborate with LandEx.','Vapor barriers overlap 12" at seams, run up walls 6" minimum per BC building code.','Crawl space jobs often come as referrals from home inspectors — build that network.','Average Metro Vancouver crawl space: 600–1,200 sqft.']
+    learning:[
+      {text:'Rodent waste cleanup requires biohazard protocol — refer to or collaborate with LandEx.',video:'https://www.youtube.com/results?search_query=crawl+space+rodent+cleanup+biohazard'},
+      {text:'Vapor barriers overlap 12" at seams, run up walls 6" minimum per BC building code.',video:'https://www.youtube.com/results?search_query=crawl+space+vapor+barrier+installation'},
+      {text:'Crawl space jobs often come as referrals from home inspectors — build that network.',video:''},
+      {text:'Average Metro Vancouver crawl space: 600–1,200 sqft.',video:''},
+    ]
   },
   interior:{
     key:'interior',id:'d-interior',name:'Interior Cleaning',color:'#10b981',
@@ -597,7 +622,13 @@ const DIVISIONS = {
       {name:'Medas',notes:'Interior cleaning — full profile pending',threat:4},
       {name:'Mayan Cleaning Services',notes:'(604) 816-9722 · mayancleaning.com · Residential & commercial',threat:4},
     ],
-    learning:['JAN-PRO franchisees pay royalties, creating service quality inconsistency — differentiate on consistency.','STR/Airbnb turnover clients need same-day/rapid-response scheduling — build that workflow.','Linen laundry (wash/dry/fold) is a high-value add-on for STR clients.','Health Canada registered disinfectants (DIN) required for commercial sanitizing claims.','Lancelot Janitorial (Vancouver) is primary local supplier for chemicals and equipment.']
+    learning:[
+      {text:'JAN-PRO franchisees pay royalties, creating service quality inconsistency — differentiate on consistency.',video:'https://www.youtube.com/results?search_query=commercial+cleaning+business+tips'},
+      {text:'STR/Airbnb turnover clients need same-day/rapid-response scheduling — build that workflow.',video:'https://www.youtube.com/results?search_query=airbnb+cleaning+turnover+tips'},
+      {text:'Linen laundry (wash/dry/fold) is a high-value add-on for STR clients.',video:''},
+      {text:'Health Canada registered disinfectants (DIN) required for commercial sanitizing claims.',video:'https://www.youtube.com/results?search_query=commercial+disinfection+cleaning+protocols'},
+      {text:'Lancelot Janitorial (Vancouver) is primary local supplier for chemicals and equipment.',video:''},
+    ]
   },
   landscaping:{
     key:'landscaping',id:'d-landscaping',name:'Landscaping',color:'#84cc16',
@@ -618,7 +649,12 @@ const DIVISIONS = {
       {service:'Garden Bed Maintenance',low:150,high:350,unit:'per visit'},
     ],
     competitors:[],
-    learning:['Bundling lawn care + power washing as seasonal package drives higher average job value.','Monthly contracts are the recurring revenue backbone of a landscaping operation.','Metro Vancouver ALR zones and strata properties represent large-contract opportunities.','STIHL commercial tools have lower total cost of ownership vs homeowner-grade tools.']
+    learning:[
+      {text:'Bundling lawn care + power washing as seasonal package drives higher average job value.',video:'https://www.youtube.com/results?search_query=lawn+care+business+tips+pricing'},
+      {text:'Monthly contracts are the recurring revenue backbone of a landscaping operation.',video:'https://www.youtube.com/results?search_query=landscaping+business+recurring+contracts'},
+      {text:'Metro Vancouver ALR zones and strata properties represent large-contract opportunities.',video:''},
+      {text:'STIHL commercial tools have lower total cost of ownership vs homeowner-grade tools.',video:'https://www.youtube.com/results?search_query=STIHL+commercial+equipment+review'},
+    ]
   },
   junk:{
     key:'junk',id:'d-junk',name:'Junk Removal',color:'#ef4444',
@@ -640,7 +676,12 @@ const DIVISIONS = {
       {service:'Estate Cleanout',low:800,high:2500,unit:'quoted'},
     ],
     competitors:[],
-    learning:['GVRD transfer station fees: ~$120–150/tonne at Delta/Surrey stations. Factor into pricing.','Hazardous materials (paint, chemicals) cannot go to regular transfer — decline or quote separately.','1-800-GOT-JUNK Metro Van pricing: $150+ for minimum load, premium positioning.','Post-reno debris from LandEx job sites is a direct pipeline — formalize the referral process.']
+    learning:[
+      {text:'GVRD transfer station fees: ~$120–150/tonne at Delta/Surrey stations. Factor into pricing.',video:'https://www.youtube.com/results?search_query=junk+removal+business+pricing+tips'},
+      {text:'Hazardous materials (paint, chemicals) cannot go to regular transfer — decline or quote separately.',video:''},
+      {text:'1-800-GOT-JUNK Metro Van pricing: $150+ for minimum load, premium positioning.',video:'https://www.youtube.com/results?search_query=junk+removal+business+operations'},
+      {text:'Post-reno debris from LandEx job sites is a direct pipeline — formalize the referral process.',video:''},
+    ]
   }
 };
 
@@ -826,7 +867,10 @@ function buildDivisionHTML(d){
   const learnItems=d.learning.map((l,i)=>`
     <div class="learn-item">
       <div class="learn-num">0${i+1}</div>
-      <div class="learn-text">${l}</div>
+      <div style="flex:1">
+        <div class="learn-text">${l.text}</div>
+        ${l.video?`<a href="${l.video}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);text-decoration:none;border:1px solid var(--green);border-radius:4px;padding:3px 8px;opacity:.8;transition:opacity .12s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.8">▶ Watch Tutorial</a>`:''}
+      </div>
     </div>
   `).join('');
 
