@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORTEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A0D0B;--sb:#0F1410;--sbh:#162018;--sba:#1C2A1E;
+  --card:#111714;--card2:#161E18;--border:#1E2A20;--border2:#243028;
+  --text:#E8E4DC;--t2:#8A9B8C;--t3:#4A5C4C;
+  --green:#00E87B;--gd:#00B85F;--gl:#00E87B22;
+  --amber:#F59E0B;--red:#EF4444;--blue:#60A5FA;--purple:#A78BFA;
+  --sw:240px;
+  --r6:6px;--r10:10px;--r14:14px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);display:flex;font-size:14px}
+
+/* SIDEBAR */
+#sidebar{width:var(--sw);background:var(--sb);display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;border-right:1px solid var(--border);overflow-y:auto;z-index:10}
+.sb-logo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.logo-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--green);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.logo-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 #00e87b44}50%{opacity:.7;box-shadow:0 0 0 5px transparent}}
+.logo-name{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-1.5px;color:var(--text);line-height:1}
+.logo-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);margin-top:4px;letter-spacing:.5px}
+.sb-section{padding:14px 10px 4px}
+.sb-lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:2px;color:var(--t3);padding:0 8px;margin-bottom:4px;text-transform:uppercase}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r6);cursor:pointer;transition:all .12s;margin-bottom:1px;color:var(--t2);font-size:13px;font-weight:400;user-select:none;position:relative}
+.ni:hover{background:var(--sbh);color:var(--text)}
+.ni.active{background:var(--sba);color:var(--green);font-weight:600}
+.ni.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:2.5px;border-radius:0 2px 2px 0;background:var(--green)}
+.ni-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ni-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.ni-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);background:var(--border);padding:1px 5px;border-radius:3px}
+.sb-footer{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
+.sb-settings{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r6);cursor:pointer;color:var(--t3);font-size:12px;transition:all .12s}
+.sb-settings:hover{background:var(--sbh);color:var(--t2)}
+.sb-db-badge{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 8px;border-radius:4px;margin-bottom:6px}
+.sb-db-badge.connected{background:#00e87b11;color:var(--green);border:1px solid #00e87b22}
+.sb-db-badge.local{background:#f59e0b11;color:var(--amber);border:1px solid #f59e0b22}
+
+/* MAIN */
+#main{margin-left:var(--sw);flex:1;overflow-y:auto;height:100vh}
+.panel{display:none;padding:32px 36px;max-width:1100px;animation:fadeIn .2s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.panel-header{margin-bottom:28px}
+.panel-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1;margin-bottom:6px}
+.panel-sub{font-size:13px;color:var(--t2);font-weight:400}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:20px}
+.card2{background:var(--card2);border:1px solid var(--border2);border-radius:var(--r10);padding:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* STAT CARDS */
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:20px 22px}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.stat-value{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1.5px;color:var(--text);line-height:1}
+.stat-unit{font-size:12px;color:var(--t2);margin-top:4px}
+
+/* TABS */
+.tabs{display:flex;gap:2px;margin-bottom:24px;background:var(--card);border:1px solid var(--border);padding:4px;border-radius:var(--r10);width:fit-content}
+.tab{padding:7px 16px;border-radius:var(--r6);cursor:pointer;font-size:12.5px;font-weight:500;color:var(--t2);transition:all .12s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--sba);color:var(--green);font-weight:600}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 12px;border-bottom:1px solid #1A221C;font-size:13px;color:var(--t2);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--card2);color:var(--text)}
+.badge{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;letter-spacing:.5px}
+.badge-essential{background:#00e87b11;color:var(--green);border:1px solid #00e87b22}
+.badge-scaleup{background:#60a5fa11;color:var(--blue);border:1px solid #60a5fa22}
+.badge-upsell{background:#f59e0b11;color:var(--amber);border:1px solid #f59e0b22}
+.badge-highrise{background:#a78bfa11;color:var(--purple);border:1px solid #a78bfa22}
+.badge-material{background:#ef444411;color:var(--red);border:1px solid #ef444422}
+.badge-commercial{background:#60a5fa11;color:var(--blue);border:1px solid #60a5fa22}
+.badge-chemical{background:#f59e0b11;color:var(--amber);border:1px solid #f59e0b22}
+.badge-recommended{background:#a78bfa11;color:var(--purple);border:1px solid #a78bfa22}
+.badge-longterm{background:#f59e0b11;color:var(--amber);border:1px solid #f59e0b22}
+.badge-starthere{background:#00e87b11;color:var(--green);border:1px solid #00e87b22}
+.badge-highvalue{background:#60a5fa11;color:var(--blue);border:1px solid #60a5fa22}
+
+/* PRICE TAG */
+.price-range{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text)}
+.price-unit{font-size:11px;color:var(--t3);margin-left:4px}
+
+/* COMPETITOR CARD */
+.comp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r10);padding:16px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px}
+.comp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.comp-name{font-weight:600;font-size:14px;color:var(--text);margin-bottom:3px}
+.comp-meta{font-size:12px;color:var(--t2)}
+.threat-bar{display:flex;align-items:center;gap:8px;margin-top:8px}
+.threat-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);text-transform:uppercase}
+.threat-dots{display:flex;gap:3px}
+.threat-dot{width:8px;height:8px;border-radius:50%}
+
+/* LEARNING ITEMS */
+.learn-item{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.learn-item:last-child{border-bottom:none}
+.learn-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);flex-shrink:0;width:20px;margin-top:1px}
+.learn-text{font-size:13.5px;color:var(--t2);line-height:1.6}
+
+/* OVERVIEW */
+.service-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{font-size:12px;color:var(--t2);background:var(--card2);border:1px solid var(--border2);border-radius:20px;padding:4px 12px}
+.note-box{background:var(--card2);border-left:3px solid var(--amber);border-radius:0 var(--r6) var(--r6) 0;padding:12px 14px;font-size:13px;color:var(--t2);margin-top:16px;line-height:1.6}
+
+/* IDEAS */
+.idea-compose{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:20px;margin-bottom:24px}
+.idea-textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.7;resize:none;min-height:90px;placeholder-color:var(--t3)}
+.idea-textarea::placeholder{color:var(--t3)}
+.idea-bar{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.idea-tags{flex:1;background:transparent;border:none;outline:none;color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:11px;placeholder-color:var(--t3)}
+.idea-tags::placeholder{color:var(--t3)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r6);cursor:pointer;font-size:13px;font-weight:600;border:none;transition:all .15s;font-family:'Outfit',sans-serif}
+.btn-primary{background:var(--green);color:#0A0D0B}
+.btn-primary:hover{background:#00FF8A;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--card2);color:var(--text)}
+.btn-danger{background:transparent;color:var(--red);border:none;padding:4px 8px;font-size:11px}
+.btn-danger:hover{background:#ef444411}
+.idea-list{display:flex;flex-direction:column;gap:10px}
+.idea-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r10);padding:16px 18px;transition:border-color .12s}
+.idea-item:hover{border-color:var(--border2)}
+.idea-content{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:10px}
+.idea-footer{display:flex;align-items:center;gap:8px}
+.idea-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)}
+.idea-tag-chip{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);background:var(--gl);border-radius:3px;padding:2px 6px}
+.idea-delete{margin-left:auto}
+.empty-state{text-align:center;padding:60px 20px;color:var(--t3)}
+.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-text{font-size:14px}
+
+/* ROADMAP */
+.phase-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
+.phase-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.phase-card.done::before{background:var(--green)}
+.phase-card.active::before{background:var(--amber)}
+.phase-card.upcoming::before{background:var(--border2)}
+.phase-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.phase-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--border2)}
+.phase-card.active .phase-num{color:var(--amber)}
+.phase-card.done .phase-num{color:var(--green)}
+.phase-title{font-weight:600;font-size:16px;color:var(--text)}
+.phase-status{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:3px;letter-spacing:1px;text-transform:uppercase}
+.status-done{background:#00e87b11;color:var(--green);border:1px solid #00e87b22}
+.status-active{background:#f59e0b11;color:var(--amber);border:1px solid #f59e0b22}
+.status-upcoming{background:var(--card2);color:var(--t3);border:1px solid var(--border)}
+.phase-items{display:flex;flex-direction:column;gap:6px}
+.phase-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--t2)}
+.phase-item-dot{width:5px;height:5px;border-radius:50%;background:var(--t3);flex-shrink:0;margin-top:6px}
+.phase-card.active .phase-item-dot{background:var(--amber)}
+.phase-card.done .phase-item-dot{background:var(--green)}
+
+/* SETTINGS */
+.settings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r14);padding:24px;margin-bottom:16px}
+.settings-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px}
+.settings-sub{font-size:12px;color:var(--t2);margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
+.field input{width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:var(--r6);padding:10px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .12s}
+.field input:focus{border-color:var(--green)}
+.field input::placeholder{color:var(--t3)}
+
+/* DASHBOARD */
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:4px}
+.activity-text{font-size:13px;color:var(--t2);flex:1;line-height:1.5}
+.activity-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);white-space:nowrap}
+.quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.qa-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r10);padding:12px 16px;cursor:pointer;text-align:left;transition:all .12s;flex:1;min-width:180px}
+.qa-btn:hover{background:var(--card2);border-color:var(--border2);transform:translateY(-1px)}
+.qa-icon{font-size:18px;margin-bottom:8px}
+.qa-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.qa-desc{font-size:11px;color:var(--t3)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--t3)}
+
+.divider{height:1px;background:var(--border);margin:20px 0}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-tag">
+      <span>PRIVATE</span>
+    </div>
+    <div class="logo-name">CORTEX</div>
+    <div class="logo-sub">LandEx R&D · Think Tank</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-lbl">Workspace</div>
+    <div class="ni active" onclick="nav('dashboard')">
+      <span class="ni-icon">◈</span> Dashboard
+    </div>
+    <div class="ni" onclick="nav('ideas')">
+      <span class="ni-icon">◉</span> Ideas & Thoughts
+      <span class="ni-count" id="ideas-count">0</span>
+    </div>
+    <div class="ni" onclick="nav('roadmap')">
+      <span class="ni-icon">◎</span> Roadmap
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-lbl">LIVO Divisions</div>
+    <div class="ni" onclick="nav('d-powerwash')"><span class="ni-dot" style="background:#0ea5e9"></span>Power Washing & Windows</div>
+    <div class="ni" onclick="nav('d-moving')"><span class="ni-dot" style="background:#f59e0b"></span>Moving</div>
+    <div class="ni" onclick="nav('d-carpet')"><span class="ni-dot" style="background:#92400e"></span>Carpet Cleanup</div>
+    <div class="ni" onclick="nav('d-duct')"><span class="ni-dot" style="background:#6366f1"></span>Duct Cleanup</div>
+    <div class="ni" onclick="nav('d-crawlspace')"><span class="ni-dot" style="background:#854d0e"></span>Crawl Space</div>
+    <div class="ni" onclick="nav('d-interior')"><span class="ni-dot" style="background:#10b981"></span>Interior Cleaning</div>
+    <div class="ni" onclick="nav('d-landscaping')"><span class="ni-dot" style="background:#84cc16"></span>Landscaping</div>
+    <div class="ni" onclick="nav('d-junk')"><span class="ni-dot" style="background:#ef4444"></span>Junk Removal</div>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-db-badge local" id="db-badge">
+      <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
+      <span id="db-status-text">Local Storage</span>
+    </div>
+    <div class="sb-settings" onclick="nav('settings')">
+      <span style="font-size:12px">⚙</span> Settings & Supabase
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="panel-header">
+      <div class="panel-title">Good morning, LandEx.</div>
+      <div class="panel-sub">CORTEX · Private R&D Command Center</div>
+    </div>
+    <div class="grid4" style="margin-bottom:24px">
+      <div class="stat-card">
+        <div class="stat-label">Ideas Saved</div>
+        <div class="stat-value" id="dash-ideas-count">0</div>
+        <div class="stat-unit">captured thoughts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">LIVO Divisions</div>
+        <div class="stat-value">8</div>
+        <div class="stat-unit">service lines</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Competitors Tracked</div>
+        <div class="stat-value">9</div>
+        <div class="stat-unit">across all divisions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Roadmap Phase</div>
+        <div class="stat-value" style="color:var(--amber)">01</div>
+        <div class="stat-unit">Launch MVP — Active</div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="section-label">Recent Ideas</div>
+        <div id="dash-recent-ideas">
+          <div class="empty-state" style="padding:30px 10px">
+            <div class="empty-icon">◉</div>
+            <div class="empty-text">No ideas yet. Start capturing.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-label">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <div class="qa-btn" onclick="nav('ideas')">
+            <div class="qa-icon">◉</div>
+            <div class="qa-label">Capture an Idea</div>
+            <div class="qa-desc">Brain dump · strategy · questions</div>
+          </div>
+          <div class="qa-btn" onclick="nav('d-interior')">
+            <div class="qa-icon">✨</div>
+            <div class="qa-label">Interior Cleaning</div>
+            <div class="qa-desc">Your highest-priority launch division</div>
+          </div>
+          <div class="qa-btn" onclick="nav('roadmap')">
+            <div class="qa-icon">◎</div>
+            <div class="qa-label">View Roadmap</div>
+            <div class="qa-desc">LIVO phases · milestones · goals</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IDEAS -->
+  <div class="panel" id="panel-ideas">
+    <div class="panel-header">
+      <div class="panel-title">Ideas & Thoughts</div>
+      <div class="panel-sub">Capture everything. Filter later. Your private thinking space.</div>
+    </div>
+    <div class="idea-compose">
+      <textarea class="idea-textarea" id="idea-input" placeholder="What's on your mind? Business idea, observation, question, strategy...&#10;Voice it out loud and paste it here." rows="4"></textarea>
+      <div class="idea-bar">
+        <input class="idea-tags" id="idea-tags-input" placeholder="tags: livo, moving, pricing...  (comma-separated)" style="flex:1;outline:none">
+        <button class="btn btn-primary" onclick="saveIdea()">Save Thought</button>
+      </div>
+    </div>
+    <div class="section-label" style="margin-bottom:16px" id="ideas-section-label">Saved Thoughts</div>
+    <div class="idea-list" id="idea-list"></div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="panel" id="panel-roadmap">
+    <div class="panel-header">
+      <div class="panel-title">LIVO Roadmap</div>
+      <div class="panel-sub">Strategic phases from launch to cross-Canada expansion</div>
+    </div>
+    <div class="phase-card active">
+      <div class="phase-header">
+        <div class="phase-num">01</div>
+        <div>
+          <div class="phase-title">Launch MVP — Lower Mainland</div>
+          <div style="margin-top:4px"><span class="phase-status status-active">Active Now</span></div>
+        </div>
+      </div>
+      <div class="phase-items">
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Register LIVO as business entity (BC)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Launch livoland.com (public site + booking form)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Activate CORTEX as persistent intelligence hub</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Go live with Interior Cleaning + Junk Removal + Power Washing</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>First 10 paying clients — build Google reviews</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Mystery shop You Move Me (hourly rate)</div></div>
+      </div>
+    </div>
+    <div class="phase-card upcoming">
+      <div class="phase-header">
+        <div class="phase-num">02</div>
+        <div>
+          <div class="phase-title">Build Operations Systems</div>
+          <div style="margin-top:4px"><span class="phase-status status-upcoming">Upcoming</span></div>
+        </div>
+      </div>
+      <div class="phase-items">
+        <div class="phase-item"><div class="phase-item-dot"></div><div>LIVO Admin Panel live (bookings, jobs, crew tracking)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Twilio SMS + Resend email confirmation pipeline</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Add Moving division (Sprinter already in fleet)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Add Carpet Cleanup division</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Formalize LandEx → LIVO post-reno debris referral pipeline</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Target: $8K–12K monthly revenue</div></div>
+      </div>
+    </div>
+    <div class="phase-card upcoming">
+      <div class="phase-header">
+        <div class="phase-num">03</div>
+        <div>
+          <div class="phase-title">Scale — All 8 Divisions Active</div>
+          <div style="margin-top:4px"><span class="phase-status status-upcoming">Upcoming</span></div>
+        </div>
+      </div>
+      <div class="phase-items">
+        <div class="phase-item"><div class="phase-item-dot"></div><div>All 8 service divisions operational</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>3–5 crew members + second vehicle</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>STR/Airbnb turnover as dedicated service stream</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Monthly revenue $15K+</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Incorporate LIVO as standalone entity (Holdco structure)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Engage BC corporate CPA for tax structure optimization</div></div>
+      </div>
+    </div>
+    <div class="phase-card upcoming">
+      <div class="phase-header">
+        <div class="phase-num">04</div>
+        <div>
+          <div class="phase-title">Expand — Cross-BC &amp; Canada</div>
+          <div style="margin-top:4px"><span class="phase-status status-upcoming">Horizon</span></div>
+        </div>
+      </div>
+      <div class="phase-items">
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Expand to Fraser Valley, Victoria, Okanagan</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>livoland.ca as Canadian SEO presence (redirect → .com)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Evaluate managed model vs franchise model for new markets</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>Alberta entry (Calgary / Edmonton property market)</div></div>
+        <div class="phase-item"><div class="phase-item-dot"></div><div>livoland.com as cross-border platform (US expansion readiness)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIVISION PANELS (generated by JS) -->
+  <div id="division-panels"></div>
+
+  <!-- SETTINGS -->
+  <div class="panel" id="panel-settings">
+    <div class="panel-header">
+      <div class="panel-title">Settings</div>
+      <div class="panel-sub">Supabase connection · data persistence · configuration</div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-title">Supabase Connection</div>
+      <div class="settings-sub">Connect your Supabase project to persist Ideas across devices. Without this, data is stored in your browser only. Your Supabase URL and anon key are stored locally in this browser.</div>
+      <div class="field">
+        <label>Supabase Project URL</label>
+        <input type="text" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
+      </div>
+      <div class="field">
+        <label>Supabase Anon Key</label>
+        <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button class="btn btn-primary" onclick="saveSupabaseConfig()">Connect Supabase</button>
+        <button class="btn btn-ghost" onclick="clearSupabaseConfig()">Disconnect</button>
+      </div>
+      <div id="sb-msg" style="font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:12px;display:none"></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-title">Create Supabase Table</div>
+      <div class="settings-sub">Run this SQL in your Supabase project under SQL Editor to create the Ideas table.</div>
+      <div style="background:var(--card2);border:1px solid var(--border2);border-radius:var(--r6);padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t2);line-height:1.8">
+        CREATE TABLE cortex_ideas (<br>
+        &nbsp;&nbsp;id uuid DEFAULT gen_random_uuid() PRIMARY KEY,<br>
+        &nbsp;&nbsp;content text NOT NULL,<br>
+        &nbsp;&nbsp;tags text[] DEFAULT '{}',<br>
+        &nbsp;&nbsp;created_at timestamptz DEFAULT now()<br>
+        );<br><br>
+        ALTER TABLE cortex_ideas ENABLE ROW LEVEL SECURITY;<br>
+        CREATE POLICY "Public access" ON cortex_ideas FOR ALL USING (true);
+      </div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-title">Data Management</div>
+      <div class="settings-sub">Export or clear your locally stored ideas.</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="exportIdeas()">Export Ideas (JSON)</button>
+        <button class="btn btn-danger" style="border:1px solid var(--border)" onclick="clearLocalIdeas()">Clear Local Ideas</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const DIVISIONS = {
+  powerwash:{
+    key:'powerwash',id:'d-powerwash',name:'Power Washing & Windows',color:'#0ea5e9',
+    overview:{tagline:'Exterior surface cleaning — residential, commercial, high-rise',services:['High-Pressure Washing','Soft Washing','Window Cleaning (Ground + High-Rise)','Gutter Cleaning'],notes:'Vancouver climate drives year-round demand. Moss and mold buildup is a recurring problem on all surfaces. Strong upsell opportunity.'},
+    equipment:[
+      {item:'Pressure Washer (Belt Drive)',spec:'3,500+ PSI / 4 GPM',brand:'Simpson / Karcher Pro',priority:'Essential'},
+      {item:'Surface Cleaner Attachment',spec:'16–24" bar',brand:'Whisper Wash',priority:'Essential'},
+      {item:'Water-Fed Pole System',spec:'30–60 ft',brand:'IPC Eagle',priority:'High-Rise'},
+      {item:'Telescoping Window Kit',spec:'12–24 ft reach',brand:'Ettore / Unger',priority:'Essential'},
+      {item:'Soft Wash System',spec:'12V pump, 65 gal tank',brand:'General Pump',priority:'Upsell'},
+      {item:'Safety Harness Kit',spec:'BCSA compliant',brand:'3M DBI-SALA',priority:'High-Rise'},
+    ],
+    pricing:[
+      {service:'House Exterior Wash',low:300,high:600,unit:'flat'},
+      {service:'Driveway / Concrete',low:150,high:300,unit:'flat'},
+      {service:'Deck / Fence',low:0.20,high:0.35,unit:'per sqft'},
+      {service:'Window Cleaning (per pane)',low:5,high:8,unit:'per pane'},
+      {service:'Gutter Cleaning',low:1.50,high:2.50,unit:'per lin. ft'},
+      {service:'High-Rise Window Surcharge',low:30,high:50,unit:'% premium'},
+    ],
+    competitors:[
+      {name:'Gorilla Power Washing',notes:'Local Vancouver operator — tracked',threat:6},
+      {name:'Mayan Cleaning Services',notes:'(604) 816-9722 · mayancleaning.com · Residential & commercial: carpet, floor, window, pressure washing',threat:5},
+    ],
+    learning:['Soft wash (low pressure + surfactants) is safer for stucco, vinyl siding, and painted surfaces.','BCSA Regulation Part 11 governs rope access and elevated window cleaning in BC.','Moss treatment is a strong upsell in Metro Vancouver — charge $0.10–0.15/sqft after wash.','Lancelot Janitorial (Vancouver) is primary local supplier for commercial window equipment.']
+  },
+  moving:{
+    key:'moving',id:'d-moving',name:'Moving',color:'#f59e0b',
+    overview:{tagline:'Residential & commercial moving — local, small moves, full-service',services:['Residential Moving (studio to 5-bed)','Small Moves / Single Item','Commercial Office Relocation','Packing & Unpacking'],notes:'You Move Me (O2E Brands franchise) is dominant local player. Hourly rate not publicly listed — mystery shop pending.'},
+    equipment:[
+      {item:'Mercedes Sprinter 3500',spec:'Existing — commercially insured',brand:'Mercedes-Benz',priority:'Essential'},
+      {item:'Appliance / Furniture Dolly',spec:'1,000 lb capacity',brand:'Magliner',priority:'Essential'},
+      {item:'Moving Blankets',spec:'80" × 72", 6 lb',brand:'Pro-Series',priority:'Essential'},
+      {item:'Ratchet Straps',spec:'2" × 27 ft, 3,300 lb',brand:'Rhino USA',priority:'Essential'},
+      {item:'Stair Climber Dolly',spec:'Hand truck + crawler',brand:'Magliner',priority:'High Value'},
+      {item:'Wardrobe Boxes',spec:'46" tall',brand:'Uline',priority:'Consumable'},
+    ],
+    pricing:[
+      {service:'2-Man Crew (min 2 hrs)',low:120,high:150,unit:'per hour'},
+      {service:'3-Man Crew',low:160,high:190,unit:'per hour'},
+      {service:'Small Move Flat Rate',low:300,high:500,unit:'flat'},
+      {service:'Packing Service',low:45,high:65,unit:'per hour/person'},
+      {service:'Long-Distance (BC)',low:800,high:2500,unit:'quoted'},
+    ],
+    competitors:[
+      {name:'You Move Me',notes:'O2E Brands franchise. Hourly rate not published — mystery shop pending. Watch for new Lower Mainland territory entries.',threat:8},
+      {name:'Small Moves Vancouver',notes:'Local operator focused on small/apartment moves',threat:5},
+      {name:'Jim\'s Moving',notes:'Jim\'s Group franchise — tracked',threat:5},
+    ],
+    learning:['You Move Me charges hourly but does not publish rates — mystery shop is priority intel.','O2E Brands (parent) uses franchise model — watch for new Lower Mainland territory entries.','Small moves (studio, 1-BR) are quick wins: 2–3 hr jobs, low complexity, high repeat rate.','Corporate relocation has higher margins but longer sales cycles.']
+  },
+  carpet:{
+    key:'carpet',id:'d-carpet',name:'Carpet Cleanup',color:'#92400e',
+    overview:{tagline:'Deep carpet cleaning, stain treatment, upholstery care',services:['Hot Water Extraction (Steam)','Dry Foam Cleaning','Stain & Odour Treatment','Upholstery Cleaning','Area Rug Cleaning'],notes:'Strong recurring demand in Metro Vancouver. Pet stain/odour jobs command premium pricing.'},
+    equipment:[
+      {item:'Portable Hot Water Extractor',spec:'200 PSI, 140°F',brand:'Mytee 8070',priority:'Start Here'},
+      {item:'Carpet Cleaning Wand (12")',spec:'Dual-jet, stainless',brand:'Sapphire Scientific',priority:'Essential'},
+      {item:'Pre-Treatment Sprayer',spec:'1.5 gal pump',brand:'Chapin Pro',priority:'Essential'},
+      {item:'Air Mover / Dryer',spec:'1/3 HP, 1,600 CFM',brand:'Xpower / Dri-Eaz',priority:'Essential'},
+      {item:'Enzyme Odour Treatment',spec:'Commercial grade',brand:'Bac-Azap / Zorbx',priority:'Upsell'},
+      {item:'Truck-Mount Extractor',spec:'High-temp, 500 PSI',brand:'Prochem / HydraMaster',priority:'Long-Term'},
+    ],
+    pricing:[
+      {service:'Per Room (avg 200 sqft)',low:40,high:80,unit:'per room'},
+      {service:'Whole Home (3 BR)',low:250,high:450,unit:'flat'},
+      {service:'Stain Treatment',low:25,high:50,unit:'per spot'},
+      {service:'Pet Odour Treatment',low:75,high:150,unit:'add-on'},
+      {service:'Upholstery (3-seat sofa)',low:120,high:200,unit:'flat'},
+      {service:'Area Rug',low:2,high:4,unit:'per sqft'},
+    ],
+    competitors:[
+      {name:'COIT Carpet Care',notes:'National franchise — strong brand presence in Vancouver',threat:7},
+      {name:'Mayan Cleaning Services',notes:'Also offers carpet cleaning — (604) 816-9722 · mayancleaning.com',threat:5},
+    ],
+    learning:['Hot water extraction (steam) is industry gold standard — removes 98%+ of bacteria.','Truck-mounts produce best results; portable units adequate for startup phase.','Pet urine requires enzyme treatment + UV light inspection — strong visible upsell.','Dwell time on pre-treatment chemicals: 5–10 min before agitation and extraction.']
+  },
+  duct:{
+    key:'duct',id:'d-duct',name:'Duct Cleanup',color:'#6366f1',
+    overview:{tagline:'HVAC duct and dryer vent cleaning — residential and commercial',services:['Full HVAC Duct Cleaning','Dryer Vent Cleaning','Air Handler Unit Cleaning','Sanitizing & Deodorizing','Post-Reno Duct Purge'],notes:'Typically sold every 3–5 years per home. Dryer vent cleaning is high-frequency, fast job. Strong recurring revenue.'},
+    equipment:[
+      {item:'Negative Air Machine / HEPA Vac',spec:'500+ CFM, HEPA filter',brand:'Nikro / Abatement Tech',priority:'Essential'},
+      {item:'Rotary Brush System',spec:'Flex cable, multiple heads',brand:'Rotobrush / Abatement',priority:'Essential'},
+      {item:'Dryer Vent Brush Kit',spec:'24 ft flex cable',brand:'Gardus LintEater',priority:'Essential'},
+      {item:'Inspection Camera',spec:'HD, 9mm, 16 ft',brand:'RIDGID SeeSnake Micro',priority:'Recommended'},
+      {item:'ULV Fogger (Sanitizing)',spec:'Duct-compatible',brand:'Vectorfog',priority:'Upsell'},
+    ],
+    pricing:[
+      {service:'Full Duct Clean (avg home)',low:350,high:600,unit:'flat'},
+      {service:'Per Vent (add-on)',low:20,high:35,unit:'per vent'},
+      {service:'Dryer Vent Clean',low:80,high:140,unit:'flat'},
+      {service:'Sanitizing Treatment',low:75,high:125,unit:'add-on'},
+      {service:'Commercial HVAC',low:800,high:2500,unit:'quoted'},
+    ],
+    competitors:[],
+    learning:['NADCA certification adds credibility and justifies premium pricing.','Never use negative pressure without sealing all vents except the one being cleaned.','Dryer vent cleaning reduces fire risk — strong safety narrative for marketing.','Post-reno duct purge is a direct tie-in with LandEx demolition/remediation clients.']
+  },
+  crawlspace:{
+    key:'crawlspace',id:'d-crawlspace',name:'Crawl Space Cleanup',color:'#854d0e',
+    overview:{tagline:'Crawl space debris removal, vapor barrier, insulation, moisture control',services:['Old Insulation Removal','Debris & Rodent Waste Cleanup','Vapor Barrier Installation','New Insulation Install','Moisture Assessment'],notes:'Rodent remediation fits better under LandEx (existing HEPA/biohazard protocols). LIVO handles clean debris removal and re-insulation side.'},
+    equipment:[
+      {item:'HEPA Vacuum (Commercial)',spec:'9 gal, HEPA H13',brand:'ProTeam ProVac',priority:'Essential'},
+      {item:'Insulation Removal Vacuum',spec:'2 hp, 14 ft hose',brand:'Dustless Technologies',priority:'Essential'},
+      {item:'Tyvek Coveralls',spec:'Type 5/6',brand:'DuPont / Kimberly-Clark',priority:'Essential'},
+      {item:'Full-Face Respirator',spec:'P100 + OV cartridge',brand:'3M 6800',priority:'Essential'},
+      {item:'LED Work Light (slim)',spec:'Rechargeable, low profile',brand:'Streamlight',priority:'Essential'},
+      {item:'Vapor Barrier (6 mil poly)',spec:'10 × 100 ft rolls',brand:'Raven Industries',priority:'Material'},
+    ],
+    pricing:[
+      {service:'Debris / Insulation Removal',low:400,high:900,unit:'flat (avg home)'},
+      {service:'Vapor Barrier',low:1.50,high:3.00,unit:'per sqft'},
+      {service:'New Insulation Install',low:2.00,high:4.50,unit:'per sqft'},
+      {service:'Full Crawl Space Reno',low:2500,high:6000,unit:'quoted'},
+    ],
+    competitors:[],
+    learning:['Rodent waste cleanup requires biohazard protocol — refer to or collaborate with LandEx.','Vapor barriers overlap 12" at seams, run up walls 6" minimum per BC building code.','Crawl space jobs often come as referrals from home inspectors — build that network.','Average Metro Vancouver crawl space: 600–1,200 sqft.']
+  },
+  interior:{
+    key:'interior',id:'d-interior',name:'Interior Cleaning',color:'#10b981',
+    overview:{tagline:'Residential & commercial interior cleaning, detailing, move-in/out, STR turnover',services:['Standard Residential Clean','Deep Clean','Move-In / Move-Out','Post-Renovation Cleanup','Airbnb / STR Turnover','Commercial Office Cleaning','Industrial & Warehouse','Sanitizing & Disinfecting'],notes:'STR (Airbnb) turnover is high-frequency, premium service. JAN-PRO is dominant commercial player — differentiate with faster response and bundled services.'},
+    equipment:[
+      {item:'Commercial Backpack Vacuum',spec:'HEPA, 10 qt',brand:'ProTeam Super CoachVac',priority:'Essential'},
+      {item:'Commercial Upright Vacuum',spec:'HEPA, 13" path',brand:'Sanitaire SC886E',priority:'Essential'},
+      {item:'Microfiber Flat Mop System',spec:'Wet/dry, 18"',brand:'Rubbermaid HYGEN',priority:'Essential'},
+      {item:'Janitor Cart / Service Trolley',spec:'3-shelf, 36 gal',brand:'Rubbermaid 3486',priority:'Essential'},
+      {item:'Auto-Scrubber (20")',spec:'Battery, 20" disc',brand:'Tennant T300e',priority:'Commercial'},
+      {item:'All-Purpose Cleaner',spec:'Commercial concentrate',brand:'Diversey Suma / Ecolab',priority:'Chemical'},
+      {item:'Disinfectant (Health Canada DIN)',spec:'Broad spectrum',brand:'Diversey Oxivir / Virox',priority:'Chemical'},
+    ],
+    pricing:[
+      {service:'Standard Clean (avg home)',low:120,high:200,unit:'flat'},
+      {service:'Deep Clean',low:250,high:450,unit:'flat'},
+      {service:'Move-In / Move-Out',low:300,high:600,unit:'flat'},
+      {service:'Airbnb Turnover (1–2 BR)',low:80,high:150,unit:'flat'},
+      {service:'Office Cleaning',low:0.10,high:0.20,unit:'per sqft / month'},
+      {service:'Post-Reno Cleanup',low:0.30,high:0.55,unit:'per sqft'},
+      {service:'Sanitizing Add-On',low:50,high:100,unit:'add-on'},
+    ],
+    competitors:[
+      {name:'JAN-PRO',notes:'National franchise — commercial focus. High service inconsistency due to franchise model. Primary threat for commercial accounts.',threat:8},
+      {name:'Cleaning4U',notes:'Local Vancouver operator — tracked',threat:5},
+      {name:'Medas',notes:'Interior cleaning — full profile pending',threat:4},
+      {name:'Mayan Cleaning Services',notes:'(604) 816-9722 · mayancleaning.com · Residential & commercial',threat:4},
+    ],
+    learning:['JAN-PRO franchisees pay royalties, creating service quality inconsistency — differentiate on consistency.','STR/Airbnb turnover clients need same-day/rapid-response scheduling — build that workflow.','Linen laundry (wash/dry/fold) is a high-value add-on for STR clients.','Health Canada registered disinfectants (DIN) required for commercial sanitizing claims.','Lancelot Janitorial (Vancouver) is primary local supplier for chemicals and equipment.']
+  },
+  landscaping:{
+    key:'landscaping',id:'d-landscaping',name:'Landscaping',color:'#84cc16',
+    overview:{tagline:'Lawn & garden maintenance, seasonal cleanup, tree and hedge care',services:['Lawn Mowing & Edging','Hedge & Shrub Trimming','Garden Bed Maintenance','Leaf Blowing & Yard Cleanup','Spring / Fall Seasonal Cleanup','Patio Power Wash (bundled)'],notes:'Strong repeat revenue via weekly/biweekly contracts. Metro Vancouver mild climate = near year-round demand.'},
+    equipment:[
+      {item:'Commercial Walk-Behind Mower',spec:'21", Honda GCV200',brand:'Honda HRX217',priority:'Essential'},
+      {item:'String Trimmer',spec:'Commercial, 2-stroke',brand:'STIHL FS 94 R',priority:'Essential'},
+      {item:'Backpack Blower',spec:'145 MPH, 56cc',brand:'STIHL BR 600',priority:'Essential'},
+      {item:'Hedge Trimmer (commercial)',spec:'24" blade',brand:'STIHL HS 82 R',priority:'Essential'},
+      {item:'Heavy-Duty Debris Tarp',spec:'72" × 96"',brand:'Rubbermaid Commercial',priority:'Essential'},
+      {item:'Ride-On Mower',spec:'42", Kohler engine',brand:'Husqvarna TS142',priority:'Scale-Up'},
+    ],
+    pricing:[
+      {service:'Lawn Mow + Edge (avg lot)',low:50,high:100,unit:'per visit'},
+      {service:'Weekly Maintenance Contract',low:180,high:350,unit:'per month'},
+      {service:'Spring / Fall Cleanup',low:250,high:600,unit:'flat'},
+      {service:'Hedge Trimming',low:80,high:200,unit:'flat'},
+      {service:'Garden Bed Maintenance',low:150,high:350,unit:'per visit'},
+    ],
+    competitors:[],
+    learning:['Bundling lawn care + power washing as seasonal package drives higher average job value.','Monthly contracts are the recurring revenue backbone of a landscaping operation.','Metro Vancouver ALR zones and strata properties represent large-contract opportunities.','STIHL commercial tools have lower total cost of ownership vs homeowner-grade tools.']
+  },
+  junk:{
+    key:'junk',id:'d-junk',name:'Junk Removal',color:'#ef4444',
+    overview:{tagline:'Residential & commercial junk hauling, post-construction debris, estate cleanouts',services:['Residential Junk Removal','Commercial Clearance','Post-Construction Debris Hauling','Estate / Hoarder Cleanout','E-Waste & Appliance Removal','Donation Drops (GVRD)'],notes:'Post-construction debris hauling is a direct tie-in with LandEx demo projects. Sprinter 3500 already in fleet.'},
+    equipment:[
+      {item:'Mercedes Sprinter 3500',spec:'Existing — commercially insured',brand:'Mercedes-Benz',priority:'Essential'},
+      {item:'Heavy-Duty Dollies',spec:'1,000 lb, rubber wheels',brand:'Magliner',priority:'Essential'},
+      {item:'Work Gloves (Leather Palm)',spec:'Cut-resistant',brand:'Mechanix Wear',priority:'Essential'},
+      {item:'Heavy Tarps',spec:'18 × 24 ft, 10 mil',brand:'Foremost Tarp',priority:'Essential'},
+      {item:'Dump Trailer (12 ft)',spec:'7,000 lb GVWR',brand:'Load Trail / PJ Trailers',priority:'Scale-Up'},
+    ],
+    pricing:[
+      {service:'1/8 Truck Load',low:100,high:150,unit:'flat'},
+      {service:'1/4 Truck Load',low:175,high:250,unit:'flat'},
+      {service:'1/2 Truck Load',low:275,high:375,unit:'flat'},
+      {service:'Full Load',low:400,high:600,unit:'flat'},
+      {service:'Labour (2-man)',low:90,high:130,unit:'per hour'},
+      {service:'Appliance Removal',low:75,high:120,unit:'per item'},
+      {service:'Estate Cleanout',low:800,high:2500,unit:'quoted'},
+    ],
+    competitors:[],
+    learning:['GVRD transfer station fees: ~$120–150/tonne at Delta/Surrey stations. Factor into pricing.','Hazardous materials (paint, chemicals) cannot go to regular transfer — decline or quote separately.','1-800-GOT-JUNK Metro Van pricing: $150+ for minimum load, premium positioning.','Post-reno debris from LandEx job sites is a direct pipeline — formalize the referral process.']
+  }
+};
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+let sbClient = null;
+
+function getConfig(){
+  try{return JSON.parse(localStorage.getItem('cortex_sb_config')||'{}')}catch{return{}}
+}
+
+function initSupabase(){
+  const cfg=getConfig();
+  if(cfg.url&&cfg.key){
+    try{
+      sbClient=supabase.createClient(cfg.url,cfg.key);
+      updateDbBadge(true);
+    }catch(e){sbClient=null;updateDbBadge(false)}
+  }else{updateDbBadge(false)}
+}
+
+function updateDbBadge(connected){
+  const badge=document.getElementById('db-badge');
+  const txt=document.getElementById('db-status-text');
+  badge.className='sb-db-badge '+(connected?'connected':'local');
+  txt.textContent=connected?'Supabase Connected':'Local Storage';
+}
+
+// ─── IDEAS ────────────────────────────────────────────────────────────────────
+async function loadIdeas(){
+  let ideas=[];
+  if(sbClient){
+    const{data,error}=await sbClient.from('cortex_ideas').select('*').order('created_at',{ascending:false});
+    if(!error&&data)ideas=data;
+    else ideas=getLocalIdeas();
+  }else{ideas=getLocalIdeas()}
+  renderIdeas(ideas);
+  updateIdeaCount(ideas.length);
+  renderDashIdeas(ideas.slice(0,3));
+}
+
+function getLocalIdeas(){
+  try{return JSON.parse(localStorage.getItem('cortex_ideas')||'[]')}catch{return[]}
+}
+
+async function saveIdea(){
+  const content=document.getElementById('idea-input').value.trim();
+  if(!content)return;
+  const tagsRaw=document.getElementById('idea-tags-input').value;
+  const tags=tagsRaw.split(',').map(t=>t.trim()).filter(Boolean);
+  const idea={id:crypto.randomUUID(),content,tags,created_at:new Date().toISOString()};
+
+  if(sbClient){
+    const{error}=await sbClient.from('cortex_ideas').insert([{content,tags}]);
+    if(error){saveIdeaLocally(idea)}
+  }else{saveIdeaLocally(idea)}
+
+  document.getElementById('idea-input').value='';
+  document.getElementById('idea-tags-input').value='';
+  loadIdeas();
+}
+
+function saveIdeaLocally(idea){
+  const ideas=getLocalIdeas();
+  ideas.unshift(idea);
+  localStorage.setItem('cortex_ideas',JSON.stringify(ideas));
+}
+
+async function deleteIdea(id){
+  if(sbClient){
+    await sbClient.from('cortex_ideas').delete().eq('id',id);
+  }else{
+    const ideas=getLocalIdeas().filter(i=>i.id!==id);
+    localStorage.setItem('cortex_ideas',JSON.stringify(ideas));
+  }
+  loadIdeas();
+}
+
+function updateIdeaCount(n){
+  document.getElementById('ideas-count').textContent=n;
+  document.getElementById('dash-ideas-count').textContent=n;
+  const lbl=document.getElementById('ideas-section-label');
+  if(lbl)lbl.textContent=`Saved Thoughts (${n})`;
+}
+
+function renderIdeas(ideas){
+  const el=document.getElementById('idea-list');
+  if(!ideas.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">◉</div><div class="empty-text">No thoughts saved yet. Start capturing.</div></div>`;
+    return;
+  }
+  el.innerHTML=ideas.map(i=>`
+    <div class="idea-item">
+      <div class="idea-content">${escHtml(i.content)}</div>
+      <div class="idea-footer">
+        <span class="idea-time">${fmtDate(i.created_at)}</span>
+        ${(i.tags||[]).map(t=>`<span class="idea-tag-chip">${escHtml(t)}</span>`).join('')}
+        <button class="btn btn-danger idea-delete" onclick="deleteIdea('${i.id}')">delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDashIdeas(ideas){
+  const el=document.getElementById('dash-recent-ideas');
+  if(!ideas.length){
+    el.innerHTML=`<div class="empty-state" style="padding:30px 10px"><div class="empty-icon">◉</div><div class="empty-text">No ideas yet.</div></div>`;
+    return;
+  }
+  el.innerHTML=ideas.map(i=>`
+    <div class="activity-item">
+      <div class="activity-dot"></div>
+      <div class="activity-text">${escHtml(i.content.substring(0,100))}${i.content.length>100?'…':''}</div>
+      <div class="activity-time">${fmtDate(i.created_at)}</div>
+    </div>
+  `).join('');
+}
+
+function fmtDate(iso){
+  const d=new Date(iso);
+  const now=new Date();
+  const diff=now-d;
+  if(diff<60000)return'just now';
+  if(diff<3600000)return Math.floor(diff/60000)+'m ago';
+  if(diff<86400000)return Math.floor(diff/3600000)+'h ago';
+  return d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ─── DIVISIONS ────────────────────────────────────────────────────────────────
+function buildDivisions(){
+  const container=document.getElementById('division-panels');
+  Object.values(DIVISIONS).forEach(d=>{
+    const panel=document.createElement('div');
+    panel.className='panel';
+    panel.id='panel-'+d.id;
+    panel.innerHTML=buildDivisionHTML(d);
+    container.appendChild(panel);
+  });
+}
+
+function buildDivisionHTML(d){
+  const bpMap={
+    'Essential':'badge-essential','Scale-Up':'badge-scaleup','Upsell':'badge-upsell',
+    'High-Rise':'badge-highrise','Material':'badge-material','Commercial':'badge-commercial',
+    'Chemical':'badge-chemical','Recommended':'badge-recommended','Long-Term':'badge-longterm',
+    'Start Here':'badge-starthere','High Value':'badge-highvalue','Consumable':'badge-upsell'
+  };
+  const eqRows=d.equipment.map(e=>`
+    <tr>
+      <td style="color:var(--text);font-weight:500">${e.item}</td>
+      <td>${e.spec}</td>
+      <td style="color:var(--t3)">${e.brand}</td>
+      <td><span class="badge ${bpMap[e.priority]||'badge-essential'}">${e.priority}</span></td>
+    </tr>
+  `).join('');
+
+  const priceRows=d.pricing.map(p=>`
+    <tr>
+      <td style="color:var(--text)">${p.service}</td>
+      <td><span class="price-range">$${p.low} – $${p.high}</span><span class="price-unit">${p.unit}</span></td>
+    </tr>
+  `).join('');
+
+  const compCards=d.competitors.length?d.competitors.map(c=>{
+    const dots=Array.from({length:10},(_,i)=>
+      `<div class="threat-dot" style="background:${i<c.threat?d.color:'var(--border2)'}"></div>`
+    ).join('');
+    return`<div class="comp-card">
+      <div class="comp-dot" style="background:${d.color}"></div>
+      <div style="flex:1">
+        <div class="comp-name">${c.name}</div>
+        <div class="comp-meta">${c.notes}</div>
+        <div class="threat-bar">
+          <span class="threat-label">Threat</span>
+          <div class="threat-dots">${dots}</div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2)">${c.threat}/10</span>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):`<div class="empty-state"><div class="empty-icon">◈</div><div class="empty-text">No competitors tracked yet for this division.</div></div>`;
+
+  const learnItems=d.learning.map((l,i)=>`
+    <div class="learn-item">
+      <div class="learn-num">0${i+1}</div>
+      <div class="learn-text">${l}</div>
+    </div>
+  `).join('');
+
+  const serviceChips=d.overview.services.map(s=>`<div class="chip">${s}</div>`).join('');
+
+  return`
+    <div class="panel-header">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${d.color}"></div>
+        <div class="panel-title" style="margin-bottom:0">${d.name}</div>
+      </div>
+      <div class="panel-sub">${d.overview.tagline}</div>
+    </div>
+    <div class="tabs" id="tabs-${d.key}">
+      <div class="tab active" onclick="divTab('${d.key}','overview')">Overview</div>
+      <div class="tab" onclick="divTab('${d.key}','equipment')">Equipment</div>
+      <div class="tab" onclick="divTab('${d.key}','pricing')">Price List</div>
+      <div class="tab" onclick="divTab('${d.key}','competitors')">Competitors</div>
+      <div class="tab" onclick="divTab('${d.key}','learning')">Learning</div>
+    </div>
+    <div id="dv-${d.key}-overview">
+      <div class="card">
+        <div class="section-label">Services Offered</div>
+        <div class="service-chips">${serviceChips}</div>
+        <div class="note-box">${d.overview.notes}</div>
+      </div>
+    </div>
+    <div id="dv-${d.key}-equipment" style="display:none">
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>Item</th><th>Specification</th><th>Brand</th><th>Priority</th></tr></thead>
+          <tbody>${eqRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div id="dv-${d.key}-pricing" style="display:none">
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th>Service</th><th>Vancouver Rate</th></tr></thead>
+          <tbody>${priceRows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div id="dv-${d.key}-competitors" style="display:none">
+      ${compCards}
+    </div>
+    <div id="dv-${d.key}-learning" style="display:none">
+      <div class="card">
+        ${learnItems}
+      </div>
+    </div>
+  `;
+}
+
+function divTab(key,tab){
+  const tabs=['overview','equipment','pricing','competitors','learning'];
+  tabs.forEach(t=>{
+    const el=document.getElementById(`dv-${key}-${t}`);
+    if(el)el.style.display=t===tab?'block':'none';
+  });
+  const tabBar=document.getElementById(`tabs-${key}`);
+  if(tabBar){
+    tabBar.querySelectorAll('.tab').forEach((el,i)=>{
+      el.classList.toggle('active',tabs[i]===tab);
+    });
+  }
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function nav(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const panel=document.getElementById('panel-'+id);
+  if(panel)panel.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(`'${id}'`))n.classList.add('active');
+  });
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function saveSupabaseConfig(){
+  const url=document.getElementById('sb-url').value.trim();
+  const key=document.getElementById('sb-key').value.trim();
+  if(!url||!key){showMsg('Enter both URL and Key','error');return}
+  localStorage.setItem('cortex_sb_config',JSON.stringify({url,key}));
+  initSupabase();
+  showMsg('Supabase connected. Ideas will now sync to your database.','success');
+  loadIdeas();
+}
+
+function clearSupabaseConfig(){
+  localStorage.removeItem('cortex_sb_config');
+  sbClient=null;
+  updateDbBadge(false);
+  document.getElementById('sb-url').value='';
+  document.getElementById('sb-key').value='';
+  showMsg('Disconnected. Switched to local storage.','warn');
+}
+
+function showMsg(msg,type){
+  const el=document.getElementById('sb-msg');
+  el.style.display='block';
+  const colors={success:'var(--green)',error:'var(--red)',warn:'var(--amber)'};
+  el.style.color=colors[type]||'var(--t2)';
+  el.textContent=msg;
+}
+
+function exportIdeas(){
+  const ideas=getLocalIdeas();
+  const blob=new Blob([JSON.stringify(ideas,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`cortex-ideas-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+}
+
+function clearLocalIdeas(){
+  if(!confirm('Delete all locally stored ideas? This cannot be undone.'))return;
+  localStorage.removeItem('cortex_ideas');
+  loadIdeas();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  buildDivisions();
+  initSupabase();
+  loadIdeas();
+  const cfg=getConfig();
+  if(cfg.url)document.getElementById('sb-url').value=cfg.url;
+  if(cfg.key)document.getElementById('sb-key').value=cfg.key;
+
+  // Save idea on Ctrl+Enter
+  document.getElementById('idea-input').addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter')saveIdea();
+  });
+});
+</script>
+</body>
+</html>
