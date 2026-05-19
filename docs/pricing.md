@@ -2,6 +2,8 @@
 
 Internal reference only. Update as market conditions change.
 
+> **LandEx Referral Discount:** Apply a **10% discount** on all services for clients referred through LandEx. Note this on the invoice and flag the job in the system as a LandEx referral.
+
 ## Division 1 — Power Washing and Window Cleaning
 | Service | Unit | Rate |
 |---|---|---|
