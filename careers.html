@@ -3,458 +3,237 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Careers — LIVO Property Services</title>
-<meta name="description" content="Join the LIVO team. We're hiring across Greater Vancouver — cleaning technicians, landscaping crews, junk removal drivers, and more.">
+<title>Work With LIVO</title>
+<meta name="description" content="Work with LIVO Property Services across Greater Vancouver. Join through Vorx.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --purple:#8E3AAC;
-  --deep:#5F2491;
-  --lime:#C8D700;
-  --ink:#0c0c0c;
-  --white:#fff;
-  --gray:#f9f9f9;
-  --border:#ede8f5;
-  --text-soft:#5a5a5a;
-  --text-muted:#9e9e9e;
-}
+:root{--purple:#8E3AAC;--deep:#5F2491;--lime:#C8D700;--ink:#0c0c0c;--white:#fff;--gray:#f9f9f9;--border:#ede8f5;--soft:#5a5a5a;--muted:#9e9e9e}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased}
 
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:68px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:box-shadow .3s}
-nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.08)}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:66px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
 .nav-logo{font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:var(--ink);letter-spacing:.08em;text-decoration:none}
 .nav-logo span{color:var(--lime)}
-.nav-right{display:flex;align-items:center;gap:20px}
-.nav-link{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--text-soft);text-decoration:none;transition:color .15s}
-.nav-link:hover{color:var(--purple)}
-.nav-cta{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;background:var(--lime);color:var(--ink);border:none;padding:10px 22px;border-radius:100px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .15s}
-.nav-cta:hover{background:#b5c200;transform:translateY(-1px)}
+.nav-r{display:flex;align-items:center;gap:16px}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none;transition:color .15s}
+.nav-back:hover{color:var(--purple)}
+.nav-join{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;background:var(--lime);color:var(--ink);padding:10px 22px;border-radius:100px;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .15s;display:inline-block}
+.nav-join:hover{background:#b5c200;transform:translateY(-1px)}
 
-/* ── HERO ── */
-.hero{min-height:100vh;background:linear-gradient(135deg,var(--deep) 0%,var(--purple) 100%);display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 28px 80px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:rgba(200,215,0,.08);border-radius:50%}
-.hero::after{content:'';position:absolute;bottom:-80px;left:-80px;width:350px;height:350px;background:rgba(255,255,255,.04);border-radius:50%}
-.hero-inner{position:relative;z-index:1;max-width:720px}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(200,215,0,.15);border:1px solid rgba(200,215,0,.3);border-radius:100px;padding:7px 18px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);margin-bottom:28px}
-.hero-tag span{width:7px;height:7px;background:var(--lime);border-radius:50%;display:inline-block;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.hero-h{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(36px,6vw,64px);color:var(--white);line-height:1.1;margin-bottom:20px;letter-spacing:-.02em}
+/* HERO */
+.hero{min-height:100vh;background:linear-gradient(135deg,var(--deep) 0%,var(--purple) 100%);display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 28px 100px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-120px;width:560px;height:560px;background:rgba(200,215,0,.07);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:380px;height:380px;background:rgba(255,255,255,.04);border-radius:50%}
+.hero-in{position:relative;z-index:1;max-width:680px}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(200,215,0,.15);border:1px solid rgba(200,215,0,.3);border-radius:100px;padding:7px 18px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);margin-bottom:32px}
+.hero-pill span{width:7px;height:7px;background:var(--lime);border-radius:50%;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-h{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(42px,7vw,72px);color:var(--white);line-height:1.0;margin-bottom:20px;letter-spacing:-.03em}
 .hero-h em{color:var(--lime);font-style:normal}
-.hero-sub{font-size:17px;color:rgba(255,255,255,.65);line-height:1.7;max-width:520px;margin:0 auto 40px}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn-lime{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;background:var(--lime);color:var(--ink);border:none;padding:14px 32px;border-radius:100px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .18s;display:inline-block}
-.btn-lime:hover{background:#b5c200;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,215,0,.3)}
-.btn-ghost-white{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.35);padding:14px 32px;border-radius:100px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:all .18s;display:inline-block}
-.btn-ghost-white:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
+.hero-sub{font-size:18px;color:rgba(255,255,255,.65);line-height:1.65;max-width:460px;margin:0 auto 48px}
+.hero-btn{display:inline-flex;align-items:center;gap:12px;background:var(--lime);color:var(--ink);font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;letter-spacing:.04em;text-transform:uppercase;padding:18px 44px;border-radius:100px;text-decoration:none;transition:all .22s;box-shadow:0 12px 40px rgba(200,215,0,.35)}
+.hero-btn:hover{background:#c8cf00;transform:translateY(-3px);box-shadow:0 20px 56px rgba(200,215,0,.45)}
+.hero-btn svg{stroke:var(--ink);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.hero-btn:hover svg{transform:translateX(5px)}
+.hero-note{margin-top:16px;font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.02em}
 
-/* ── STATS ── */
-.stats{background:var(--ink);padding:48px 28px}
-.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
-.stat-num{font-family:'Montserrat',sans-serif;font-weight:800;font-size:36px;color:var(--lime);letter-spacing:-.02em;margin-bottom:4px}
-.stat-lbl{font-size:13px;color:rgba(255,255,255,.5);font-weight:400}
-
-/* ── SECTION BASE ── */
+/* SECTION */
 section{padding:88px 28px}
-.section-inner{max-width:1100px;margin:0 auto}
-.section-tag{display:inline-flex;align-items:center;gap:8px;background:#f3eafc;border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:16px}
-.section-tag span{width:6px;height:6px;background:var(--lime);border-radius:50%;display:inline-block}
-.section-h{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3.5vw,40px);color:var(--ink);line-height:1.2;margin-bottom:12px}
-.section-h em{color:var(--purple);font-style:normal}
-.section-sub{font-size:15px;color:var(--text-soft);line-height:1.7;max-width:560px;margin-bottom:48px}
+.si{max-width:1060px;margin:0 auto}
+.stag{display:inline-flex;align-items:center;gap:8px;background:#f3eafc;border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:16px}
+.stag span{width:6px;height:6px;background:var(--lime);border-radius:50%}
+.sh{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3.5vw,42px);color:var(--ink);line-height:1.15;margin-bottom:12px}
+.sh em{color:var(--purple);font-style:normal}
+.ss{font-size:15px;color:var(--soft);line-height:1.7;max-width:480px;margin-bottom:48px}
 
-/* ── WHY LIVO ── */
-#why{background:var(--gray)}
-.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.why-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:28px;transition:all .18s}
-.why-card:hover{border-color:var(--purple);box-shadow:0 8px 32px rgba(142,58,172,.08)}
-.why-ico{width:44px;height:44px;background:#f3eafc;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-.why-ico svg{stroke:var(--purple);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.why-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--ink);margin-bottom:6px}
-.why-p{font-size:13px;color:var(--text-soft);line-height:1.6}
+/* WHY */
+#why{background:var(--white)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:52px}
+.wc{background:var(--gray);border:1.5px solid var(--border);border-radius:16px;padding:28px 22px;transition:all .18s}
+.wc:hover{border-color:var(--purple);background:#faf7fd}
+.wc-ico{width:42px;height:42px;background:#f3eafc;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.wc-ico svg{stroke:var(--purple);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wc-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px}
+.wc-p{font-size:13px;color:var(--soft);line-height:1.6}
 
-/* ── ROLES ── */
-#roles{background:var(--white)}
-.roles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.role-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:22px 20px;transition:all .16s;cursor:pointer;text-align:left}
-.role-card:hover,.role-card.active{border-color:var(--purple);background:#faf7fd;box-shadow:0 4px 20px rgba(142,58,172,.1)}
-.role-card.active .role-apply{background:var(--lime);color:var(--ink)}
-.role-tag{display:inline-block;background:#f3eafc;color:var(--purple);font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:10px}
-.role-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--ink);margin-bottom:6px}
-.role-desc{font-size:12px;color:var(--text-soft);line-height:1.55;margin-bottom:14px}
-.role-details{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
-.role-detail{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
-.role-detail svg{stroke:var(--purple);fill:none;stroke-width:1.8;stroke-linecap:round;flex-shrink:0}
-.role-apply{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;background:var(--gray);color:var(--ink);border:none;border-radius:100px;padding:9px 18px;cursor:pointer;transition:all .15s;width:100%}
-.role-apply:hover{background:var(--lime)}
+/* SERVICE CHIPS */
+.chips-lbl{font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:52px}
+.chip{background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:8px 18px;font-size:13px;font-weight:500;color:var(--soft)}
+.chip strong{color:var(--purple);font-weight:600}
 
-/* ── APPLY FORM ── */
-#apply{background:var(--gray)}
-.apply-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
-.apply-left p{font-size:15px;color:var(--text-soft);line-height:1.7;margin-bottom:32px}
-.process{display:flex;flex-direction:column;gap:20px}
-.process-step{display:flex;align-items:flex-start;gap:16px}
-.process-num{width:36px;height:36px;background:var(--lime);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:var(--ink);flex-shrink:0}
-.process-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--ink);margin-bottom:3px}
-.process-p{font-size:13px;color:var(--text-soft);line-height:1.5}
-.apply-card{background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:36px 32px;box-shadow:0 8px 40px rgba(142,58,172,.08)}
-.apply-card-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;color:var(--ink);margin-bottom:4px}
-.apply-card-sub{font-size:13px;color:var(--text-muted);margin-bottom:24px}
-.af-field{margin-bottom:14px}
-.af-lbl{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--ink);display:block;margin-bottom:5px}
-.af-lbl em{font-weight:400;color:var(--text-muted);font-style:normal}
-.af-inp,.af-sel,.af-ta{width:100%;border:1.5px solid #e5e0f0;border-radius:8px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);background:var(--white);appearance:none;outline:none;transition:border .14s,box-shadow .14s;resize:none}
-.af-inp::placeholder,.af-ta::placeholder{color:#ccc}
-.af-inp:focus,.af-sel:focus,.af-ta:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(142,58,172,.08)}
-.af-sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%238E3AAC' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
-.af-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.af-submit{width:100%;background:var(--lime);color:var(--ink);border:none;border-radius:100px;padding:14px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .16s;margin-top:8px}
-.af-submit:hover{background:#b5c200;transform:translateY(-1px)}
-.af-submit:disabled{background:#e5e0f0;color:#bbb;cursor:not-allowed;transform:none}
-.af-done{text-align:center;padding:32px 0}
-.af-done-ico{width:56px;height:56px;background:var(--lime);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(200,215,0,.3)}
-.af-done-ico svg{stroke:var(--ink);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.af-done-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;color:var(--ink);margin-bottom:8px}
-.af-done-p{font-size:14px;color:var(--text-soft);line-height:1.6}
+/* VORX BLOCK */
+.vorx{background:linear-gradient(135deg,var(--deep) 0%,var(--purple) 100%);border-radius:22px;padding:52px 44px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;position:relative;overflow:hidden}
+.vorx::before{content:'';position:absolute;top:-50px;right:-50px;width:260px;height:260px;background:rgba(200,215,0,.08);border-radius:50%}
+.vl{position:relative;z-index:1}
+.vl-eye{font-family:'Montserrat',sans-serif;font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);margin-bottom:12px}
+.vl-h{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(22px,3vw,34px);color:var(--white);line-height:1.15;margin-bottom:12px}
+.vl-h em{color:var(--lime);font-style:normal}
+.vl-p{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7}
+.vr{position:relative;z-index:1;display:flex;flex-direction:column;gap:10px}
+.vf{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:12px}
+.vf-ico{width:30px;height:30px;background:rgba(200,215,0,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vf-ico svg{stroke:var(--lime);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vf-t{font-size:13px;color:rgba(255,255,255,.8);font-weight:500}
 
-/* ── FOOTER ── */
-footer{background:var(--ink);padding:40px 28px;text-align:center}
-.footer-logo{font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:var(--white);letter-spacing:.08em;margin-bottom:8px}
-.footer-logo span{color:var(--lime)}
-.footer-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px}
-.footer-back{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);text-decoration:none;border:1px solid rgba(200,215,0,.3);border-radius:100px;padding:8px 20px;transition:all .15s;display:inline-block}
-.footer-back:hover{background:rgba(200,215,0,.1)}
+/* STEPS */
+#how{background:var(--gray)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:28px 22px}
+.step-n{width:38px;height:38px;background:var(--lime);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:var(--ink);margin-bottom:14px}
+.step-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--ink);margin-bottom:7px}
+.step-p{font-size:13px;color:var(--soft);line-height:1.6}
+
+/* FINAL CTA */
+#cta{background:var(--white);text-align:center;padding:96px 28px}
+.cta-in{max-width:520px;margin:0 auto}
+.cta-h{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(32px,5vw,54px);color:var(--ink);line-height:1.08;margin-bottom:16px;letter-spacing:-.02em}
+.cta-h em{color:var(--purple);font-style:normal}
+.cta-sub{font-size:15px;color:var(--soft);line-height:1.65;margin-bottom:36px}
+.cta-btn{display:inline-flex;align-items:center;gap:12px;background:var(--lime);color:var(--ink);font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;letter-spacing:.04em;text-transform:uppercase;padding:17px 40px;border-radius:100px;text-decoration:none;transition:all .2s;box-shadow:0 8px 32px rgba(200,215,0,.3)}
+.cta-btn:hover{background:#b5c200;transform:translateY(-2px);box-shadow:0 16px 48px rgba(200,215,0,.4)}
+.cta-btn svg{stroke:var(--ink);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.cta-btn:hover svg{transform:translateX(4px)}
+.cta-note{margin-top:14px;font-size:12px;color:var(--muted)}
+
+footer{background:var(--ink);padding:34px 28px;text-align:center}
+.fl{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:var(--white);letter-spacing:.08em;margin-bottom:6px}
+.fl span{color:var(--lime)}
+.fs{font-size:12px;color:rgba(255,255,255,.3);margin-bottom:16px}
+.fb{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);text-decoration:none;border:1px solid rgba(200,215,0,.3);border-radius:100px;padding:7px 18px;display:inline-block;transition:all .15s}
+.fb:hover{background:rgba(200,215,0,.1)}
 
 @media(max-width:768px){
-  .stats-inner{grid-template-columns:repeat(2,1fr)}
-  .why-grid{grid-template-columns:1fr}
-  .roles-grid{grid-template-columns:1fr}
-  .apply-grid{grid-template-columns:1fr}
-  .af-two{grid-template-columns:1fr}
-  .hero-btns{flex-direction:column;align-items:center}
-  nav .nav-link{display:none}
+  .why-grid,.steps{grid-template-columns:1fr}
+  .vorx{grid-template-columns:1fr;padding:32px 24px}
+  nav .nav-back{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav id="nav">
+<nav>
   <a href="https://livoland.com" class="nav-logo">LIVO<span>.</span></a>
-  <div class="nav-right">
-    <a href="https://livoland.com" class="nav-link">← Back to site</a>
-    <a href="#apply" class="nav-cta">Apply Now</a>
+  <div class="nav-r">
+    <a href="https://livoland.com" class="nav-back">← Back to site</a>
+    <a href="https://vorx.ca" target="_blank" class="nav-join">Join via Vorx</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
-  <div class="hero-inner">
-    <div class="hero-tag"><span></span> We're actively hiring</div>
-    <h1 class="hero-h">Build Your Career<br>With <em>LIVO.</em></h1>
-    <p class="hero-sub">We're growing fast across Greater Vancouver and looking for motivated people who take pride in their work. Join a team that invests in you.</p>
-    <div class="hero-btns">
-      <a href="#apply" class="btn-lime">Apply Now</a>
-      <a href="#roles" class="btn-ghost-white">See Open Roles</a>
-    </div>
+  <div class="hero-in">
+    <div class="hero-pill"><span></span>Now accepting — Greater Vancouver</div>
+    <h1 class="hero-h">Do More.<br>Earn <em>More.</em></h1>
+    <p class="hero-sub">The more services you handle, the more work comes your way. Join LIVO's worker network through Vorx.</p>
+    <a href="https://vorx.ca" target="_blank" class="hero-btn">
+      Join the team on Vorx
+      <svg width="20" height="20" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+    <div class="hero-note">Applications handled through Vorx — our worker platform</div>
   </div>
 </div>
 
-<!-- STATS -->
-<div class="stats">
-  <div class="stats-inner">
-    <div>
-      <div class="stat-num">8</div>
-      <div class="stat-lbl">Service divisions</div>
-    </div>
-    <div>
-      <div class="stat-num">$35+</div>
-      <div class="stat-lbl">Top performer hourly</div>
-    </div>
-    <div>
-      <div class="stat-num">48h</div>
-      <div class="stat-lbl">Application response</div>
-    </div>
-    <div>
-      <div class="stat-num">GVA</div>
-      <div class="stat-lbl">Greater Vancouver</div>
-    </div>
-  </div>
-</div>
-
-<!-- WHY LIVO -->
 <section id="why">
-  <div class="section-inner">
-    <div class="section-tag"><span></span> Why LIVO</div>
-    <h2 class="section-h">A Company That Actually<br>Invests In Its <em>People.</em></h2>
-    <p class="section-sub">We're not a faceless corporation. We're a growing team that promotes from within and treats every crew member with respect.</p>
+  <div class="si">
+    <div class="stag"><span></span>The opportunity</div>
+    <h2 class="sh">More Skills.<br><em>More Work.</em></h2>
+    <p class="ss">Workers who cover multiple services get called more often. The wider your skillset, the busier you stay.</p>
+
     <div class="why-grid">
-      <div class="why-card">
-        <div class="why-ico"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-        <div class="why-h">Competitive pay</div>
-        <div class="why-p">Paid by the job — earn more when you work more. Top performers consistently earn $25–$35/hr+. Quality is always rewarded, not just hours.</div>
+      <div class="wc">
+        <div class="wc-ico"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="wc-h">Multi-service = more jobs</div>
+        <div class="wc-p">Cover more than one division and job requests come to you more often through Vorx.</div>
       </div>
-      <div class="why-card">
-        <div class="why-ico"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
-        <div class="why-h">Flexible scheduling</div>
-        <div class="why-p">Full-time and part-time roles available. You tell us your availability and we build your schedule around your life — not the other way around.</div>
+      <div class="wc">
+        <div class="wc-ico"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="wc-h">Work on your schedule</div>
+        <div class="wc-p">Set your availability in Vorx. Accept jobs that fit. No mandatory minimums — you're in control.</div>
       </div>
-      <div class="why-card">
-        <div class="why-ico"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-        <div class="why-h">Real growth path</div>
-        <div class="why-p">Start in one division, cross-train into others. Team leads and route managers are always promoted from within. Your ceiling is set by your effort.</div>
+      <div class="wc">
+        <div class="wc-ico"><svg width="20" height="20" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="wc-h">Paid per job</div>
+        <div class="wc-p">Contract-based, not salaried. Work volume varies by season and demand. We're upfront about that.</div>
       </div>
-      <div class="why-card">
-        <div class="why-ico"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div class="why-h">Tight-knit team</div>
-        <div class="why-p">Small crews, clear expectations, and management that actually communicates. No politics. No bureaucracy. Just good work with good people.</div>
+    </div>
+
+    <div class="chips-lbl">Services you can work across</div>
+    <div class="chips">
+      <div class="chip"><strong>Interior</strong> Cleaning</div>
+      <div class="chip"><strong>Carpet</strong> Cleanup</div>
+      <div class="chip"><strong>Power Washing</strong> & Windows</div>
+      <div class="chip"><strong>Airbnb</strong> Turnovers</div>
+      <div class="chip"><strong>Junk</strong> Removal</div>
+      <div class="chip"><strong>Moving</strong></div>
+    </div>
+
+    <div class="vorx">
+      <div class="vl">
+        <div class="vl-eye">Powered by Vorx</div>
+        <h3 class="vl-h">Everything Runs<br>Through <em>Vorx.</em></h3>
+        <p class="vl-p">One platform. Apply, get verified, set your schedule, receive jobs, get paid, and build your reputation — all in one place.</p>
+      </div>
+      <div class="vr">
+        <div class="vf"><div class="vf-ico"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="vf-t">Document upload and verification</div></div>
+        <div class="vf"><div class="vf-ico"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><div class="vf-t">Availability and scheduling</div></div>
+        <div class="vf"><div class="vf-ico"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="vf-t">Job assignments and tracking</div></div>
+        <div class="vf"><div class="vf-ico"><svg width="15" height="15" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="vf-t">Ratings and performance reviews</div></div>
+        <div class="vf"><div class="vf-ico"><svg width="15" height="15" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="vf-t">Payment history and tracking</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- OPEN ROLES -->
-<section id="roles">
-  <div class="section-inner">
-    <div class="section-tag"><span></span> Open positions</div>
-    <h2 class="section-h">Find Your Role<br>At <em>LIVO.</em></h2>
-    <p class="section-sub">All positions are based in the Greater Vancouver area. No experience required for most roles — we train the right people.</p>
-    <div class="roles-grid">
-
-      <div class="role-card" onclick="selectRole(this,'Cleaning Technician')">
-        <div class="role-tag">Cleaning</div>
-        <div class="role-name">Cleaning Technician</div>
-        <div class="role-desc">Residential and commercial interior cleaning. Standard, deep clean, and move-out cleans across Metro Vancouver.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Full-time or part-time</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$22–$30/hr</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
+<section id="how">
+  <div class="si">
+    <div class="stag"><span></span>How it works</div>
+    <h2 class="sh">Three Steps.<br><em>That's It.</em></h2>
+    <p class="ss" style="margin-bottom:40px">Everything happens inside Vorx.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-h">Build your Vorx profile</div>
+        <div class="step-p">Sign up, upload your documents, and select the services you can cover. More services listed = more work opportunities.</div>
       </div>
-
-      <div class="role-card" onclick="selectRole(this,'Carpet & Duct Specialist')">
-        <div class="role-tag">Specialist</div>
-        <div class="role-name">Carpet & Duct Specialist</div>
-        <div class="role-desc">Steam carpet cleaning and HVAC duct cleaning. Equipment training provided. Physical work with great results you can see.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Full-time preferred</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$24–$32/hr</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-h">Get verified</div>
+        <div class="step-p">Vorx reviews your profile and experience. Once approved, you're in the pool and eligible to receive job requests.</div>
       </div>
-
-      <div class="role-card" onclick="selectRole(this,'Power Washing Crew')">
-        <div class="role-tag">Exterior</div>
-        <div class="role-name">Power Washing Crew</div>
-        <div class="role-desc">House exteriors, driveways, decks, and window cleaning. Outdoor work across the Lower Mainland. Equipment provided.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Seasonal to full-time</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$22–$30/hr</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
-      </div>
-
-      <div class="role-card" onclick="selectRole(this,'Landscaping Crew')">
-        <div class="role-tag">Landscaping</div>
-        <div class="role-name">Landscaping Crew</div>
-        <div class="role-desc">Lawn mowing, hedge trimming, garden beds, and seasonal cleanups. Outdoor physical work. Valid driver's license an asset.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Full-time or part-time</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$22–$30/hr</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
-      </div>
-
-      <div class="role-card" onclick="selectRole(this,'Junk Removal Driver')">
-        <div class="role-tag">Driver</div>
-        <div class="role-name">Junk Removal Driver</div>
-        <div class="role-desc">Drive and operate our removal truck. Load and haul furniture, appliances, and debris. Valid BC driver's license required.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Full-time</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$24–$32/hr</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
-      </div>
-
-      <div class="role-card" onclick="selectRole(this,'Moving Crew')">
-        <div class="role-tag">Moving</div>
-        <div class="role-name">Moving Crew</div>
-        <div class="role-desc">Residential moving — load, transport, and unload with care. Physical work, great tips. Valid license an asset.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Full-time or part-time</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$23–$30/hr + tips</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
-      </div>
-
-      <div class="role-card" onclick="selectRole(this,'Crawl Space Technician')">
-        <div class="role-tag">Specialist</div>
-        <div class="role-name">Crawl Space Tech</div>
-        <div class="role-desc">Crawl space cleanup, vapour barrier installation, and insulation removal. PPE provided. Niche skill with premium pay.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Full-time</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>$26–$35/hr</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
-      </div>
-
-      <div class="role-card" onclick="selectRole(this,'Open to Anything')">
-        <div class="role-tag">General</div>
-        <div class="role-name">Open to Anything</div>
-        <div class="role-desc">Not sure which role fits you? Tell us about yourself and we'll find where you fit best across our 8 service divisions.</div>
-        <div class="role-details">
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Flexible</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Greater Vancouver</div>
-          <div class="role-detail"><svg width="13" height="13" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Based on role</div>
-        </div>
-        <button class="role-apply">Apply for This Role</button>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- APPLY -->
-<section id="apply">
-  <div class="section-inner">
-    <div class="apply-grid">
-      <div class="apply-left">
-        <div class="section-tag"><span></span> Apply now</div>
-        <h2 class="section-h">60 Seconds.<br>No Resume <em>Needed.</em></h2>
-        <p>Just tell us who you are and what you're looking for. We review every application personally and get back to you within 48 hours.</p>
-        <div class="process">
-          <div class="process-step">
-            <div class="process-num">1</div>
-            <div><div class="process-h">Fill out the form</div><div class="process-p">Name, contact info, and the role you want. Takes 60 seconds.</div></div>
-          </div>
-          <div class="process-step">
-            <div class="process-num">2</div>
-            <div><div class="process-h">We review and call you</div><div class="process-p">A real person reviews your application within 48 hours and reaches out directly.</div></div>
-          </div>
-          <div class="process-step">
-            <div class="process-num">3</div>
-            <div><div class="process-h">Start earning</div><div class="process-p">Short onboarding, equipment briefing, and you're on your first job — sometimes within the week.</div></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="apply-card">
-          <div id="af-form">
-            <div class="apply-card-h">Apply to Join LIVO</div>
-            <div class="apply-card-sub">We'll follow up within 48 hours.</div>
-            <div class="af-two">
-              <div class="af-field"><label class="af-lbl">First name</label><input class="af-inp" id="af-fn" type="text" placeholder="Alex"></div>
-              <div class="af-field"><label class="af-lbl">Last name</label><input class="af-inp" id="af-ln" type="text" placeholder="Johnson"></div>
-            </div>
-            <div class="af-field"><label class="af-lbl">Phone</label><input class="af-inp" id="af-ph" type="tel" placeholder="604-555-0100"></div>
-            <div class="af-field"><label class="af-lbl">Email</label><input class="af-inp" id="af-em" type="email" placeholder="alex@email.com"></div>
-            <div class="af-field"><label class="af-lbl">Role you want</label>
-              <select class="af-sel" id="af-role">
-                <option value="">Select a role…</option>
-                <option>Cleaning Technician</option>
-                <option>Carpet & Duct Specialist</option>
-                <option>Power Washing Crew</option>
-                <option>Landscaping Crew</option>
-                <option>Junk Removal Driver</option>
-                <option>Moving Crew</option>
-                <option>Crawl Space Technician</option>
-                <option>Open to Anything</option>
-              </select>
-            </div>
-            <div class="af-field"><label class="af-lbl">Availability</label>
-              <select class="af-sel" id="af-av">
-                <option value="">Select…</option>
-                <option>Full-time</option>
-                <option>Part-time</option>
-                <option>Weekends only</option>
-                <option>Flexible</option>
-              </select>
-            </div>
-            <div class="af-field"><label class="af-lbl">Tell us about yourself <em>(optional)</em></label>
-              <textarea class="af-ta" id="af-note" rows="3" placeholder="Experience, what you're looking for, why LIVO…"></textarea>
-            </div>
-            <button class="af-submit" id="af-btn" onclick="submitApp()">Apply Now — Join LIVO</button>
-          </div>
-          <div id="af-done" style="display:none">
-            <div class="af-done">
-              <div class="af-done-ico"><svg width="24" height="24" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-              <div class="af-done-h">Application received</div>
-              <div class="af-done-p">We'll review your info and reach out within 48 hours. Thanks for wanting to be part of LIVO — we'll be in touch soon.</div>
-            </div>
-          </div>
-        </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-h">Accept jobs, get paid</div>
+        <div class="step-p">When work matches your skills and area, Vorx notifies you. Complete the job, get rated, get paid.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<section id="cta">
+  <div class="cta-in">
+    <h2 class="cta-h">Ready to<br>Work With <em>LIVO?</em></h2>
+    <p class="cta-sub">Start your application on Vorx. Takes a few minutes.</p>
+    <a href="https://vorx.ca" target="_blank" class="cta-btn">
+      Get started on Vorx
+      <svg width="18" height="18" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+    <div class="cta-note">You'll be taken to vorx.ca — our worker platform</div>
+  </div>
+</section>
+
 <footer>
-  <div class="footer-logo">LIVO<span>.</span></div>
-  <div class="footer-sub">604 358 2358 · Greater Vancouver, BC</div>
-  <a href="https://livoland.com" class="footer-back">← Back to livoland.com</a>
+  <div class="fl">LIVO<span>.</span></div>
+  <div class="fs">604 358 2358 · Greater Vancouver, BC</div>
+  <a href="https://livoland.com" class="fb">← livoland.com</a>
 </footer>
 
 <script>
-// Sticky nav
 window.addEventListener('scroll',()=>{
-  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
+  document.querySelector('nav').classList.toggle('sc',window.scrollY>20);
 });
-
-// Select role from card
-function selectRole(el,role){
-  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  const sel=document.getElementById('af-role');
-  for(let i=0;i<sel.options.length;i++){
-    if(sel.options[i].text===role){sel.selectedIndex=i;break;}
-  }
-  document.getElementById('apply').scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(()=>document.getElementById('af-fn').focus(),600);
-}
-
-// Submit application
-async function submitApp(){
-  const fn=document.getElementById('af-fn').value.trim();
-  const em=document.getElementById('af-em').value.trim();
-  const ph=document.getElementById('af-ph').value.trim();
-  const role=document.getElementById('af-role').value;
-  if(!fn||!em||!role){alert('Please fill in your name, email, and the role you want.');return;}
-  const btn=document.getElementById('af-btn');
-  btn.textContent='Submitting…';btn.disabled=true;
-
-  const payload={
-    name:fn+' '+document.getElementById('af-ln').value.trim(),
-    phone:ph,email:em,role,
-    availability:document.getElementById('af-av').value,
-    note:document.getElementById('af-note').value.trim()
-  };
-
-  try{
-    /* Wire to Supabase when ready:
-    await fetch('https://YOUR_PROJECT.supabase.co/functions/v1/apply',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer YOUR_ANON_KEY'},
-      body:JSON.stringify(payload)
-    }); */
-    await new Promise(r=>setTimeout(r,900));
-  }catch(e){console.error(e);}
-
-  document.getElementById('af-form').style.display='none';
-  document.getElementById('af-done').style.display='block';
-  btn.textContent='Apply Now — Join LIVO';
-  btn.disabled=false;
-}
 </script>
 </body>
 </html>
