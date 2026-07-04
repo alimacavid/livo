@@ -1,9 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LIVO Property Services — Greater Vancouver</title>
+<title>LIVO Property Services â€” Greater Vancouver</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#6B3FA0">
 <meta name="description" content="LIVO Property Services. Power washing, window cleaning, moving, carpet cleaning, duct cleaning, interior cleaning, landscaping, and junk removal across Greater Vancouver and the Tri-Cities.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,7 +77,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 .btn-lime:hover{background:#d4e200;transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,215,0,.35)}
 .btn-wh{background:transparent;color:#fff;padding:15px 34px;border-radius:100px;font-family:var(--heading);font-weight:600;font-size:.9rem;text-decoration:none;border:1.5px solid rgba(255,255,255,.35);display:inline-flex;align-items:center;gap:8px;transition:all .3s var(--ease)}
 .btn-wh:hover{border-color:rgba(255,255,255,.8);background:rgba(255,255,255,.08)}
-/* HERO — full bleed, image is the background, text floats on top */
+/* HERO â€” full bleed, image is the background, text floats on top */
 #hero{
   position:relative;
   width:100%;
@@ -94,7 +98,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
   z-index:0;
   display:block;
 }
-/* Subtle left-side darkening so white text is readable — no box, no panel */
+/* Subtle left-side darkening so white text is readable â€” no box, no panel */
 .h-left{
   position:relative;
   z-index:2;
@@ -152,8 +156,8 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 #services{padding:40px 0 100px;background:#fafafa}
 .sh{margin-bottom:64px}
 
-/* Services section header — centered */
-/* ── OUR SERVICES HEADER ── */
+/* Services section header â€” centered */
+/* â”€â”€ OUR SERVICES HEADER â”€â”€ */
 .svc-hd{
   text-align:center;
   padding:8px 0 24px;
@@ -234,7 +238,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
   background:#5F2491;
 }
 
-/* Image layer — fades OUT on hover */
+/* Image layer â€” fades OUT on hover */
 .sc-img{
   position:absolute;inset:0;z-index:0;
 }
@@ -254,7 +258,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 
 .sn{display:none!important}
 
-/* Title — bottom of card always */
+/* Title â€” bottom of card always */
 .sc-front{
   position:absolute;
   bottom:0;left:0;right:0;
@@ -272,7 +276,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
   transition:all .4s var(--ease);
 }
 
-/* Description — hidden by default */
+/* Description â€” hidden by default */
 .sd{
   font-size:.9rem;
   color:rgba(255,255,255,.85);
@@ -284,7 +288,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
   transition:opacity .4s .1s var(--ease),max-height .4s var(--ease),margin .4s;
 }
 
-/* Price — hidden by default */
+/* Price â€” hidden by default */
 .sp{
   display:inline-block;
   font-size:.8rem;font-weight:700;
@@ -310,7 +314,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 .si{display:none!important}
 .sa{display:none!important}
 
-/* ── HOVER: image disappears, purple bg, content reveals ── */
+/* â”€â”€ HOVER: image disappears, purple bg, content reveals â”€â”€ */
 .sc2:hover .sc-img img{opacity:0}
 .sc2:hover .sc-default-overlay{opacity:0}
 .sc2:hover .sn{opacity:.2;color:var(--lime)}
@@ -356,7 +360,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 .ba-dot.on{background:var(--purple);width:20px;border-radius:4px}
 .ba-caption{text-align:center;margin-top:14px;font-size:.82rem;color:var(--muted);font-weight:500}
 
-/* HOW IT WORKS — light */
+/* HOW IT WORKS â€” light */
 #how{
   background:#faf9fb;
   padding:0;
@@ -384,7 +388,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 }
 .how-title em{font-style:italic;color:var(--purple)}
 
-/* Steps row — no arrows */
+/* Steps row â€” no arrows */
 .steps{
   display:grid;
   grid-template-columns:1fr 72px 1fr 72px 1fr;
@@ -476,7 +480,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
   fill:#e8f5d0;
   transition:fill .3s;
 }
-/* Lime fill — clipped, starts empty, fills on .chev-go */
+/* Lime fill â€” clipped, starts empty, fills on .chev-go */
 .chev-fill{
   fill:var(--lime);
   clip-path:url(#chevClip1);
@@ -551,7 +555,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
   position:relative;
   overflow:hidden;
 }
-/* Exact diagonal lime wedge — bottom right corner */
+/* Exact diagonal lime wedge â€” bottom right corner */
 #area::after{
   content:'';
   position:absolute;
@@ -675,7 +679,7 @@ footer::after{
 }
 .foot-phone-link:hover{background:var(--lime);color:var(--ink);border-color:var(--lime)}
 .foot-phone-link::before{
-  content:'📞';font-size:.85rem;
+  content:'ðŸ“ž';font-size:.85rem;
 }
 
 /* Columns */
@@ -787,7 +791,7 @@ footer::after{
 .price-features{list-style:none;text-align:left;margin-bottom:32px;display:flex;flex-direction:column;gap:10px}
 .price-features li{font-size:.83rem;color:var(--soft);display:flex;align-items:center;gap:8px}
 .price-card.featured .price-features li{color:rgba(255,255,255,.8)}
-.price-features li::before{content:'✓';color:var(--lime);font-weight:700;flex-shrink:0}
+.price-features li::before{content:'âœ“';color:var(--lime);font-weight:700;flex-shrink:0}
 .price-cta{display:block;width:100%;padding:13px;background:var(--lime);color:var(--ink);font-family:var(--heading);font-weight:700;font-size:.88rem;border-radius:100px;text-decoration:none;text-align:center;transition:all .25s;border:none;cursor:pointer}
 .price-cta:hover{background:var(--lime-dk);transform:translateY(-1px)}
 .price-card.featured .price-cta{background:#fff;color:var(--purple)}
@@ -878,7 +882,7 @@ footer::after{
   transition:transform .55s cubic-bezier(.4,0,.2,1),visibility 0s 0s;
 }
 
-/* ── BACK BAR */
+/* â”€â”€ BACK BAR */
 .svc-back{
   position:sticky !important; top:0; z-index:100;
   background:rgba(255,255,255,.97);
@@ -894,7 +898,7 @@ footer::after{
 }
 .svc-back:hover{color:var(--deep);background:#f7f4fb}
 
-/* ── HERO BANNER */
+/* â”€â”€ HERO BANNER */
 .svc-page-hero{
   position:relative; width:100% !important;
   height:480px; flex-shrink:0;
@@ -937,10 +941,10 @@ footer::after{
   padding:8px 20px; border-radius:100px;
 }
 
-/* ── CONTENT WRAPPER */
+/* â”€â”€ CONTENT WRAPPER */
 .svc-page-body{padding:0; width:100% !important; display:block}
 
-/* ── ABOUT + INCLUDES — dark purple left, white right */
+/* â”€â”€ ABOUT + INCLUDES â€” dark purple left, white right */
 .svc-page-inner{
   display:grid; grid-template-columns:1fr 1fr;
   gap:0; width:100%;
@@ -985,7 +989,7 @@ footer::after{
   box-shadow:0 0 0 3px rgba(200,215,0,.2);
 }
 
-/* ── BEFORE / AFTER */
+/* â”€â”€ BEFORE / AFTER */
 .svc-ba{
   padding:80px 60px;
   background:#fff;
@@ -1029,7 +1033,7 @@ footer::after{
 }
 .svc-ba-lbl.L{left:20px}.svc-ba-lbl.R{right:20px}
 
-/* ── PRICING */
+/* â”€â”€ PRICING */
 .svc-pricing{
   padding:80px 60px;
   background:#1a0a2e;
@@ -1080,7 +1084,7 @@ footer::after{
 .spc.feat .spc-cta{background:var(--ink);color:#fff;border-color:var(--ink)}
 .spc.feat .spc-cta:hover{background:#5F2491}
 
-/* ── CTA BAR */
+/* â”€â”€ CTA BAR */
 .svc-cta-bar{
   padding:100px 60px;
   background:linear-gradient(135deg,var(--lime) 0%,#d4e200 100%);
@@ -1152,7 +1156,7 @@ footer::after{
   <a href="#area" onclick="closeMM()">Areas</a>
   <a href="#testimonials" onclick="closeMM()">Reviews</a>
   <a href="tel:+16043582358" onclick="closeMM()">604 358 2358</a>
-  <a href="#final-cta" class="mm-cta" onclick="closeMM()">Book Now →</a>
+  <a href="#final-cta" class="mm-cta" onclick="closeMM()">Book Now â†’</a>
 </div>
 
 <!-- HERO -->
@@ -1165,7 +1169,7 @@ footer::after{
       <div class="h-content">
                         <h1 class="h-headline fade-in d1">Trusted Property Services<br><em>For Greater Vancouver.</em></h1>
         <div class="h-ctas fade-in d2">
-          <a href="#final-cta" class="btn-lime">Book a Service →</a>
+          <a href="#final-cta" class="btn-lime">Book a Service â†’</a>
           <a href="#services" class="btn-wh">See Services</a>
         </div>
       </div>
@@ -1208,7 +1212,7 @@ footer::after{
           <div class="sd">Streak-free windows and pressure-cleaned driveways, sidings and patios.</div>
           <div class="sp">From $149</div>
         </div>
-        <div class="sc-cta">View Service →</div>
+        <div class="sc-cta">View Service â†’</div>
       </a>
       <a href="javascript:void(0)" onclick="openPage('service-carpet')" class="sc2">
         <div class="sc-img">
@@ -1221,7 +1225,7 @@ footer::after{
           <div class="sd">Hot water extraction on carpets and upholstery. Sofas, chairs, mattresses.</div>
           <div class="sp">From $99</div>
         </div>
-        <div class="sc-cta">View Service →</div>
+        <div class="sc-cta">View Service â†’</div>
       </a>
       <a href="javascript:void(0)" onclick="openPage('service-interior')" class="sc2">
         <div class="sc-img">
@@ -1234,7 +1238,7 @@ footer::after{
           <div class="sd">Deep clean, move-in/out, post-construction and recurring packages.</div>
           <div class="sp">From $179</div>
         </div>
-        <div class="sc-cta">View Service →</div>
+        <div class="sc-cta">View Service â†’</div>
       </a>
       <a href="javascript:void(0)" onclick="openPage('service-junk')" class="sc2">
         <div class="sc-img">
@@ -1247,7 +1251,7 @@ footer::after{
           <div class="sd">Fast, responsible removal. We sort, donate where possible, dispose properly.</div>
           <div class="sp">From $99</div>
         </div>
-        <div class="sc-cta">View Service →</div>
+        <div class="sc-cta">View Service â†’</div>
       </a>
       <a href="javascript:void(0)" onclick="openPage('service-airbnb')" class="sc2">
         <div class="sc-img">
@@ -1260,7 +1264,7 @@ footer::after{
           <div class="sd">Fast, reliable turnovers for short-term rental hosts. Guest-ready in hours.</div>
           <div class="sp">From $89</div>
         </div>
-        <div class="sc-cta">View Service →</div>
+        <div class="sc-cta">View Service â†’</div>
       </a>
       <a href="javascript:void(0)" onclick="openPage('service-commercial')" class="sc2">
         <div class="sc-img">
@@ -1273,7 +1277,7 @@ footer::after{
           <div class="sd">Post-construction, office deep clean and commercial property maintenance.</div>
           <div class="sp">Custom Quote</div>
         </div>
-        <div class="sc-cta">View Service →</div>
+        <div class="sc-cta">View Service â†’</div>
       </a>
     </div>
   </div>
@@ -1302,12 +1306,12 @@ footer::after{
           <div class="step-card">
             <div class="step-num">01<span class="step-num-label">Step</span></div>
             <h3>Get a Free Quote</h3>
-            <p>Call or book online. Clear price, locked appointment — same-day response, always.</p>
+            <p>Call or book online. Clear price, locked appointment â€” same-day response, always.</p>
             <span class="stag">No commitment required</span>
           </div>
         </div>
 
-        <!-- Chevron 1→2 -->
+        <!-- Chevron 1â†’2 -->
         <div class="step-chev" id="chev1">
           <svg viewBox="0 0 52 104" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -1340,7 +1344,7 @@ footer::after{
           </div>
         </div>
 
-        <!-- Chevron 2→3 -->
+        <!-- Chevron 2â†’3 -->
         <div class="step-chev" id="chev2">
           <svg viewBox="0 0 52 104" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -1360,7 +1364,7 @@ footer::after{
           <div class="step-card">
             <div class="step-num">03<span class="step-num-label">Step</span></div>
             <h3>You Pay After</h3>
-            <p>We bill only once you're 100% satisfied. If it's not right, we fix it — before we leave.</p>
+            <p>We bill only once you're 100% satisfied. If it's not right, we fix it â€” before we leave.</p>
             <span class="stag">Satisfaction guaranteed</span>
           </div>
         </div>
@@ -1387,9 +1391,9 @@ footer::after{
   <div class="container">
     <div class="sh fade-in"><div class="sec-ey">Client Reviews</div><h2 class="sec-h">What Our Clients Say</h2><p class="sec-s">Real reviews from homeowners across the Tri-Cities and Greater Vancouver.</p></div>
     <div class="tg">
-      <div class="tc2 fade-in d1"><div class="ts">★★★★★</div><p class="tt">LIVO did our post-renovation clean and it was absolutely spotless. They brought serious commercial equipment and the crew was professional from start to finish. Already booked them for monthly service.</p><div class="tn">Sarah M.</div><div class="tm">Port Coquitlam · Interior Cleaning</div></div>
-      <div class="tc2 fade-in d2"><div class="ts">★★★★★</div><p class="tt">Power washed my driveway and back patio in a couple of hours. The difference is incredible — looks brand new. Fair price, showed up on time, professional crew. No complaints whatsoever.</p><div class="tn">Derek T.</div><div class="tm">Coquitlam · Power Washing</div></div>
-      <div class="tc2 fade-in d3"><div class="ts">★★★★★</div><p class="tt">Used LIVO for our office move and they were outstanding. Careful with everything, super efficient, and the price was very reasonable. Would recommend to anyone — first class operation.</p><div class="tn">Linda K.</div><div class="tm">Port Moody · Moving</div></div>
+      <div class="tc2 fade-in d1"><div class="ts">â˜…â˜…â˜…â˜…â˜…</div><p class="tt">LIVO did our post-renovation clean and it was absolutely spotless. They brought serious commercial equipment and the crew was professional from start to finish. Already booked them for monthly service.</p><div class="tn">Sarah M.</div><div class="tm">Port Coquitlam Â· Interior Cleaning</div></div>
+      <div class="tc2 fade-in d2"><div class="ts">â˜…â˜…â˜…â˜…â˜…</div><p class="tt">Power washed my driveway and back patio in a couple of hours. The difference is incredible â€” looks brand new. Fair price, showed up on time, professional crew. No complaints whatsoever.</p><div class="tn">Derek T.</div><div class="tm">Coquitlam Â· Power Washing</div></div>
+      <div class="tc2 fade-in d3"><div class="ts">â˜…â˜…â˜…â˜…â˜…</div><p class="tt">Used LIVO for our office move and they were outstanding. Careful with everything, super efficient, and the price was very reasonable. Would recommend to anyone â€” first class operation.</p><div class="tn">Linda K.</div><div class="tm">Port Moody Â· Moving</div></div>
     </div>
   </div>
 </section>
@@ -1419,7 +1423,7 @@ footer::after{
           <span class="cp">Delta</span>
           <span class="cp">Abbotsford</span>
         </div>
-        <a href="#final-cta" class="btn-lime">Check Availability →</a>
+        <a href="#final-cta" class="btn-lime">Check Availability â†’</a>
       </div>
       <div class="am fade-in d2">
         <div id="livoMap"></div>
@@ -1434,8 +1438,8 @@ footer::after{
     <div class="ci fade-in">
       <h2 class="ch">Your Property Deserves Better.<br><em>Let's Get It There.</em></h2>
       <p class="cs">Free quote. No contracts. You only pay after the job is done and you're completely satisfied.</p>
-      <a href="tel:+16043582358" class="btn-lime">Get a Free Quote →</a>
-      <p class="cm">Or call us directly: 604 358 2358 · Same-day response guaranteed</p>
+      <a href="tel:+16043582358" class="btn-lime">Get a Free Quote â†’</a>
+      <p class="cm">Or call us directly: 604 358 2358 Â· Same-day response guaranteed</p>
     </div>
   </div>
 </section>
@@ -1444,7 +1448,7 @@ footer::after{
 <div id="svcOverlay" style="display:none"></div>
 
 <div class="svc-page" id="service-power">
-  <button class="svc-back" onclick="closePage()">← Back to Services</button>
+  <button class="svc-back" onclick="closePage()">â† Back to Services</button>
   <div class="svc-page-hero" style="background:linear-gradient(135deg,#1a4060,#2d7ea8)">
     <div class="svc-page-overlay"></div>
     <div class="svc-page-title">
@@ -1478,7 +1482,7 @@ footer::after{
             <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#4a3000,#8b6200)"></div>
           </div>
           <div class="svc-ba-line" id="sba0-l"></div>
-          <div class="svc-ba-knob" id="sba0-k">⇄</div>
+          <div class="svc-ba-knob" id="sba0-k">â‡„</div>
           <div class="svc-ba-lbl L">Before</div>
           <div class="svc-ba-lbl R">After</div>
         </div>
@@ -1494,13 +1498,13 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Power Washing & Window Cleaning →</a>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Power Washing & Window Cleaning â†’</a>
     </div>
   </div>
 </div>
 
 <div class="svc-page" id="service-carpet">
-  <button class="svc-back" onclick="closePage()">← Back to Services</button>
+  <button class="svc-back" onclick="closePage()">â† Back to Services</button>
   <div class="svc-page-hero" style="background:linear-gradient(135deg,#3a1060,#8E3AAC)">
     <div class="svc-page-overlay"></div>
     <div class="svc-page-title">
@@ -1515,7 +1519,7 @@ footer::after{
     <div class="svc-page-inner">
       <div class="svc-page-desc">
         <h2>About This Service</h2>
-        <p>We use commercial-grade hot water extraction to deep-clean both carpets and upholstery. Sofas, chairs, mattresses, area rugs — our Mytee equipment removes embedded dirt, pet dander, allergens and stains.</p>
+        <p>We use commercial-grade hot water extraction to deep-clean both carpets and upholstery. Sofas, chairs, mattresses, area rugs â€” our Mytee equipment removes embedded dirt, pet dander, allergens and stains.</p>
       </div>
       <div class="svc-page-includes">
         <h2>What's Included</h2>
@@ -1534,7 +1538,7 @@ footer::after{
             <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#4a2a1a,#7a4a2a)"></div>
           </div>
           <div class="svc-ba-line" id="sba1-l"></div>
-          <div class="svc-ba-knob" id="sba1-k">⇄</div>
+          <div class="svc-ba-knob" id="sba1-k">â‡„</div>
           <div class="svc-ba-lbl L">Before</div>
           <div class="svc-ba-lbl R">After</div>
         </div>
@@ -1545,18 +1549,18 @@ footer::after{
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
       </div>
-      <div class="svc-price-grid"><div class="spc "><div class="spc-name">1–2 Rooms</div><div class="spc-sub">Up to 400 sq ft</div><div class="spc-price">$99</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc feat"><div style="font-size:.7rem;font-weight:700;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Most Popular</div><div class="spc-name">3–5 Rooms</div><div class="spc-sub">Up to 1,000 sq ft</div><div class="spc-price">$179</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc "><div class="spc-name">Whole Home</div><div class="spc-sub">All rooms + stairs</div><div class="spc-price">$269</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div></div>
+      <div class="svc-price-grid"><div class="spc "><div class="spc-name">1â€“2 Rooms</div><div class="spc-sub">Up to 400 sq ft</div><div class="spc-price">$99</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc feat"><div style="font-size:.7rem;font-weight:700;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Most Popular</div><div class="spc-name">3â€“5 Rooms</div><div class="spc-sub">Up to 1,000 sq ft</div><div class="spc-price">$179</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc "><div class="spc-name">Whole Home</div><div class="spc-sub">All rooms + stairs</div><div class="spc-price">$269</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div></div>
     </div>
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Carpet & Upholstery Cleaning →</a>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Carpet & Upholstery Cleaning â†’</a>
     </div>
   </div>
 </div>
 
 <div class="svc-page" id="service-interior">
-  <button class="svc-back" onclick="closePage()">← Back to Services</button>
+  <button class="svc-back" onclick="closePage()">â† Back to Services</button>
   <div class="svc-page-hero" style="background:linear-gradient(135deg,#2d1060,#5F2491)">
     <div class="svc-page-overlay"></div>
     <div class="svc-page-title">
@@ -1571,7 +1575,7 @@ footer::after{
     <div class="svc-page-inner">
       <div class="svc-page-desc">
         <h2>About This Service</h2>
-        <p>From move-in/move-out cleans to recurring weekly service, our interior cleaning team delivers spotless results using commercial-grade Diversey products. We cover every surface — kitchen to bathrooms, baseboards to light fixtures.</p>
+        <p>From move-in/move-out cleans to recurring weekly service, our interior cleaning team delivers spotless results using commercial-grade Diversey products. We cover every surface â€” kitchen to bathrooms, baseboards to light fixtures.</p>
       </div>
       <div class="svc-page-includes">
         <h2>What's Included</h2>
@@ -1590,7 +1594,7 @@ footer::after{
             <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#3a2015,#5a3020)"></div>
           </div>
           <div class="svc-ba-line" id="sba2-l"></div>
-          <div class="svc-ba-knob" id="sba2-k">⇄</div>
+          <div class="svc-ba-knob" id="sba2-k">â‡„</div>
           <div class="svc-ba-lbl L">Before</div>
           <div class="svc-ba-lbl R">After</div>
         </div>
@@ -1601,18 +1605,18 @@ footer::after{
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
       </div>
-      <div class="svc-price-grid"><div class="spc "><div class="spc-name">Studio / 1 Bed</div><div class="spc-sub">Up to 700 sq ft</div><div class="spc-price">$149</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc feat"><div style="font-size:.7rem;font-weight:700;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Most Popular</div><div class="spc-name">2–3 Bedroom</div><div class="spc-sub">700–1,800 sq ft</div><div class="spc-price">$249</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc "><div class="spc-name">4+ Bedroom</div><div class="spc-sub">1,800+ sq ft</div><div class="spc-price">$349</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div></div>
+      <div class="svc-price-grid"><div class="spc "><div class="spc-name">Studio / 1 Bed</div><div class="spc-sub">Up to 700 sq ft</div><div class="spc-price">$149</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc feat"><div style="font-size:.7rem;font-weight:700;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Most Popular</div><div class="spc-name">2â€“3 Bedroom</div><div class="spc-sub">700â€“1,800 sq ft</div><div class="spc-price">$249</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc "><div class="spc-name">4+ Bedroom</div><div class="spc-sub">1,800+ sq ft</div><div class="spc-price">$349</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div></div>
     </div>
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Interior Cleaning →</a>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Interior Cleaning â†’</a>
     </div>
   </div>
 </div>
 
 <div class="svc-page" id="service-junk">
-  <button class="svc-back" onclick="closePage()">← Back to Services</button>
+  <button class="svc-back" onclick="closePage()">â† Back to Services</button>
   <div class="svc-page-hero" style="background:linear-gradient(135deg,#1a0a2e,#5F2491)">
     <div class="svc-page-overlay"></div>
     <div class="svc-page-title">
@@ -1627,7 +1631,7 @@ footer::after{
     <div class="svc-page-inner">
       <div class="svc-page-desc">
         <h2>About This Service</h2>
-        <p>Our junk removal service is fast, responsible, and stress-free. We haul away furniture, appliances, renovation debris, and general clutter — sorting for donation and recycling where possible.</p>
+        <p>Our junk removal service is fast, responsible, and stress-free. We haul away furniture, appliances, renovation debris, and general clutter â€” sorting for donation and recycling where possible.</p>
       </div>
       <div class="svc-page-includes">
         <h2>What's Included</h2>
@@ -1646,7 +1650,7 @@ footer::after{
             <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#2a2a2a,#5a5a5a)"></div>
           </div>
           <div class="svc-ba-line" id="sba3-l"></div>
-          <div class="svc-ba-knob" id="sba3-k">⇄</div>
+          <div class="svc-ba-knob" id="sba3-k">â‡„</div>
           <div class="svc-ba-lbl L">Before</div>
           <div class="svc-ba-lbl R">After</div>
         </div>
@@ -1662,13 +1666,13 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Junk Removal →</a>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Junk Removal â†’</a>
     </div>
   </div>
 </div>
 
 <div class="svc-page" id="service-airbnb">
-  <button class="svc-back" onclick="closePage()">← Back to Services</button>
+  <button class="svc-back" onclick="closePage()">â† Back to Services</button>
   <div class="svc-page-hero" style="background:linear-gradient(135deg,#5F2491,#a0ac00)">
     <div class="svc-page-overlay"></div>
     <div class="svc-page-title">
@@ -1683,7 +1687,7 @@ footer::after{
     <div class="svc-page-inner">
       <div class="svc-page-desc">
         <h2>About This Service</h2>
-        <p>We specialize in rapid, hotel-quality turnovers for Airbnb and short-term rental hosts. Our team arrives between checkout and check-in, leaving your property spotless, restocked, and guest-ready — every time.</p>
+        <p>We specialize in rapid, hotel-quality turnovers for Airbnb and short-term rental hosts. Our team arrives between checkout and check-in, leaving your property spotless, restocked, and guest-ready â€” every time.</p>
       </div>
       <div class="svc-page-includes">
         <h2>What's Included</h2>
@@ -1702,7 +1706,7 @@ footer::after{
             <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#2a1a2a,#5a3a5a)"></div>
           </div>
           <div class="svc-ba-line" id="sba4-l"></div>
-          <div class="svc-ba-knob" id="sba4-k">⇄</div>
+          <div class="svc-ba-knob" id="sba4-k">â‡„</div>
           <div class="svc-ba-lbl L">Before</div>
           <div class="svc-ba-lbl R">After</div>
         </div>
@@ -1713,18 +1717,18 @@ footer::after{
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
       </div>
-      <div class="svc-price-grid"><div class="spc "><div class="spc-name">Studio</div><div class="spc-sub">Up to 1 bed</div><div class="spc-price">$89</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc feat"><div style="font-size:.7rem;font-weight:700;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Most Popular</div><div class="spc-name">2–3 Bedroom</div><div class="spc-sub">Standard unit</div><div class="spc-price">$149</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc "><div class="spc-name">Large / Luxury</div><div class="spc-sub">4+ bed or luxury</div><div class="spc-price">$229</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div></div>
+      <div class="svc-price-grid"><div class="spc "><div class="spc-name">Studio</div><div class="spc-sub">Up to 1 bed</div><div class="spc-price">$89</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc feat"><div style="font-size:.7rem;font-weight:700;color:var(--ink);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Most Popular</div><div class="spc-name">2â€“3 Bedroom</div><div class="spc-sub">Standard unit</div><div class="spc-price">$149</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div><div class="spc "><div class="spc-name">Large / Luxury</div><div class="spc-sub">4+ bed or luxury</div><div class="spc-price">$229</div><div class="spc-per">per visit</div><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="spc-cta">Book Now</a></div></div>
     </div>
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Airbnb Turnover →</a>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Airbnb Turnover â†’</a>
     </div>
   </div>
 </div>
 
 <div class="svc-page" id="service-commercial">
-  <button class="svc-back" onclick="closePage()">← Back to Services</button>
+  <button class="svc-back" onclick="closePage()">â† Back to Services</button>
   <div class="svc-page-hero" style="background:linear-gradient(135deg,#1a0a2e,#3a1060)">
     <div class="svc-page-overlay"></div>
     <div class="svc-page-title">
@@ -1758,7 +1762,7 @@ footer::after{
             <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#2a2a2a,#5a5a5a)"></div>
           </div>
           <div class="svc-ba-line" id="sba5-l"></div>
-          <div class="svc-ba-knob" id="sba5-k">⇄</div>
+          <div class="svc-ba-knob" id="sba5-k">â‡„</div>
           <div class="svc-ba-lbl L">Before</div>
           <div class="svc-ba-lbl R">After</div>
         </div>
@@ -1774,7 +1778,7 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Commercial Cleanup →</a>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Commercial Cleanup â†’</a>
     </div>
   </div>
 </div>
@@ -1839,7 +1843,7 @@ footer::after{
     </div>
 
     <div class="foot-bottom">
-      <span>© 2026 LIVO Property Services · Greater Vancouver, BC · All rights reserved</span>
+      <span>Â© 2026 LIVO Property Services Â· Greater Vancouver, BC Â· All rights reserved</span>
       <div style="display:flex;gap:20px">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
@@ -1927,10 +1931,10 @@ document.querySelectorAll('.si2').forEach(el=>sObs.observe(el));
 
 // BEFORE / AFTER
 const slides=[
-  {label:'Power Washing — Port Coquitlam',bc:'linear-gradient(135deg,#4a3000 0%,#6b4500 50%,#8b6200 100%)',ac:'linear-gradient(135deg,#C8D700 0%,#8E3AAC 60%,#5F2491 100%)'},
-  {label:'Window Cleaning — Coquitlam',bc:'linear-gradient(135deg,#2a3520 0%,#3a4a2a 50%,#4a5a3a 100%)',ac:'linear-gradient(135deg,#B776D1 0%,#8E3AAC 50%,#5F2491 100%)'},
-  {label:'Interior Cleaning — Port Moody',bc:'linear-gradient(135deg,#3a2015 0%,#5a3020 50%,#7a4025 100%)',ac:'linear-gradient(135deg,#5F2491 0%,#8E3AAC 50%,#B776D1 100%)'},
-  {label:'Carpet Cleaning — Burnaby',bc:'linear-gradient(135deg,#2a1515 0%,#4a2020 50%,#6a2a2a 100%)',ac:'linear-gradient(135deg,#3a1660 0%,#5F2491 50%,#C8D700 100%)'},
+  {label:'Power Washing â€” Port Coquitlam',bc:'linear-gradient(135deg,#4a3000 0%,#6b4500 50%,#8b6200 100%)',ac:'linear-gradient(135deg,#C8D700 0%,#8E3AAC 60%,#5F2491 100%)'},
+  {label:'Window Cleaning â€” Coquitlam',bc:'linear-gradient(135deg,#2a3520 0%,#3a4a2a 50%,#4a5a3a 100%)',ac:'linear-gradient(135deg,#B776D1 0%,#8E3AAC 50%,#5F2491 100%)'},
+  {label:'Interior Cleaning â€” Port Moody',bc:'linear-gradient(135deg,#3a2015 0%,#5a3020 50%,#7a4025 100%)',ac:'linear-gradient(135deg,#5F2491 0%,#8E3AAC 50%,#B776D1 100%)'},
+  {label:'Carpet Cleaning â€” Burnaby',bc:'linear-gradient(135deg,#2a1515 0%,#4a2020 50%,#6a2a2a 100%)',ac:'linear-gradient(135deg,#3a1660 0%,#5F2491 50%,#C8D700 100%)'},
 ];
 let cur=0,drag=false;
 const wrap=document.getElementById('baSlider'),
@@ -2045,12 +2049,13 @@ function baNext(){cur=(cur+1)%slides.length;loadSlide(cur)}
 </script>
 
 <!--
-  ═══════════════════════════════════════════════════
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   LIVO WEBSITE ADDITIONS
   Paste everything below just before </body>
-  ═══════════════════════════════════════════════════
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -->
 
-<!-- ── DEMO TRIGGER (remove from real site) ── -->
+<!-- â”€â”€ DEMO TRIGGER (remove from real site) â”€â”€ -->
 </body>
 </html>
+
