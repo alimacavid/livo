@@ -1083,6 +1083,43 @@ footer::after{
 .spc.feat .spc-cta{background:var(--ink);color:#fff;border-color:var(--ink)}
 .spc.feat .spc-cta:hover{background:#5F2491}
 
+/* ── SUB-SERVICES (per-size pricing) */
+.svc-subs{padding:80px 60px;background:#faf9fb;border-top:1px solid #f0edf4}
+.svc-subs-header{margin-bottom:14px}
+.svc-subs h2{font-family:var(--heading);font-weight:800;font-size:clamp(1.6rem,3vw,2.4rem);color:var(--ink);letter-spacing:-.02em;margin-bottom:8px;line-height:1}
+.svc-subs h2 em{color:var(--purple);font-style:italic}
+.svc-subs-header p{font-size:.9rem;color:var(--muted)}
+.svc-subs-note{font-size:.8rem;color:var(--purple);font-weight:600;margin-bottom:32px}
+.ssv-sublabel{font-family:var(--heading);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin:44px 0 18px;display:flex;align-items:center;gap:10px}
+.ssv-sublabel::before{content:'';width:24px;height:2px;background:var(--purple)}
+.ssv-sublabel.addon{color:#7a8500}
+.ssv-sublabel.addon::before{background:var(--lime)}
+.svc-subs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ssv{background:#fff;border:1.5px solid #ede8f0;border-radius:16px;padding:24px;transition:all .25s var(--ease)}
+.ssv:hover{border-color:rgba(107,63,160,.32);box-shadow:0 12px 30px rgba(95,36,145,.09);transform:translateY(-3px)}
+.ssv-top{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+.ssv-ico{width:48px;height:48px;background:var(--purple);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ssv-ico svg{width:25px;height:25px;stroke:#fff;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ssv.addon .ssv-ico{background:var(--lime)}
+.ssv.addon .ssv-ico svg{stroke:var(--ink)}
+.ssv-name{font-family:var(--heading);font-weight:700;font-size:1.02rem;color:var(--ink);letter-spacing:-.01em}
+.ssv-desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:16px;min-height:36px}
+.ssv-rows{display:flex;flex-direction:column}
+.ssv-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f0edf4}
+.ssv-row:last-child{border-bottom:none;padding-bottom:0}
+.ssv-sz{display:flex;flex-direction:column;gap:1px}
+.ssv-sz b{font-size:.84rem;font-weight:600;color:var(--ink)}
+.ssv-sz span{font-size:.7rem;color:var(--muted)}
+.ssv-pr{font-family:var(--heading);font-size:1.05rem;font-weight:800;color:var(--purple)}
+.ssv.addon .ssv-pr{color:#7a8500}
+.ssv-book{margin-top:18px;display:block;text-align:center;padding:11px;background:var(--purple);color:#fff;font-family:var(--heading);font-weight:700;font-size:.8rem;border-radius:100px;text-decoration:none;transition:all .2s}
+.ssv-book:hover{background:var(--lime);color:var(--ink)}
+@media(max-width:1000px){.svc-subs-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.svc-subs{padding:56px 28px}}
+@media(max-width:600px){.svc-subs-grid{grid-template-columns:1fr}.ssv-desc{min-height:0}}
+
+
+
 /* ── CTA BAR */
 .svc-cta-bar{
   padding:100px 60px;
@@ -1581,6 +1618,126 @@ footer::after{
         <ul><li>Full kitchen deep clean</li><li>Bathroom scrub & sanitize</li><li>Vacuum & mop all floors</li><li>Baseboards, vents & light fixtures</li><li>Inside appliances (fridge, oven)</li></ul>
       </div>
     </div>
+<!-- ── SUB-SERVICES (per-size pricing) ── -->
+<div class="svc-subs">
+  <div class="svc-subs-header">
+    <h2>Choose Your <em>Clean</em></h2>
+    <p>Pick the service and your home size — clear pricing, no surprises.</p>
+  </div>
+  <p class="svc-subs-note">All prices include supplies, equipment &amp; GST. Pay after the job is done.</p>
+
+  <div class="ssv-sublabel">Main Cleans — priced by home size</div>
+  <div class="svc-subs-grid">
+
+    <div class="ssv">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5"/><path d="M9 10h.01M15 10h.01"/></svg></div>
+        <div class="ssv-name">General Cleaning</div>
+      </div>
+      <p class="ssv-desc">Routine maintenance — surfaces, floors, dusting, bathrooms &amp; kitchen kept fresh.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Studio / Bachelor</b><span>1 room + bath + kitchen</span></div><div class="ssv-pr">$120</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>1 Bedroom</b><span>1 bed + 1 bath</span></div><div class="ssv-pr">$150</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>2–3 Bedroom</b><span>up to 1,800 sq ft</span></div><div class="ssv-pr">$230</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>4+ Bedroom</b><span>1,800+ sq ft</span></div><div class="ssv-pr">$310</div></div>
+      </div>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="ssv-book">Book This</a>
+    </div>
+
+    <div class="ssv">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M12 3l1.5 3.5L17 8l-3.5 1.5L12 13l-1.5-3.5L7 8l3.5-1.5z"/><path d="M18 14l.8 1.8L20.5 17l-1.7.8L18 19.5 17.2 17.8 15.5 17l1.7-.7z"/><path d="M6 15l.7 1.5L8 17l-1.3.6L6 19l-.6-1.4L4 17l1.4-.5z"/></svg></div>
+        <div class="ssv-name">Deep Cleaning</div>
+      </div>
+      <p class="ssv-desc">Full top-to-bottom reset — baseboards, vents, tracks, behind furniture. Best for first visits.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Studio / Bachelor</b><span>1 room + bath + kitchen</span></div><div class="ssv-pr">$175</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>1 Bedroom</b><span>1 bed + 1 bath</span></div><div class="ssv-pr">$220</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>2–3 Bedroom</b><span>up to 1,800 sq ft</span></div><div class="ssv-pr">$360</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>4+ Bedroom</b><span>1,800+ sq ft</span></div><div class="ssv-pr">$495</div></div>
+      </div>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="ssv-book">Book This</a>
+    </div>
+
+    <div class="ssv">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-6a2 2 0 0 1 4 0v6"/><path d="M19 9l1.5-1.5M20 7.5h1.5"/></svg></div>
+        <div class="ssv-name">Move-In / Move-Out</div>
+      </div>
+      <p class="ssv-desc">Landlord-ready clean to get your deposit back — inside cabinets, closets, appliances, full detail.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>1 Bedroom</b><span>1 bed + 1 bath</span></div><div class="ssv-pr">$320</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>2 Bedroom</b><span>2 bed + bath(s)</span></div><div class="ssv-pr">$420</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>3+ Bedroom</b><span>full house</span></div><div class="ssv-pr">$550</div></div>
+      </div>
+      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)" class="ssv-book">Book This</a>
+    </div>
+
+  </div>
+
+  <div class="ssv-sublabel addon">Add-Ons — stack onto any clean</div>
+  <div class="svc-subs-grid">
+
+    <div class="ssv addon">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M4 10h16"/><path d="M7 6v1M7 14v3"/></svg></div>
+        <div class="ssv-name">Fridge &amp; Oven Detail</div>
+      </div>
+      <p class="ssv-desc">Inside appliances — shelves, racks, door seals, degreased and sanitized.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Fridge Interior</b><span>shelves + drawers</span></div><div class="ssv-pr">+$40</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>Oven Interior</b><span>racks + door glass</span></div><div class="ssv-pr">+$45</div></div>
+        <div class="ssv-row"><div class="ssv-sz"><b>Both Together</b><span>fridge + oven</span></div><div class="ssv-pr">+$75</div></div>
+      </div>
+    </div>
+
+    <div class="ssv addon">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M8 3h5l3 3v4M8 3v7h8"/><path d="M16 13c2 0 3 1.5 3 3.5S18 20 16 20"/><path d="M19 6.5l1.5-1.5M20 8h1.5"/></svg></div>
+        <div class="ssv-name">Kitchen Deep Clean</div>
+      </div>
+      <p class="ssv-desc">Cabinets, countertops, backsplash, stovetop degrease and sink descale.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Full Kitchen</b><span>all surfaces + degrease</span></div><div class="ssv-pr">$95</div></div>
+      </div>
+    </div>
+
+    <div class="ssv addon">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M7 21h10M8 21c0-4-4-5-4-11h16c0 6-4 7-4 11"/><path d="M4 10V7a2 2 0 0 1 2-2h1"/><path d="M8 5V3"/><path d="M10 14v2M13 14v2"/></svg></div>
+        <div class="ssv-name">Bathroom Detail</div>
+      </div>
+      <p class="ssv-desc">Tile, grout, tub, shower glass, toilet and fixtures — scrubbed and disinfected.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Per Bathroom</b><span>full deep scrub</span></div><div class="ssv-pr">$75</div></div>
+      </div>
+    </div>
+
+    <div class="ssv addon">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M12 5v14M4 12h16"/><path d="M6.5 8.5l2 2M15.5 8.5l2 2"/></svg></div>
+        <div class="ssv-name">Interior Windows</div>
+      </div>
+      <p class="ssv-desc">Interior glass, sills and tracks — streak-free finish.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Per 5 Windows</b><span>glass + sills + tracks</span></div><div class="ssv-pr">+$40</div></div>
+      </div>
+    </div>
+
+    <div class="ssv addon">
+      <div class="ssv-top">
+        <div class="ssv-ico"><svg viewBox="0 0 24 24"><path d="M12 3c-3 0-4 2-4 4 0 3 4 5 4 5s4-2 4-5c0-2-1-4-4-4z"/><path d="M6 14c-1 1-1 3 0 4M18 14c1 1 1 3 0 4M9 16c-.5.7-.5 1.3 0 2M15 16c.5.7.5 1.3 0 2"/></svg></div>
+        <div class="ssv-name">Deodorize &amp; Sanitize</div>
+      </div>
+      <p class="ssv-desc">Odour-neutralizing treatment plus full surface disinfection for a truly fresh space.</p>
+      <div class="ssv-rows">
+        <div class="ssv-row"><div class="ssv-sz"><b>Whole Home</b><span>treat + disinfect</span></div><div class="ssv-pr">$79</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
     <div class="svc-ba">
       <div class="svc-ba-inner">
         <div class="svc-ba-header">
