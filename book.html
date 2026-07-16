@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Book a Service — LIVO Property Services</title>
+<meta name="description" content="Book power washing, carpet cleaning, interior cleaning, junk removal, Airbnb turnover or commercial cleanup with LIVO Property Services. One-time or recurring. First-time customers save 30%.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="theme-color" content="#8E3AAC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#8E3AAC;--deep:#5F2491;--light:#B776D1;--pale:#f3e8f9;
+  --lime:#C8D700;--lime-dk:#a0ac00;--lime-pale:#f5f8cc;
+  --ink:#0c0c0c;--soft:#3d3d3d;--muted:#737373;--border:#e2e2e2;
+  --bg:#fafafa;--white:#fff;
+  --heading:'Montserrat',system-ui,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --header-h:64px;
+  --bar-h:78px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding-top:var(--header-h);padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom))}
+h1,h2,h3,h4{font-family:var(--heading)}
+a{color:inherit}
+button{font-family:var(--body);cursor:pointer}
+.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+:focus-visible{outline:3px solid var(--deep);outline-offset:2px}
+
+/* ---------- HEADER ---------- */
+#site-header{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center}
+#site-header .inner{width:100%;max-width:1180px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.brand svg{width:26px;height:26px;flex-shrink:0}
+.brand-word{font-family:var(--heading);font-weight:800;font-size:1.15rem;letter-spacing:.01em;color:var(--ink)}
+.brand-word em{font-style:normal;color:var(--lime-dk)}
+.header-phone{display:flex;align-items:center;gap:7px;text-decoration:none;color:var(--ink);font-weight:700;font-size:.85rem;border:1.5px solid var(--border);padding:8px 14px;border-radius:100px;transition:border-color .2s,background .2s;white-space:nowrap}
+.header-phone:hover{border-color:var(--purple);background:var(--pale)}
+.header-phone svg{width:15px;height:15px;stroke:var(--purple)}
+
+/* ---------- PROMO STRIP ---------- */
+.promo-strip{background:linear-gradient(135deg,var(--deep),var(--purple));color:#fff;text-align:center;padding:10px 16px;font-size:.82rem;font-weight:600;letter-spacing:.01em}
+.promo-strip strong{color:var(--lime)}
+
+/* ---------- STEPPER ---------- */
+.progress-wrap{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:var(--header-h);z-index:100}
+.progress{display:flex;max-width:640px;margin:0 auto;padding:14px 20px}
+.pstep{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.pstep::before{content:'';position:absolute;top:11px;left:-50%;width:100%;height:2px;background:var(--border);z-index:0}
+.pstep:first-child::before{display:none}
+.pdot{width:24px;height:24px;border-radius:50%;background:var(--border);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--heading);font-weight:800;font-size:.7rem;z-index:1;transition:background .3s,color .3s}
+.pstep.active .pdot,.pstep.done .pdot{background:var(--purple)}
+.pstep.active{color:var(--ink)}
+.pstep.done{color:var(--purple)}
+.pstep.done::before,.pstep.done .pdot{background:var(--purple)}
+
+/* ---------- LAYOUT ---------- */
+main{padding:28px 0 20px}
+.page-head{max-width:640px;margin:0 auto 22px;padding:0 20px}
+.page-head h1{font-size:1.5rem;font-weight:800;margin-bottom:4px}
+.page-head p{color:var(--muted);font-size:.92rem}
+.flow{max-width:640px;margin:0 auto;padding:0 20px}
+.step{display:none}
+.step.active{display:block;animation:fadeUp .4s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* back link */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;color:var(--muted);text-decoration:none;margin-bottom:16px;background:none;border:none}
+.back-link:hover{color:var(--purple)}
+
+/* ---------- SERVICE GRID ---------- */
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.svc-card{border:1.5px solid var(--border);border-radius:16px;background:#fff;padding:18px 14px;text-align:left;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,transform .2s,box-shadow .2s}
+.svc-card:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.06)}
+.svc-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff}
+.svc-icon svg{width:22px;height:22px}
+.svc-card h3{font-size:.92rem;font-weight:700;line-height:1.25}
+.svc-card .from{font-size:.75rem;color:var(--muted);font-weight:600}
+.svc-card .from b{color:var(--purple)}
+
+/* ---------- SELECTED SERVICE HEADER ---------- */
+.sel-head{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:14px;border-radius:14px;background:#fff;border:1px solid var(--border)}
+.sel-head .svc-icon{width:44px;height:44px;flex-shrink:0}
+.sel-head h2{font-size:1.05rem;font-weight:800}
+.sel-head span{font-size:.78rem;color:var(--muted)}
+
+/* ---------- SEGMENTED FREQUENCY ---------- */
+.section-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block}
+.freq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+.freq-opt{position:relative;border:1.5px solid var(--border);border-radius:13px;background:#fff;padding:14px 12px;text-align:left;transition:border-color .2s,background .2s}
+.freq-opt input{position:absolute;opacity:0;pointer-events:none}
+.freq-opt .fname{font-weight:700;font-size:.86rem;display:block;margin-bottom:2px}
+.freq-opt .fsub{font-size:.72rem;color:var(--muted)}
+.freq-opt .fsave{position:absolute;top:-9px;right:10px;background:var(--lime);color:var(--ink);font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:100px;letter-spacing:.02em}
+.freq-opt.sel{border-color:var(--purple);background:var(--pale)}
+.freq-opt.sel .fname{color:var(--deep)}
+
+/* ---------- TIER CARDS ---------- */
+.tier-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.tier-opt{position:relative;border:1.5px solid var(--border);border-radius:13px;background:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border-color .2s,background .2s}
+.tier-opt input{position:absolute;opacity:0;pointer-events:none}
+.tier-left{display:flex;flex-direction:column}
+.tier-name{font-weight:700;font-size:.9rem}
+.tier-sub{font-size:.75rem;color:var(--muted)}
+.tier-badge{font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--purple);background:var(--pale);padding:2px 7px;border-radius:100px;width:fit-content;margin-top:4px}
+.tier-price{font-family:var(--heading);font-weight:800;font-size:1.15rem;color:var(--ink);white-space:nowrap}
+.tier-price small{font-size:.65rem;color:var(--muted);font-weight:600;display:block;text-align:right}
+.tier-opt.sel{border-color:var(--purple);background:var(--pale)}
+
+/* ---------- PROMO BOX ---------- */
+.promo-box{border:1.5px dashed var(--lime-dk);background:var(--lime-pale);border-radius:13px;padding:14px 16px;margin-bottom:24px}
+.promo-row{display:flex;align-items:flex-start;gap:10px}
+.promo-row input[type=checkbox]{width:19px;height:19px;margin-top:2px;accent-color:var(--purple);flex-shrink:0}
+.promo-row label{font-size:.85rem;font-weight:600;line-height:1.4}
+.promo-row .ptag{color:var(--deep);font-weight:800}
+.promo-code-row{display:flex;gap:8px;margin-top:10px}
+.promo-code-row input{flex:1;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-size:.85rem;background:#fff}
+.promo-code-row button{border:1.5px solid var(--border);background:#fff;border-radius:9px;padding:9px 14px;font-size:.78rem;font-weight:700}
+
+/* ---------- SUMMARY CARD ---------- */
+.summary-card{border:1px solid var(--border);border-radius:14px;background:#fff;padding:16px 18px;margin-bottom:22px}
+.summary-card h3{font-size:.9rem;font-weight:800;margin-bottom:12px}
+.srow{display:flex;justify-content:space-between;font-size:.85rem;padding:6px 0;color:var(--soft)}
+.srow.discount{color:var(--deep);font-weight:700}
+.srow.total{border-top:1px solid var(--border);margin-top:6px;padding-top:12px;font-size:1rem;font-weight:800;color:var(--ink)}
+.srow.total b{font-family:var(--heading);font-size:1.3rem}
+.srow small{display:block;color:var(--muted);font-weight:500;font-size:.72rem;margin-top:2px}
+
+/* ---------- FORM ---------- */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+.field{margin-bottom:14px}
+.field.full{grid-column:1/-1}
+.field label{display:block;font-size:.76rem;font-weight:700;color:var(--soft);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:.9rem;font-family:var(--body);background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--purple)}
+.field textarea{resize:vertical;min-height:70px}
+.time-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.time-opt{border:1.5px solid var(--border);border-radius:9px;padding:9px 4px;text-align:center;font-size:.76rem;font-weight:700;background:#fff}
+.time-opt input{position:absolute;opacity:0}
+.time-opt.sel{border-color:var(--purple);background:var(--pale);color:var(--deep)}
+
+/* ---------- REVIEW ---------- */
+.review-block{border:1px solid var(--border);border-radius:14px;background:#fff;padding:16px 18px;margin-bottom:16px}
+.review-block h3{font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.review-line{display:flex;justify-content:space-between;font-size:.88rem;padding:5px 0}
+.review-line span:first-child{color:var(--muted)}
+.review-line span:last-child{font-weight:600;text-align:right}
+.edit-link{font-size:.72rem;font-weight:700;color:var(--purple);background:none;border:none;text-decoration:underline;margin-left:8px}
+
+/* ---------- CONFIRMATION ---------- */
+.confirm-wrap{text-align:center;padding:20px 0 10px}
+.confirm-icon{width:68px;height:68px;border-radius:50%;background:var(--lime-pale);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.confirm-icon svg{width:34px;height:34px;stroke:var(--lime-dk)}
+.confirm-wrap h1{font-size:1.4rem;margin-bottom:8px}
+.confirm-wrap p{color:var(--muted);font-size:.9rem;margin-bottom:4px}
+.ref-pill{display:inline-block;background:var(--pale);color:var(--deep);font-weight:800;font-family:var(--heading);letter-spacing:.03em;padding:8px 18px;border-radius:100px;margin:16px 0}
+.confirm-actions{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:22px auto 0}
+
+/* ---------- BUTTONS ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:100px;font-weight:700;font-size:.9rem;padding:14px 22px;border:none;text-decoration:none;transition:transform .15s,opacity .15s,background .2s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--lime);color:var(--ink)}
+.btn-primary:hover{background:var(--lime-dk);color:#fff}
+.btn-primary:disabled{opacity:.4;pointer-events:none}
+.btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--purple)}
+.btn-purple{background:var(--purple);color:#fff}
+.btn-purple:hover{background:var(--deep)}
+.btn-block{width:100%}
+
+/* ---------- STICKY BOTTOM BAR ---------- */
+#bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:250;background:#fff;border-top:1px solid var(--border);padding:12px 20px calc(12px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bb-price{display:flex;flex-direction:column;line-height:1.2}
+.bb-price .amt{font-family:var(--heading);font-weight:800;font-size:1.25rem}
+.bb-price .lbl{font-size:.68rem;color:var(--muted);font-weight:600}
+.bb-actions{display:flex;gap:8px}
+#bottom-bar .btn{padding:13px 20px;font-size:.85rem}
+#bottom-bar.hide-price .bb-price{visibility:hidden}
+
+/* ---------- DESKTOP ---------- */
+@media(min-width:860px){
+  :root{--header-h:76px}
+  #site-header .inner{padding:0 40px}
+  .brand svg{width:32px;height:32px}
+  .brand-word{font-size:1.4rem}
+  .header-phone{font-size:.9rem;padding:10px 18px}
+  .promo-strip{font-size:.88rem;padding:12px 16px}
+  main{padding:44px 0 40px}
+  .page-head{max-width:1180px;padding:0 40px;text-align:center;margin-bottom:36px}
+  .page-head h1{font-size:2.1rem}
+  .page-head p{font-size:1rem}
+  .progress{max-width:760px;padding:18px 20px}
+  .flow{max-width:1180px;padding:0 40px;display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:start}
+  .step{grid-column:1}
+  .step[data-step="1"]{grid-column:1/-1}
+  #desktop-summary{grid-column:2;grid-row:1/4;position:sticky;top:calc(var(--header-h) + 96px);display:none}
+  #desktop-summary.show{display:block}
+  .svc-grid{grid-template-columns:repeat(3,1fr)}
+  .svc-card{padding:22px 20px}
+  .svc-card h3{font-size:1rem}
+  #bottom-bar{display:none !important}
+  body{padding-bottom:40px}
+  .freq-grid{grid-template-columns:repeat(4,1fr)}
+  .confirm-actions{flex-direction:row}
+}
+</style>
+</head>
+<body>
+
+<header id="site-header">
+  <div class="inner">
+    <a href="/" class="brand" aria-label="LIVO Property Services home">
+      <svg viewBox="0 0 48 46" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="#8E3AAC" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"/></svg>
+      <span class="brand-word">LIV<em>O</em></span>
+    </a>
+    <a href="tel:+18888025486" class="header-phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>888&nbsp;802&nbsp;LIVO</span>
+    </a>
+  </div>
+</header>
+
+<div class="promo-strip">🎉 First time with LIVO? Get <strong>30% off</strong> your first service — automatically applied at checkout</div>
+
+<div class="progress-wrap">
+  <div class="progress" id="progress">
+    <div class="pstep active" data-pstep="1"><div class="pdot">1</div>Service</div>
+    <div class="pstep" data-pstep="2"><div class="pdot">2</div>Options</div>
+    <div class="pstep" data-pstep="3"><div class="pdot">3</div>Details</div>
+    <div class="pstep" data-pstep="4"><div class="pdot">4</div>Confirm</div>
+  </div>
+</div>
+
+<main>
+  <div class="page-head" id="page-head">
+    <h1>Book your service</h1>
+    <p>Choose a service, pick one-time or recurring, and we'll take it from there.</p>
+  </div>
+
+  <div class="flow">
+
+    <!-- STEP 1: SERVICE -->
+    <section class="step active" data-step="1">
+      <div class="svc-grid" id="svc-grid"></div>
+    </section>
+
+    <!-- STEP 2: OPTIONS -->
+    <section class="step" data-step="2">
+      <button class="back-link" data-back="1">← Back to services</button>
+      <div class="sel-head" id="sel-head"></div>
+
+      <span class="section-label">How often?</span>
+      <div class="freq-grid" id="freq-grid"></div>
+
+      <span class="section-label">Choose your size / scope</span>
+      <div class="tier-grid" id="tier-grid"></div>
+
+      <div class="promo-box">
+        <div class="promo-row">
+          <input type="checkbox" id="first-time-2">
+          <label for="first-time-2">This is my <span class="ptag">first time</span> booking with LIVO — apply my 30% new-customer discount</label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="to-step-3" style="display:none">Continue to details →</button>
+    </section>
+
+    <!-- STEP 3: DETAILS -->
+    <section class="step" data-step="3">
+      <button class="back-link" data-back="2">← Back to options</button>
+      <span class="section-label">Contact info</span>
+      <div class="form-grid">
+        <div class="field"><label for="f-name">Full name</label><input id="f-name" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="f-phone">Phone number</label><input id="f-phone" type="tel" autocomplete="tel" required></div>
+        <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" required></div>
+      </div>
+
+      <span class="section-label">Service address</span>
+      <div class="form-grid">
+        <div class="field full"><label for="f-addr">Street address</label><input id="f-addr" type="text" autocomplete="address-line1" required></div>
+        <div class="field"><label for="f-city">City</label>
+          <select id="f-city">
+            <option>Port Coquitlam</option><option>Coquitlam</option><option>Port Moody</option>
+            <option>Vancouver</option><option>Burnaby</option><option>New Westminster</option>
+            <option>Surrey</option><option>North Vancouver</option><option>Other Greater Vancouver</option>
+          </select>
+        </div>
+        <div class="field"><label for="f-postal">Postal code</label><input id="f-postal" type="text" autocomplete="postal-code"></div>
+      </div>
+
+      <span class="section-label">Preferred date &amp; time</span>
+      <div class="form-grid">
+        <div class="field full"><label for="f-date">Preferred date</label><input id="f-date" type="date"></div>
+      </div>
+      <div class="field full">
+        <label>Preferred time window</label>
+        <div class="time-grid" id="time-grid">
+          <label class="time-opt"><input type="radio" name="time" value="Morning"> Morning</label>
+          <label class="time-opt"><input type="radio" name="time" value="Afternoon"> Afternoon</label>
+          <label class="time-opt"><input type="radio" name="time" value="Evening"> Evening</label>
+        </div>
+      </div>
+
+      <div class="field full"><label for="f-notes">Anything we should know? (optional)</label><textarea id="f-notes" placeholder="Gate code, parking, pets, specific areas of focus…"></textarea></div>
+
+      <button class="btn btn-primary btn-block" id="to-step-4">Review my request →</button>
+    </section>
+
+    <!-- STEP 4: REVIEW -->
+    <section class="step" data-step="4">
+      <button class="back-link" data-back="3">← Back to details</button>
+
+      <div class="review-block">
+        <h3>Service <button class="edit-link" data-back="1">Change</button></h3>
+        <div class="review-line"><span>Service</span><span id="rv-service">—</span></div>
+        <div class="review-line"><span>Frequency</span><span id="rv-freq">—</span></div>
+        <div class="review-line"><span>Size / scope</span><span id="rv-tier">—</span></div>
+      </div>
+
+      <div class="review-block">
+        <h3>Contact &amp; schedule <button class="edit-link" data-back="3">Change</button></h3>
+        <div class="review-line"><span>Name</span><span id="rv-name">—</span></div>
+        <div class="review-line"><span>Phone</span><span id="rv-phone">—</span></div>
+        <div class="review-line"><span>Address</span><span id="rv-addr">—</span></div>
+        <div class="review-line"><span>Date / time</span><span id="rv-date">—</span></div>
+      </div>
+
+      <div class="summary-card" id="review-summary"></div>
+
+      <button class="btn btn-primary btn-block" id="submit-btn">Confirm &amp; send request</button>
+      <p style="text-align:center;font-size:.72rem;color:var(--muted);margin-top:10px">No payment now — we confirm your appointment first, then you pay after the job is done.</p>
+    </section>
+
+    <!-- STEP 5: CONFIRMATION -->
+    <section class="step" data-step="5">
+      <div class="confirm-wrap">
+        <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h1>Request sent!</h1>
+        <p>Thanks — we've got your request. A LIVO team member will call or text you within 1 business day to confirm your appointment.</p>
+        <div class="ref-pill" id="ref-number">LIVO-000000</div>
+        <div class="confirm-actions">
+          <a href="tel:+18888025486" class="btn btn-purple">Call 888 802 LIVO now</a>
+          <a href="#" id="text-us-link" class="btn btn-ghost">Text us instead</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- DESKTOP STICKY SUMMARY -->
+<aside id="desktop-summary"></aside>
+
+<!-- MOBILE STICKY BOTTOM BAR -->
+<div id="bottom-bar">
+  <div class="bb-price">
+    <span class="amt" id="bb-amt">$0</span>
+    <span class="lbl" id="bb-lbl">Select a service</span>
+  </div>
+  <div class="bb-actions" id="bb-actions"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- DATA ---------------- */
+// Recurring discount rates — placeholders, easy to tune.
+const FREQUENCIES = [
+  {id:'onetime',  name:'One-Time',  sub:'Single visit', discount:0},
+  {id:'weekly',   name:'Weekly',    sub:'Every week',   discount:0.15, save:'Save 15%'},
+  {id:'biweekly', name:'Bi-Weekly', sub:'Every 2 weeks',discount:0.10, save:'Save 10%'},
+  {id:'monthly',  name:'Monthly',   sub:'Every month',  discount:0.05, save:'Save 5%'},
+];
+const FIRST_TIME_DISCOUNT = 0.30;
+
+const ICONS = {
+  power: '<path d="M7 21h10M12 21V9M8 9V5a4 4 0 0 1 8 0v4M5 9h14l-1.2 6.5a3 3 0 0 1-3 2.5H9.2a3 3 0 0 1-3-2.5L5 9z"/>',
+  carpet:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 11h18M8 6v12M13 6v12"/>',
+  interior:'<path d="M12 3l1.5 3.5L17 8l-3.5 1.5L12 13l-1.5-3.5L7 8l3.5-1.5L12 3z"/><path d="M5 15l.8 1.9L8 18l-2.2.9L5 21l-.8-2.1L2 18l2.2-1.1L5 15z"/>',
+  junk:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6"/>',
+  airbnb:'<path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  commercial:'<path d="M4 21V7l8-4 8 4v14"/><path d="M4 21h16M9 21v-4h6v4M9 10h1M14 10h1M9 14h1M14 14h1"/>',
+};
+
+const SERVICES = [
+  {
+    id:'power', name:'Power Washing & Windows', short:'Driveways, siding, gutters, windows.',
+    color:'linear-gradient(135deg,#1a4060,#2d7ea8)',
+    tiers:[
+      {name:'Driveway', sub:'Up to 500 sq ft', price:149},
+      {name:'House Exterior', sub:'Full siding wash', price:249, popular:true},
+      {name:'Full Package', sub:'Driveway + siding + windows', price:379},
+    ]
+  },
+  {
+    id:'carpet', name:'Carpet & Upholstery', short:'Hot-water extraction, sofas, mattresses.',
+    color:'linear-gradient(135deg,#3a1060,#8E3AAC)',
+    tiers:[
+      {name:'1–2 Rooms', sub:'Up to 400 sq ft', price:99},
+      {name:'3–5 Rooms', sub:'Up to 1,000 sq ft', price:179, popular:true},
+      {name:'Whole Home', sub:'All rooms + stairs', price:269},
+    ]
+  },
+  {
+    id:'interior', name:'Interior Cleaning', short:'Kitchen, bathrooms, floors, appliances.',
+    color:'linear-gradient(135deg,#2d1060,#5F2491)',
+    tiers:[
+      {name:'Studio / 1 Bed', sub:'Up to 700 sq ft', price:149},
+      {name:'2–3 Bedroom', sub:'700–1,800 sq ft', price:249, popular:true},
+      {name:'4+ Bedroom', sub:'1,800+ sq ft', price:349},
+    ]
+  },
+  {
+    id:'junk', name:'Junk Removal', short:'Furniture, appliances, renovation debris.',
+    color:'linear-gradient(135deg,#241010,#4a2020)',
+    tiers:[
+      {name:'Small Load', sub:'Up to 1/4 truck', price:99},
+      {name:'Half Truck', sub:'1/2 truck load', price:199, popular:true},
+      {name:'Full Truck', sub:'Full truck load', price:349},
+    ]
+  },
+  {
+    id:'airbnb', name:'Airbnb Turnover', short:'Guest-ready resets between stays.',
+    color:'linear-gradient(135deg,#5F2491,#a0ac00)',
+    tiers:[
+      {name:'Studio', sub:'Up to 1 bed', price:89},
+      {name:'2–3 Bedroom', sub:'Standard unit', price:149, popular:true},
+      {name:'Large / Luxury', sub:'4+ bed or luxury', price:229},
+    ]
+  },
+  {
+    id:'commercial', name:'Commercial Cleanup', short:'Offices, strata, post-construction.',
+    color:'linear-gradient(135deg,#1a0a2e,#3a1060)',
+    tiers:[
+      {name:'One-Time Clean', sub:'Post-construction or deep clean', price:null},
+      {name:'Monthly Contract', sub:'Recurring facility maintenance', price:null, popular:true},
+      {name:'Strata / Multi-Unit', sub:'Common areas & corridors', price:null},
+    ]
+  },
+];
+
+/* ---------------- STATE ---------------- */
+const state = {
+  step:1,
+  serviceId:null,
+  freqId:'onetime',
+  tierIdx:null,
+  firstTime:false,
+};
+
+const $ = (sel,ctx)=> (ctx||document).querySelector(sel);
+const $$ = (sel,ctx)=> Array.from((ctx||document).querySelectorAll(sel));
+
+function currentService(){ return SERVICES.find(s=>s.id===state.serviceId) || null; }
+function currentFreq(){ return FREQUENCIES.find(f=>f.id===state.freqId); }
+function currentTier(){ const s=currentService(); return s && state.tierIdx!=null ? s.tiers[state.tierIdx] : null; }
+
+function money(n){ return n==null ? 'Custom Quote' : '$' + Math.round(n); }
+
+/* ---------------- PRICE CALC ---------------- */
+function calcPrice(){
+  const tier = currentTier();
+  if(!tier || tier.price==null) return {base:null, firstVisit:null, ongoing:null, freqPct:0, firstPct:0};
+  const freq = currentFreq();
+  const freqPct = freq.discount;
+  const afterFreq = tier.price * (1 - freqPct);
+  const firstPct = state.firstTime ? FIRST_TIME_DISCOUNT : 0;
+  const firstVisit = afterFreq * (1 - firstPct);
+  return {base:tier.price, firstVisit, ongoing:afterFreq, freqPct, firstPct, isRecurring: freq.id!=='onetime'};
+}
+
+/* ---------------- RENDER: SERVICE GRID ---------------- */
+function renderServiceGrid(){
+  const grid = $('#svc-grid');
+  grid.innerHTML = SERVICES.map(s=>`
+    <button class="svc-card" data-svc="${s.id}">
+      <div class="svc-icon" style="background:${s.color}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[s.id]}</svg></div>
+      <h3>${s.name}</h3>
+      <span class="from">${s.tiers[0].price==null ? 'Custom Quote' : 'From <b>'+money(Math.min(...s.tiers.map(t=>t.price??Infinity)))+'</b>'}</span>
+    </button>`).join('');
+  $$('.svc-card', grid).forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.serviceId = btn.dataset.svc;
+      state.tierIdx = null;
+      goToStep(2);
+    });
+  });
+}
+
+/* ---------------- RENDER: STEP 2 (options) ---------------- */
+function renderStep2(){
+  const s = currentService();
+  if(!s) return;
+  const sh = $('#sel-head');
+  sh.innerHTML = `
+    <div class="svc-icon" style="background:${s.color}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[s.id]}</svg></div>
+    <div><h2>${s.name}</h2><span>${s.short}</span></div>`;
+
+  const fg = $('#freq-grid');
+  fg.innerHTML = FREQUENCIES.map(f=>`
+    <label class="freq-opt ${f.id===state.freqId?'sel':''}" data-freq="${f.id}">
+      ${f.save?`<span class="fsave">${f.save}</span>`:''}
+      <input type="radio" name="freq" value="${f.id}" ${f.id===state.freqId?'checked':''}>
+      <span class="fname">${f.name}</span>
+      <span class="fsub">${f.sub}</span>
+    </label>`).join('');
+  $$('.freq-opt', fg).forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.freqId = el.dataset.freq;
+      $$('.freq-opt', fg).forEach(o=>o.classList.toggle('sel', o===el));
+      updateAll();
+    });
+  });
+
+  renderTiers();
+
+  $('#first-time-2').checked = state.firstTime;
+  $('#first-time-2').onchange = (e)=>{ state.firstTime = e.target.checked; updateAll(); };
+
+  updateAll();
+}
+
+function renderTiers(){
+  const s = currentService();
+  const tg = $('#tier-grid');
+  tg.innerHTML = s.tiers.map((t,i)=>`
+    <label class="tier-opt ${i===state.tierIdx?'sel':''}" data-idx="${i}">
+      <input type="radio" name="tier" value="${i}" ${i===state.tierIdx?'checked':''}>
+      <div class="tier-left">
+        <span class="tier-name">${t.name}</span>
+        <span class="tier-sub">${t.sub}</span>
+        ${t.popular?'<span class="tier-badge">Most popular</span>':''}
+      </div>
+      <span class="tier-price">${money(t.price)}${t.price!=null?'<small>per visit</small>':''}</span>
+    </label>`).join('');
+  $$('.tier-opt', tg).forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.tierIdx = Number(el.dataset.idx);
+      $$('.tier-opt', tg).forEach(o=>o.classList.toggle('sel', o===el));
+      updateAll();
+    });
+  });
+}
+
+/* ---------------- SUMMARY (shared: mobile bar + desktop card + review) ---------------- */
+function summaryHTML(compact){
+  const s = currentService();
+  if(!s) return '';
+  const tier = currentTier();
+  const freq = currentFreq();
+  const p = calcPrice();
+
+  if(!tier) return `<h3>Your order</h3><p style="font-size:.85rem;color:var(--muted)">Select a size to see pricing.</p>`;
+  if(tier.price==null){
+    return `<h3>Your order</h3>
+      <div class="srow"><span>${s.name}</span><span>${tier.name}</span></div>
+      <div class="srow total"><span>Estimate</span><b>Custom Quote</b></div>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:6px">We'll follow up with a custom price for this scope.</p>`;
+  }
+
+  let rows = `<div class="srow"><span>${s.name} · ${tier.name}</span><span>${money(tier.price)}</span></div>`;
+  if(p.freqPct>0){
+    rows += `<div class="srow discount"><span>${freq.name} discount</span><span>−${Math.round(p.freqPct*100)}%</span></div>`;
+  }
+  if(p.firstPct>0){
+    rows += `<div class="srow discount"><span>First-time customer discount</span><span>−${Math.round(p.firstPct*100)}%</span></div>`;
+  }
+  rows += `<div class="srow total"><span>Due first visit</span><b>${money(p.firstVisit)}</b></div>`;
+  if(p.isRecurring){
+    rows += `<div class="srow"><small>Then ${money(p.ongoing)} every ${freq.sub.toLowerCase()} after — cancel anytime</small></div>`;
+  }
+  return `<h3>Your order</h3>${rows}`;
+}
+
+function updateDesktopSummary(){
+  const ds = $('#desktop-summary');
+  if(state.step>=2 && state.step<=4 && currentService()){
+    ds.classList.add('show');
+    ds.innerHTML = `<div class="summary-card">${summaryHTML()}</div>`;
+  } else {
+    ds.classList.remove('show');
+  }
+}
+
+function updateBottomBar(){
+  const bar = $('#bottom-bar');
+  const amt = $('#bb-amt'), lbl = $('#bb-lbl'), actions = $('#bb-actions');
+  const p = calcPrice();
+  const tier = currentTier();
+
+  if(state.step===1){
+    amt.textContent=''; lbl.textContent='Select a service to get started';
+    actions.innerHTML = '';
+    bar.classList.add('hide-price');
+    return;
+  }
+  bar.classList.remove('hide-price');
+
+  if(state.step===2){
+    if(tier && tier.price!=null){ amt.textContent = money(p.firstVisit); lbl.textContent = p.isRecurring ? 'First visit · then '+money(p.ongoing)+'/visit' : 'Total due after job'; }
+    else if(tier){ amt.textContent='Custom'; lbl.textContent='We\'ll quote this scope'; }
+    else { amt.textContent='—'; lbl.textContent='Choose a size'; }
+    actions.innerHTML = `<button class="btn btn-primary" id="bar-next-2" ${tier?'':'disabled'}>Continue →</button>`;
+    const b = $('#bar-next-2'); if(b) b.onclick = ()=>goToStep(3);
+  } else if(state.step===3){
+    amt.textContent = tier && tier.price!=null ? money(p.firstVisit) : 'Custom';
+    lbl.textContent = 'Due first visit';
+    actions.innerHTML = `<button class="btn btn-primary" id="bar-next-3">Review →</button>`;
+    $('#bar-next-3').onclick = ()=> attemptStep4();
+  } else if(state.step===4){
+    amt.textContent = tier && tier.price!=null ? money(p.firstVisit) : 'Custom';
+    lbl.textContent = 'Due first visit';
+    actions.innerHTML = `<button class="btn btn-primary" id="bar-submit">Confirm request</button>`;
+    $('#bar-submit').onclick = submitRequest;
+  } else {
+    bar.classList.add('hide-price');
+    actions.innerHTML = '';
+  }
+}
+
+function updateStep2Continue(){
+  const btn = $('#to-step-3');
+  const tier = currentTier();
+  btn.style.display = tier ? 'flex' : 'none';
+}
+
+function updateAll(){
+  updateStep2Continue();
+  updateDesktopSummary();
+  updateBottomBar();
+}
+
+/* ---------------- STEP NAV ---------------- */
+function goToStep(n){
+  state.step = n;
+  $$('.step').forEach(s=> s.classList.toggle('active', Number(s.dataset.step)===n));
+  $$('.pstep').forEach(p=>{
+    const i = Number(p.dataset.pstep);
+    p.classList.toggle('active', i===n);
+    p.classList.toggle('done', i<n);
+  });
+  const heads = {
+    1:['Book your service','Choose a service, pick one-time or recurring, and we\'ll take it from there.'],
+    2:['Choose your options','Pick how often you need us and the right size for your space.'],
+    3:['Your details','Tell us where and when — we\'ll confirm within 1 business day.'],
+    4:['Review your request','Double-check everything before you send it over.'],
+  };
+  const ph = $('#page-head');
+  if(heads[n]){ ph.style.display=''; ph.querySelector('h1').textContent=heads[n][0]; ph.querySelector('p').textContent=heads[n][1]; }
+  else ph.style.display='none';
+
+  $('#progress').parentElement.style.display = n>=5 ? 'none' : '';
+
+  if(n===2) renderStep2();
+  if(n===4) renderReview();
+  window.scrollTo({top:0, behavior:'smooth'});
+  updateAll();
+}
+
+$$('[data-back]').forEach(btn=> btn.addEventListener('click', ()=> goToStep(Number(btn.dataset.back))));
+
+$('#to-step-3').addEventListener('click', ()=> goToStep(3));
+
+function validStep3(){
+  const req = ['f-name','f-phone','f-email','f-addr'];
+  return req.every(id => $('#'+id).value.trim().length>0);
+}
+function attemptStep4(){
+  if(!validStep3()){
+    ['f-name','f-phone','f-email','f-addr'].forEach(id=>{
+      const el = $('#'+id);
+      el.style.borderColor = el.value.trim() ? 'var(--border)' : '#c0392b';
+    });
+    return;
+  }
+  goToStep(4);
+}
+$('#to-step-4').addEventListener('click', attemptStep4);
+
+$$('.time-opt').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    $$('.time-opt').forEach(o=>o.classList.remove('sel'));
+    el.classList.add('sel');
+  });
+});
+
+function renderReview(){
+  const s = currentService(), tier = currentTier(), freq = currentFreq();
+  $('#rv-service').textContent = s.name;
+  $('#rv-freq').textContent = freq.name;
+  $('#rv-tier').textContent = tier.name;
+  $('#rv-name').textContent = $('#f-name').value;
+  $('#rv-phone').textContent = $('#f-phone').value;
+  const city = $('#f-city').value;
+  $('#rv-addr').textContent = ($('#f-addr').value || '—') + ', ' + city;
+  const timeEl = $$('.time-opt input').find(r=>r.checked);
+  $('#rv-date').textContent = ($('#f-date').value || 'Flexible') + (timeEl ? ' · '+timeEl.value : '');
+  $('#review-summary').innerHTML = summaryHTML();
+}
+
+function genRef(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r=''; for(let i=0;i<6;i++) r+=chars[Math.floor(Math.random()*chars.length)];
+  return 'LIVO-'+r;
+}
+
+function submitRequest(){
+  const ref = genRef();
+  $('#ref-number').textContent = ref;
+  const s = currentService();
+  const msg = `Hi LIVO, I just submitted booking request ${ref} for ${s?s.name:''}. `;
+  $('#text-us-link').href = 'sms:+18888025486?&body=' + encodeURIComponent(msg);
+  goToStep(5);
+}
+$('#submit-btn').addEventListener('click', submitRequest);
+
+/* ---------------- HEADER SHADOW ---------------- */
+window.addEventListener('scroll', ()=>{
+  $('#site-header').style.boxShadow = window.scrollY>4 ? '0 2px 10px rgba(0,0,0,.06)' : 'none';
+});
+
+/* ---------------- INIT ---------------- */
+renderServiceGrid();
+goToStep(1);
+
+})();
+</script>
+</body>
+</html>
