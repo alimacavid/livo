@@ -191,6 +191,25 @@ button{font-family:var(--body);cursor:pointer}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--purple)}
 .field textarea{resize:vertical;min-height:70px}
 .time-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* ---------- CALENDAR WIDGET ---------- */
+.cal-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:24px 20px;max-width:420px;margin:0 auto 28px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.cal-head .cal-month{font-family:var(--heading);font-weight:800;font-size:1.1rem}
+.cal-nav{background:var(--pale);border:none;border-radius:50%;width:36px;height:36px;font-size:1rem;color:var(--purple);transition:background .2s}
+.cal-nav:hover{background:var(--purple);color:#fff}
+.cal-nav:disabled{opacity:.3;pointer-events:none}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
+.cal-dow span{text-align:center;font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day{aspect-ratio:1;border:none;background:none;border-radius:50%;font-size:.88rem;font-weight:600;color:var(--ink);cursor:pointer;transition:background .2s,color .2s;display:flex;align-items:center;justify-content:center}
+.cal-day:hover:not(:disabled){background:var(--pale);color:var(--purple)}
+.cal-day:disabled{color:var(--border);cursor:default}
+.cal-day.empty{visibility:hidden}
+.cal-day.sel{background:var(--purple);color:#fff}
+.cal-day.today:not(.sel)::after{content:'';position:absolute}
+.sched-summary{text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:20px}
+.sched-summary b{color:var(--ink)}
 .time-opt{border:1.5px solid var(--border);border-radius:9px;padding:9px 4px;text-align:center;font-size:.76rem;font-weight:700;background:#fff}
 .time-opt input{position:absolute;opacity:0}
 .time-opt.sel{border-color:var(--purple);background:var(--pale);color:var(--deep)}
@@ -369,14 +388,19 @@ const SERVICES = [
 ];
 
 /* ---------------- STATE ---------------- */
+const _today = new Date();
 const state = {
-  view:'browse', // browse | configure | details | review | confirm
+  view:'browse', // browse | configure | contact | schedule | location | review | confirm
   configuringId:null,
   configFreq:'onetime',
   configTierIdx:null,
   editingCartIdx:null,
   cart:[], // {serviceId, tierIdx, freqId}
   firstTime:false,
+  contact:{name:'', phone:'', email:''},
+  cal:{year:_today.getFullYear(), month:_today.getMonth()},
+  schedule:{date:null, time:null},
+  location:{addr:'', city:'Port Coquitlam', postal:'', notes:''},
 };
 
 const $ = (sel,ctx)=> (ctx||document).querySelector(sel);
@@ -411,7 +435,9 @@ function renderMain(){
   const el = $('#main-col');
   if(state.view==='browse') el.innerHTML = browseHTML();
   else if(state.view==='configure') el.innerHTML = configureHTML();
-  else if(state.view==='details') el.innerHTML = detailsHTML();
+  else if(state.view==='contact') el.innerHTML = contactHTML();
+  else if(state.view==='schedule') el.innerHTML = scheduleHTML();
+  else if(state.view==='location') el.innerHTML = locationHTML();
   else if(state.view==='review') el.innerHTML = reviewHTML();
   else if(state.view==='confirm') el.innerHTML = confirmHTML();
   wireMain();
@@ -469,69 +495,105 @@ function configureHTML(){
   `;
 }
 
-function detailsHTML(){
+function contactHTML(){
   return `
     <button class="back-link" data-action="open-drawer">← Edit your order (${state.cart.length})</button>
     <span class="section-label">Contact info</span>
     <div class="form-grid">
-      <div class="field"><label for="f-name">Full name</label><input id="f-name" type="text" autocomplete="name" required></div>
-      <div class="field"><label for="f-phone">Phone number</label><input id="f-phone" type="tel" autocomplete="tel" required></div>
-      <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="f-name">Full name</label><input id="f-name" type="text" autocomplete="name" value="${state.contact.name}" required></div>
+      <div class="field"><label for="f-phone">Phone number</label><input id="f-phone" type="tel" autocomplete="tel" value="${state.contact.phone}" required></div>
+      <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" value="${state.contact.email}" required></div>
+    </div>
+    <button class="btn btn-primary btn-block" id="to-schedule">Next →</button>
+  `;
+}
+
+function scheduleHTML(){
+  const cal = state.cal;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstOfMonth = new Date(cal.year, cal.month, 1);
+  const startWeekday = firstOfMonth.getDay();
+  const daysInMonth = new Date(cal.year, cal.month+1, 0).getDate();
+  const monthName = firstOfMonth.toLocaleString('default', {month:'long', year:'numeric'});
+  const isPastMonth = (cal.year < today.getFullYear()) || (cal.year===today.getFullYear() && cal.month < today.getMonth());
+
+  let cells = '';
+  for(let i=0;i<startWeekday;i++) cells += `<button class="cal-day empty" disabled></button>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(cal.year, cal.month, d);
+    const iso = dateObj.toISOString().slice(0,10);
+    const isPast = dateObj < today;
+    const isToday = dateObj.getTime()===today.getTime();
+    const isSel = state.schedule.date === iso;
+    cells += `<button class="cal-day ${isSel?'sel':''} ${isToday?'today':''}" data-date="${iso}" ${isPast?'disabled':''}>${d}</button>`;
+  }
+
+  return `
+    <button class="back-link" data-action="back-contact">← Back</button>
+    <div class="cal-card">
+      <div class="cal-head">
+        <button class="cal-nav" id="cal-prev" ${isPastMonth?'disabled':''}>←</button>
+        <span class="cal-month">${monthName}</span>
+        <button class="cal-nav" id="cal-next">→</button>
+      </div>
+      <div class="cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+      <div class="cal-grid">${cells}</div>
     </div>
 
+    <span class="section-label">Preferred time window</span>
+    <div class="time-grid" id="time-grid">
+      <label class="time-opt ${state.schedule.time==='Morning'?'sel':''}" data-time="Morning">Morning</label>
+      <label class="time-opt ${state.schedule.time==='Afternoon'?'sel':''}" data-time="Afternoon">Afternoon</label>
+      <label class="time-opt ${state.schedule.time==='Evening'?'sel':''}" data-time="Evening">Evening</label>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="to-location" ${!state.schedule.date?'disabled':''}>Next →</button>
+  `;
+}
+
+function locationHTML(){
+  return `
+    <button class="back-link" data-action="back-schedule">← Back</button>
     <span class="section-label">Service address</span>
     <div class="form-grid">
-      <div class="field full"><label for="f-addr">Street address</label><input id="f-addr" type="text" autocomplete="address-line1" required></div>
+      <div class="field full"><label for="f-addr">Street address</label><input id="f-addr" type="text" autocomplete="address-line1" value="${state.location.addr}" required></div>
       <div class="field"><label for="f-city">City</label>
         <select id="f-city">
-          <option>Port Coquitlam</option><option>Coquitlam</option><option>Port Moody</option>
-          <option>Vancouver</option><option>Burnaby</option><option>New Westminster</option>
-          <option>Surrey</option><option>North Vancouver</option><option>Other Greater Vancouver</option>
+          <option${state.location.city==='Port Coquitlam'?' selected':''}>Port Coquitlam</option><option${state.location.city==='Coquitlam'?' selected':''}>Coquitlam</option><option${state.location.city==='Port Moody'?' selected':''}>Port Moody</option>
+          <option${state.location.city==='Vancouver'?' selected':''}>Vancouver</option><option${state.location.city==='Burnaby'?' selected':''}>Burnaby</option><option${state.location.city==='New Westminster'?' selected':''}>New Westminster</option>
+          <option${state.location.city==='Surrey'?' selected':''}>Surrey</option><option${state.location.city==='North Vancouver'?' selected':''}>North Vancouver</option><option${state.location.city==='Other Greater Vancouver'?' selected':''}>Other Greater Vancouver</option>
         </select>
       </div>
-      <div class="field"><label for="f-postal">Postal code</label><input id="f-postal" type="text" autocomplete="postal-code"></div>
+      <div class="field"><label for="f-postal">Postal code</label><input id="f-postal" type="text" autocomplete="postal-code" placeholder="e.g. V3C 0C3" value="${state.location.postal}"></div>
     </div>
 
-    <span class="section-label">Preferred date &amp; time</span>
-    <div class="form-grid">
-      <div class="field full"><label for="f-date">Preferred date</label><input id="f-date" type="date"></div>
-    </div>
-    <div class="field full">
-      <label>Preferred time window</label>
-      <div class="time-grid" id="time-grid">
-        <label class="time-opt"><input type="radio" name="time" value="Morning"> Morning</label>
-        <label class="time-opt"><input type="radio" name="time" value="Afternoon"> Afternoon</label>
-        <label class="time-opt"><input type="radio" name="time" value="Evening"> Evening</label>
-      </div>
-    </div>
-
-    <div class="field full"><label for="f-notes">Anything we should know? (optional)</label><textarea id="f-notes" placeholder="Gate code, parking, pets, specific areas of focus…"></textarea></div>
+    <div class="field full"><label for="f-notes">Anything we should know? (optional)</label><textarea id="f-notes" placeholder="Gate code, parking, pets, specific areas of focus…">${state.location.notes}</textarea></div>
 
     <button class="btn btn-primary btn-block" id="to-review">Review my order →</button>
   `;
 }
 
 function reviewHTML(){
-  const city = $('#f-city') ? $('#f-city').value : '';
-  const timeEl = $$('.time-opt input').find(r=>r.checked);
+  const c = state.contact, l = state.location, s = state.schedule;
+  const dateLabel = s.date ? new Date(s.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'}) : 'Flexible';
   return `
-    <button class="back-link" data-action="back-details">← Back to details</button>
+    <button class="back-link" data-action="back-location">← Back</button>
 
     <div class="review-block">
       <h3>Your order <button class="edit-link" data-action="open-drawer">Edit</button></h3>
       ${state.cart.map(item=>{
-        const s = getSvc(item.serviceId), tier = s.tiers[item.tierIdx], freq = getFreq(item.freqId);
+        const svc = getSvc(item.serviceId), tier = svc.tiers[item.tierIdx], freq = getFreq(item.freqId);
         const p = itemPrice(item);
-        return `<div class="review-line"><span>${s.name} · ${tier.name} · ${freq.name}</span><span>${money(p.afterFreq)}</span></div>`;
+        return `<div class="review-line"><span>${svc.name} · ${tier.name} · ${freq.name}</span><span>${money(p.afterFreq)}</span></div>`;
       }).join('')}
     </div>
 
     <div class="review-block">
-      <h3>Contact &amp; schedule <button class="edit-link" data-action="back-details">Change</button></h3>
-      <div class="review-line"><span>Name</span><span>${$('#rv-name-cache') ? '' : ''}${window.__rvName||''}</span></div>
-      <div class="review-line"><span>Phone</span><span>${window.__rvPhone||''}</span></div>
-      <div class="review-line"><span>Address</span><span>${window.__rvAddr||''}, ${window.__rvCity||''}</span></div>
-      <div class="review-line"><span>Date / time</span><span>${window.__rvDate||'Flexible'}</span></div>
+      <h3>Contact &amp; schedule <button class="edit-link" data-action="back-location">Change</button></h3>
+      <div class="review-line"><span>Name</span><span>${c.name}</span></div>
+      <div class="review-line"><span>Phone</span><span>${c.phone}</span></div>
+      <div class="review-line"><span>Address</span><span>${l.addr}, ${l.city}</span></div>
+      <div class="review-line"><span>Date / time</span><span>${dateLabel}${s.time?' · '+s.time:''}</span></div>
     </div>
 
     <div class="review-block">
@@ -600,43 +662,93 @@ function wireMain(){
       window.scrollTo({top:0, behavior:'smooth'});
     });
   }
-  if(state.view==='details'){
+  if(state.view==='contact'){
     $$('[data-action="open-drawer"]').forEach(b=>b.addEventListener('click', openDrawer));
-    $$('.time-opt').forEach(el=>{
+    const toSchedule = $('#to-schedule');
+    if(toSchedule) toSchedule.addEventListener('click', attemptSchedule);
+  }
+  if(state.view==='schedule'){
+    $$('[data-action="back-contact"]').forEach(b=>b.addEventListener('click', ()=>{ state.view='contact'; renderAll(); }));
+    $$('.cal-day:not(.empty)').forEach(el=>{
       el.addEventListener('click', ()=>{
-        $$('.time-opt').forEach(o=>o.classList.remove('sel'));
-        el.classList.add('sel');
+        state.schedule.date = el.dataset.date;
+        renderMain();
       });
     });
+    const prevBtn = $('#cal-prev');
+    if(prevBtn) prevBtn.addEventListener('click', ()=>{
+      state.cal.month--; if(state.cal.month<0){ state.cal.month=11; state.cal.year--; }
+      renderMain();
+    });
+    const nextBtn = $('#cal-next');
+    if(nextBtn) nextBtn.addEventListener('click', ()=>{
+      state.cal.month++; if(state.cal.month>11){ state.cal.month=0; state.cal.year++; }
+      renderMain();
+    });
+    $$('.time-opt').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        state.schedule.time = el.dataset.time;
+        renderMain();
+      });
+    });
+    const toLocation = $('#to-location');
+    if(toLocation) toLocation.addEventListener('click', ()=>{
+      if(!state.schedule.date) return;
+      state.view = 'location';
+      renderAll();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  }
+  if(state.view==='location'){
+    $$('[data-action="back-schedule"]').forEach(b=>b.addEventListener('click', ()=>{ state.view='schedule'; renderAll(); }));
     const toReview = $('#to-review');
     if(toReview) toReview.addEventListener('click', attemptReview);
   }
   if(state.view==='review'){
-    $$('[data-action="back-details"]').forEach(b=>b.addEventListener('click', ()=>{ state.view='details'; renderAll(); }));
+    $$('[data-action="back-location"]').forEach(b=>b.addEventListener('click', ()=>{ state.view='location'; renderAll(); }));
     $$('[data-action="open-drawer"]').forEach(b=>b.addEventListener('click', openDrawer));
     const submit = $('#submit-order');
     if(submit) submit.addEventListener('click', submitOrder);
   }
 }
 
-function validDetails(){
-  const req = ['f-name','f-phone','f-email','f-addr'];
-  return req.every(id => $('#'+id) && $('#'+id).value.trim().length>0);
+function saveContact(){
+  state.contact.name = $('#f-name') ? $('#f-name').value : state.contact.name;
+  state.contact.phone = $('#f-phone') ? $('#f-phone').value : state.contact.phone;
+  state.contact.email = $('#f-email') ? $('#f-email').value : state.contact.email;
 }
-function attemptReview(){
-  if(!validDetails()){
-    ['f-name','f-phone','f-email','f-addr'].forEach(id=>{
+function saveLocation(){
+  state.location.addr = $('#f-addr') ? $('#f-addr').value : state.location.addr;
+  state.location.city = $('#f-city') ? $('#f-city').value : state.location.city;
+  state.location.postal = $('#f-postal') ? $('#f-postal').value : state.location.postal;
+  state.location.notes = $('#f-notes') ? $('#f-notes').value : state.location.notes;
+}
+function validContact(){
+  return ['f-name','f-phone','f-email'].every(id => $('#'+id) && $('#'+id).value.trim().length>0);
+}
+function attemptSchedule(){
+  saveContact();
+  if(!validContact()){
+    ['f-name','f-phone','f-email'].forEach(id=>{
       const el = $('#'+id);
       if(el) el.style.borderColor = el.value.trim() ? 'var(--border)' : '#c0392b';
     });
     return;
   }
-  window.__rvName = $('#f-name').value;
-  window.__rvPhone = $('#f-phone').value;
-  window.__rvAddr = $('#f-addr').value;
-  window.__rvCity = $('#f-city').value;
-  const timeEl = $$('.time-opt input').find(r=>r.checked);
-  window.__rvDate = ($('#f-date').value || 'Flexible') + (timeEl ? ' · '+timeEl.value : '');
+  state.view = 'schedule';
+  renderAll();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function validDetails(){
+  return $('#f-addr') && $('#f-addr').value.trim().length>0;
+}
+function attemptReview(){
+  saveLocation();
+  if(!validDetails()){
+    const el = $('#f-addr');
+    if(el) el.style.borderColor = '#c0392b';
+    return;
+  }
   state.view = 'review';
   renderAll();
   window.scrollTo({top:0, behavior:'smooth'});
@@ -728,7 +840,7 @@ function renderCart(){
   const ftCb = $('#first-time-cb', box);
   if(ftCb) ftCb.addEventListener('change', (e)=>{ state.firstTime = e.target.checked; renderCart(); renderOrderPill(); updateMobileBar(); });
   const checkoutBtn = $('#cart-checkout', box);
-  if(checkoutBtn) checkoutBtn.addEventListener('click', ()=>{ closeDrawer(); state.view='details'; renderAll(); window.scrollTo({top:0,behavior:'smooth'}); });
+  if(checkoutBtn) checkoutBtn.addEventListener('click', ()=>{ closeDrawer(); state.view='contact'; renderAll(); window.scrollTo({top:0,behavior:'smooth'}); });
 }
 
 function renderOrderPill(){
@@ -755,7 +867,7 @@ function updateMobileBar(){
   const bar = $('#mobile-bar');
   const n = state.cart.length;
   if(!n || state.view==='confirm'){ bar.classList.remove('show'); return; }
-  if(state.view==='details' || state.view==='review'){ bar.classList.remove('show'); return; }
+  if(state.view==='contact' || state.view==='schedule' || state.view==='location' || state.view==='review'){ bar.classList.remove('show'); return; }
   bar.classList.add('show');
   $('#mb-amt').textContent = money(cartTotal());
   $('#mb-lbl').textContent = n + (n===1?' item':' items');
@@ -767,7 +879,9 @@ function renderPageHead(){
   const heads = {
     browse:['Book Online','Pick Your Service.','We\'ll Handle The Rest.','Tap a service to add it to your order — mix and match, then check out when you\'re ready.'],
     configure:['Choose Options','Pick How Often.','And The Right Size.','We\'ll show you the price before you add it to your order.'],
-    details:['Your Details','Tell Us Where.','And When.','We\'ll confirm within 1 business day.'],
+    contact:['Your Details','Who Should','We Contact?','Just the basics — we\'ll text or call to confirm.'],
+    schedule:['Pick a Time','When Works','Best For You?','Pick any day — we\'ll confirm the exact time.'],
+    location:['Where To?','Tell Us','The Address.','Type your postal code and we\'ll take it from there.'],
     review:['Almost Done','Review Your','Order.','Double-check everything before you send it over.'],
   };
   const ph = $('#page-head');
