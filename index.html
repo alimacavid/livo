@@ -1096,6 +1096,7 @@ footer::after{
   color:var(--ink);margin-bottom:10px;letter-spacing:-.02em;
 }
 .svc-cta-bar p{font-size:.95rem;color:rgba(0,0,0,.55);margin-bottom:36px}
+.svc-cta-btns{display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center}
 .svc-cta-bar a{
   background:var(--ink);color:#fff;
   font-family:var(--heading);font-weight:700;font-size:.95rem;
@@ -1103,6 +1104,9 @@ footer::after{
   text-decoration:none;display:inline-block;transition:all .25s;
 }
 .svc-cta-bar a:hover{background:#5F2491;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.svc-cta-bar a.svc-cta-secondary{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.svc-cta-bar a.svc-cta-secondary:hover{background:var(--ink);color:var(--lime);border-color:var(--ink)}
+@media(min-width:640px){.svc-cta-btns{flex-direction:row}}
 
 /* Responsive */
 @media(max-width:860px){
@@ -1462,7 +1466,7 @@ footer::after{
         </div>
       </div>
     </div>
-    <div class="svc-pricing">
+    <div class="svc-pricing" id="pricing-power">
       <div class="svc-pricing-header">
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
@@ -1472,7 +1476,7 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="location.href='book.html?service=power'">Book Power Washing & Window Cleaning →</a>
+      <div class="svc-cta-btns"><a href="javascript:void(0)" onclick="document.getElementById('pricing-power').scrollIntoView({behavior:'smooth'})" class="svc-cta-secondary">See Pricing</a><a href="javascript:void(0)" onclick="location.href='book.html?service=power'">Book Power Washing & Window Cleaning →</a></div>
     </div>
   </div>
 </div>
@@ -1518,7 +1522,7 @@ footer::after{
         </div>
       </div>
     </div>
-    <div class="svc-pricing">
+    <div class="svc-pricing" id="pricing-carpet">
       <div class="svc-pricing-header">
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
@@ -1528,7 +1532,7 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Carpet & Upholstery Cleaning →</a>
+      <div class="svc-cta-btns"><a href="javascript:void(0)" onclick="document.getElementById('pricing-carpet').scrollIntoView({behavior:'smooth'})" class="svc-cta-secondary">See Pricing</a><a href="javascript:void(0)" onclick="closePage();setTimeout(()=>document.getElementById('final-cta').scrollIntoView({behavior:'smooth'}),300)">Book Carpet & Upholstery Cleaning →</a></div>
     </div>
   </div>
 </div>
@@ -1574,7 +1578,7 @@ footer::after{
         </div>
       </div>
     </div>
-    <div class="svc-pricing">
+    <div class="svc-pricing" id="pricing-junk">
       <div class="svc-pricing-header">
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
@@ -1584,7 +1588,7 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="location.href='book.html?service=junk'">Book Junk Removal →</a>
+      <div class="svc-cta-btns"><a href="javascript:void(0)" onclick="document.getElementById('pricing-junk').scrollIntoView({behavior:'smooth'})" class="svc-cta-secondary">See Pricing</a><a href="javascript:void(0)" onclick="location.href='book.html?service=junk'">Book Junk Removal →</a></div>
     </div>
   </div>
 </div>
@@ -1630,7 +1634,7 @@ footer::after{
         </div>
       </div>
     </div>
-    <div class="svc-pricing">
+    <div class="svc-pricing" id="pricing-interior">
       <div class="svc-pricing-header">
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
@@ -1640,7 +1644,7 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="location.href='book.html?service=interior'">Book Interior Cleaning →</a>
+      <div class="svc-cta-btns"><a href="javascript:void(0)" onclick="document.getElementById('pricing-interior').scrollIntoView({behavior:'smooth'})" class="svc-cta-secondary">See Pricing</a><a href="javascript:void(0)" onclick="location.href='book.html?service=interior'">Book Interior Cleaning →</a></div>
     </div>
   </div>
 </div>
@@ -1686,7 +1690,7 @@ footer::after{
         </div>
       </div>
     </div>
-    <div class="svc-pricing">
+    <div class="svc-pricing" id="pricing-airbnb">
       <div class="svc-pricing-header">
         <h2>Simple, <em>Transparent</em> Pricing</h2>
         <p>No hidden fees. Pay after the job is done.</p>
@@ -1696,7 +1700,7 @@ footer::after{
     <div class="svc-cta-bar">
       <h3>Ready to book?</h3>
       <p>Free quote. Pay after the job. Same-day response.</p>
-      <a href="javascript:void(0)" onclick="location.href='book.html?service=airbnb'">Book Airbnb Turnover →</a>
+      <div class="svc-cta-btns"><a href="javascript:void(0)" onclick="document.getElementById('pricing-airbnb').scrollIntoView({behavior:'smooth'})" class="svc-cta-secondary">See Pricing</a><a href="javascript:void(0)" onclick="location.href='book.html?service=airbnb'">Book Airbnb Turnover →</a></div>
     </div>
   </div>
 </div>

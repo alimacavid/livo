@@ -395,6 +395,7 @@ const state = {
   configFreq:'onetime',
   configTierIdx:null,
   editingCartIdx:null,
+  cameFromServicePage:false,
   cart:[], // {serviceId, tierIdx, freqId}
   firstTime:false,
   contact:{name:'', phone:'', email:''},
@@ -462,8 +463,11 @@ function browseHTML(){
 
 function configureHTML(){
   const s = getSvc(state.configuringId);
+  const backBtn = state.cameFromServicePage
+    ? `<button class="back-link" data-action="back-site">← Back to ${s.name}</button>`
+    : `<button class="back-link" data-action="back-browse">← Back to services</button>`;
   return `
-    <button class="back-link" data-action="back-browse">← Back to services</button>
+    ${backBtn}
     <div class="cfg-head">
       <div class="cfg-head-fallback" style="background:${s.color}">${s.img?`<img src="${s.img}" alt="${s.name}" onerror="this.style.display='none'">`:''}</div>
       <div><h2>${s.name}</h2><span>${s.short}</span></div>
@@ -639,6 +643,7 @@ function wireMain(){
   }
   if(state.view==='configure'){
     $$('[data-action="back-browse"]').forEach(b=>b.addEventListener('click', ()=>{ state.editingCartIdx=null; state.view='browse'; renderAll(); }));
+    $$('[data-action="back-site"]').forEach(b=>b.addEventListener('click', ()=>{ window.location.href = 'index.html'; }));
     $$('.freq-opt').forEach(el=>{
       el.addEventListener('click', ()=>{
         state.configFreq = el.dataset.freq;
@@ -657,6 +662,7 @@ function wireMain(){
       const entry = {serviceId:state.configuringId, tierIdx:state.configTierIdx, freqId:state.configFreq};
       if(state.editingCartIdx!=null){ state.cart[state.editingCartIdx] = entry; state.editingCartIdx=null; }
       else { state.cart.push(entry); }
+      state.cameFromServicePage = false;
       state.view = 'browse';
       renderAll();
       window.scrollTo({top:0, behavior:'smooth'});
@@ -885,7 +891,10 @@ function renderPageHead(){
     review:['Almost Done','Review Your','Order.','Double-check everything before you send it over.'],
   };
   const ph = $('#page-head');
-  const h = heads[state.view] || heads.browse;
+  let h = heads[state.view] || heads.browse;
+  if(state.view==='browse' && state.cart.length>0){
+    h = ['Anything Else?','Add Another','Service.','Or open your order to review and check out.'];
+  }
   if(state.view==='confirm'){ ph.style.display='none'; return; }
   ph.style.display='';
   ph.querySelector('.eyebrow').textContent = h[0];
@@ -911,6 +920,17 @@ $('#drawer-close').addEventListener('click', closeDrawer);
 $('#drawer-backdrop').addEventListener('click', closeDrawer);
 
 /* ---------------- INIT ---------------- */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const svc = params.get('service');
+  if(svc && getSvc(svc)){
+    state.configuringId = svc;
+    state.configFreq = 'onetime';
+    state.configTierIdx = null;
+    state.view = 'configure';
+    state.cameFromServicePage = true;
+  }
+})();
 renderAll();
 
 })();
