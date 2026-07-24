@@ -480,16 +480,7 @@ function configureHTML(){
       <div><h2>${s.name}</h2><span>${s.short}</span></div>
     </div>
 
-    <span class="section-label">How often?</span>
-    <div class="freq-grid" id="freq-grid">${FREQUENCIES.map(f=>`
-      <label class="freq-opt ${f.id===state.configFreq?'sel':''}" data-freq="${f.id}">
-        ${f.save?`<span class="fsave">${f.save}</span>`:''}
-        <span class="fradio"></span>
-        <span class="fname">${f.name}</span>
-        <span class="fsub">${f.sub}</span>
-      </label>`).join('')}</div>
-
-    <span class="section-label">Choose your size / scope</span>
+    <span class="section-label">Pricing</span>
     <div class="pricing-wrap"><div class="svc-price-grid" id="tier-grid">${s.tiers.map((t,i)=>{
       const sel = i===state.configTierIdx;
       const cls = 'spc' + (t.popular?' feat':'') + (sel?' sel':'');
@@ -502,6 +493,15 @@ function configureHTML(){
         <div class="spc-cta">${sel?'Selected ✓':'Select'}</div>
       </button>`;
     }).join('')}</div></div>
+
+    <span class="section-label">How often?</span>
+    <div class="freq-grid" id="freq-grid">${FREQUENCIES.map(f=>`
+      <label class="freq-opt ${f.id===state.configFreq?'sel':''}" data-freq="${f.id}">
+        ${f.save?`<span class="fsave">${f.save}</span>`:''}
+        <span class="fradio"></span>
+        <span class="fname">${f.name}</span>
+        <span class="fsub">${f.sub}</span>
+      </label>`).join('')}</div>
 
     <button class="add-btn" id="add-to-cart" ${state.configTierIdx==null?'disabled':''}>${state.editingCartIdx!=null?'Update order →':'Add to order →'}</button>
   `;
@@ -893,7 +893,7 @@ function updateMobileBar(){
 function renderPageHead(){
   const heads = {
     browse:['Book Online','Pick Your Service.','We\'ll Handle The Rest.','Tap a service to add it to your order — mix and match, then check out when you\'re ready.'],
-    configure:['Choose Options','Pick How Often.','And The Right Size.','We\'ll show you the price before you add it to your order.'],
+    configure:['Pricing','Choose Your','Plan.','Pick a price, then how often.'],
     contact:['Your Details','Who Should','We Contact?','Just the basics — we\'ll text or call to confirm.'],
     schedule:['Pick a Time','When Works','Best For You?','Pick any day — we\'ll confirm the exact time.'],
     location:['Where To?','Tell Us','The Address.','Type your postal code and we\'ll take it from there.'],
