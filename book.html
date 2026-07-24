@@ -904,7 +904,7 @@ function renderPageHead(){
   if(state.view==='browse' && state.cart.length>0){
     h = ['Anything Else?','Add Another','Service.','Or open your order to review and check out.'];
   }
-  if(state.view==='confirm'){ ph.style.display='none'; return; }
+  if(state.view==='confirm' || state.view==='configure'){ ph.style.display='none'; return; }
   ph.style.display='';
   ph.querySelector('.eyebrow').textContent = h[0];
   ph.querySelector('h1').innerHTML = h[1] + '<br><em>' + h[2] + '</em>';
