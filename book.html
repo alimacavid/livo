@@ -291,7 +291,7 @@ button{font-family:var(--body);cursor:pointer}
   </ul>
   <div class="nav-right">
     <a href="tel:+18888025486" class="nav-ph">888 802 LIVO</a>
-    <a href="#" class="nav-cta" onclick="return false;">Book Now</a>
+    <a href="#" class="nav-cta" id="nav-book-now">Book Now</a>
     <button class="hbg" onclick="document.getElementById('mm').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -935,6 +935,14 @@ window.addEventListener('scroll', ()=>{
 
 /* ---------------- DRAWER CONTROLS (static, wire once) ---------------- */
 $('#drawer-close').addEventListener('click', closeDrawer);
+$('#nav-book-now').addEventListener('click', (e)=>{
+  e.preventDefault();
+  state.editingCartIdx = null;
+  state.cameFromServicePage = false;
+  state.view = 'browse';
+  renderAll();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
 $('#drawer-backdrop').addEventListener('click', closeDrawer);
 
 /* ---------------- INIT ---------------- */
