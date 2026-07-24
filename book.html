@@ -62,6 +62,9 @@ button{font-family:var(--body);cursor:pointer}
 .page-head .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--lime-dk);margin-bottom:8px}
 .page-head .eyebrow::before,.page-head .eyebrow::after{content:'';height:1px;width:28px;background:var(--lime-dk);opacity:.5}
 .page-head p{color:var(--muted);font-size:.92rem}
+.page-head.minimal{padding:24px 20px 0}
+.page-head.minimal .eyebrow,.page-head.minimal p{display:none}
+.page-head.minimal h1{font-size:clamp(1.4rem,3vw,1.8rem);margin-bottom:0}
 
 /* ---------- LAYOUT ---------- */
 .wrap{max-width:1400px;margin:0 auto;padding:16px 20px 40px}
@@ -904,8 +907,14 @@ function renderPageHead(){
   if(state.view==='browse' && state.cart.length>0){
     h = ['Anything Else?','Add Another','Service.','Or open your order to review and check out.'];
   }
-  if(state.view==='confirm' || state.view==='configure'){ ph.style.display='none'; return; }
+  if(state.view==='confirm'){ ph.style.display='none'; return; }
   ph.style.display='';
+  ph.classList.toggle('minimal', state.view==='configure');
+  if(state.view==='configure'){
+    const s = getSvc(state.configuringId);
+    ph.querySelector('h1').innerHTML = (s ? s.name : 'Your Service') + ' <em>Plan</em>';
+    return;
+  }
   ph.querySelector('.eyebrow').textContent = h[0];
   ph.querySelector('h1').innerHTML = h[1] + '<br><em>' + h[2] + '</em>';
   ph.querySelector('p').textContent = h[3];
