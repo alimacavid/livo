@@ -31,7 +31,7 @@
 /* Global heading resets */
 h1,h2,h3,h4{font-family:var(--heading)}
 html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 .container{max-width:1200px;margin:0 auto;padding:0 28px}
 .fade-in{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .fade-in.vis{opacity:1;transform:none}
@@ -1218,6 +1218,24 @@ footer::before{
   </div>
 </section>
 
+<script>
+(function(){
+  var sec=document.getElementById('heroScroll');if(!sec)return;
+  var p1=document.getElementById('hsP1'),p2=document.getElementById('hsP2'),t=false;
+  function upd(){
+    var span=sec.offsetHeight-window.innerHeight;
+    var prog=span>0?Math.min(1,Math.max(0,(-sec.getBoundingClientRect().top)/span)):0;
+    var two=prog>0.35;
+    sec.classList.toggle('s2',two);
+    p1.classList.toggle('on',!two);
+    p2.classList.toggle('on',two);
+  }
+  addEventListener('scroll',function(){if(!t){t=true;requestAnimationFrame(function(){upd();t=false;});}},{passive:true});
+  addEventListener('resize',upd);upd();
+})();
+</script>
+
+
 <!-- SERVICES -->
 <section id="services">
   <div class="container">
@@ -1974,21 +1992,5 @@ function baNext(){cur=(cur+1)%slides.length;loadSlide(cur)}
 
 <!-- ── DEMO TRIGGER (remove from real site) ── -->
 </body>
-<script>
-(function(){
-  var sec=document.getElementById('heroScroll');if(!sec)return;
-  var p1=document.getElementById('hsP1'),p2=document.getElementById('hsP2'),t=false;
-  function upd(){
-    var span=sec.offsetHeight-window.innerHeight;
-    var prog=span>0?Math.min(1,Math.max(0,(-sec.getBoundingClientRect().top)/span)):0;
-    var two=prog>0.35;
-    sec.classList.toggle('s2',two);
-    p1.classList.toggle('on',!two);
-    p2.classList.toggle('on',two);
-  }
-  addEventListener('scroll',function(){if(!t){t=true;requestAnimationFrame(function(){upd();t=false;});}},{passive:true});
-  addEventListener('resize',upd);upd();
-})();
-</script>
 </html>
 
