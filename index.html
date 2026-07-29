@@ -31,7 +31,7 @@
 /* Global heading resets */
 h1,h2,h3,h4{font-family:var(--heading)}
 html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased}
 .container{max-width:1200px;margin:0 auto;padding:0 28px}
 .fade-in{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .fade-in.vis{opacity:1;transform:none}
@@ -1967,7 +1967,14 @@ function baNext(){cur=(cur+1)%slides.length;loadSlide(cur)}
 <!--
   ═══════════════════════════════════════════════════
   LIVO WEBSITE ADDITIONS
-  Paste everything below just before <script>
+  Paste everything below just before 
+</body>
+  ═══════════════════════════════════════════════════
+-->
+
+<!-- ── DEMO TRIGGER (remove from real site) ── -->
+</body>
+<script>
 (function(){
   var sec=document.getElementById('heroScroll');if(!sec)return;
   var p1=document.getElementById('hsP1'),p2=document.getElementById('hsP2'),t=false;
@@ -1983,11 +1990,5 @@ function baNext(){cur=(cur+1)%slides.length;loadSlide(cur)}
   addEventListener('resize',upd);upd();
 })();
 </script>
-</body>
-  ═══════════════════════════════════════════════════
--->
-
-<!-- ── DEMO TRIGGER (remove from real site) ── -->
-</body>
 </html>
 
