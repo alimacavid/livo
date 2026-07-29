@@ -1219,19 +1219,37 @@ footer::before{
 </section>
 
 <script>
+window.__hsRan = 1;
 (function(){
-  var sec=document.getElementById('heroScroll');if(!sec)return;
-  var p1=document.getElementById('hsP1'),p2=document.getElementById('hsP2'),t=false;
-  function upd(){
-    var span=sec.offsetHeight-window.innerHeight;
-    var prog=span>0?Math.min(1,Math.max(0,(-sec.getBoundingClientRect().top)/span)):0;
-    var two=prog>0.35;
-    sec.classList.toggle('s2',two);
-    p1.classList.toggle('on',!two);
-    p2.classList.toggle('on',two);
+  function boot(){
+    window.__hsBoot = 1;
+    var sec = document.getElementById('heroScroll');
+    var p1  = document.getElementById('hsP1');
+    var p2  = document.getElementById('hsP2');
+    if(!sec || !p1 || !p2){ window.__hsErr = 'missing'; return; }
+    var ticking = false;
+    function upd(){
+      var span = sec.offsetHeight - window.innerHeight;
+      var prog = span > 0 ? Math.min(1, Math.max(0, (-sec.getBoundingClientRect().top) / span)) : 0;
+      var two  = prog > 0.35;
+      if(two){ sec.classList.add('s2'); p1.classList.remove('on'); p2.classList.add('on'); }
+      else   { sec.classList.remove('s2'); p2.classList.remove('on'); p1.classList.add('on'); }
+      window.__hsProg = prog;
+    }
+    function onScroll(){
+      if(ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function(){ upd(); ticking = false; });
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll);
+    document.addEventListener('scroll', onScroll, {passive:true});
+    window.__hsUpd = upd;
+    window.__hsOK = 1;
+    upd();
   }
-  addEventListener('scroll',function(){if(!t){t=true;requestAnimationFrame(function(){upd();t=false;});}},{passive:true});
-  addEventListener('resize',upd);upd();
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', boot); }
+  else { boot(); }
 })();
 </script>
 
