@@ -30,6 +30,7 @@ body{padding-top:56px}
 .hd h1 em{color:var(--deep);font-style:normal}
 .hd p{font-size:.82rem;color:var(--muted);margin:0 0 14px}
 .hint{display:none}
+.gnote{font-size:.76rem;color:var(--muted);line-height:1.45;margin:-2px 0 10px}
 
 /* service tabs */
 .tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
@@ -410,6 +411,10 @@ const SERVICES = [
         {name:'Half Truck', sub:'1/2 truck load', price:199, popular:true},
         {name:'Full Truck', sub:'full truck load', price:349},
       ]},
+      { title:'After Construction Clean-Up', icon:'deep', unit:'quote', note:'Post-reno and post-build cleanup — drywall dust, debris, paint spots and final detail. Every site is different, so we quote it individually: send us photos or book a free on-site visit.', items:[
+        {name:'Send Photos', sub:'we quote back same day', quote:true},
+        {name:'Book a Site Visit', sub:'free on-site assessment', quote:true, popular:true},
+      ]},
       { title:'Heavy / Bulky Item', icon:'bolt', addon:true, unit:'add-on', desc:'Appliances, pianos, hot tubs and other extra-heavy items.', items:[
         {name:'Per Item', sub:'appliance, piano, etc.', price:40, plus:true},
       ]},
@@ -524,6 +529,7 @@ function renderGroups(){
         <div class="gttl">${g.title}</div>
         ${g.addon?'<span class="badge">Add-on</span>':''}
       </div>
+      ${g.note?'<div class="gnote">'+g.note+'</div>':''}
       <div class="rows">
         ${items.map(({it,ii})=>{
           const k = keyFor(s.id,gi,ii);
@@ -534,7 +540,7 @@ function renderGroups(){
           const sub = g.sizeTier ? `<span>${SIZES[sizeIdx].name}</span>` : `<span>${it.sub}</span>`;
           return `<div class="row ${sel?'sel':''}" data-key="${k}" data-svc="${s.id}" data-gi="${gi}" data-ii="${ii}">
             <div class="rsz"><b>${nameHtml}</b>${sub}</div>
-            <div class="rr"><span class="pr">${it.plus?'+':''}${money(it.price)}</span><span class="chk">${sel?'✓':'+'}</span></div>
+            <div class="rr"><span class="pr">${it.quote?'Quote':(it.plus?'+':'')+money(it.price)}</span><span class="chk">${sel?'✓':'+'}</span></div>
           </div>`;
         }).join('')}
       </div>
@@ -554,7 +560,7 @@ function toggleItem(svcId,gi,ii){
   if(!already){
     cart.push({key:k, svcId:svcId, svcName:s.name, group:g.title,
                name:it.name, size:g.sizeTier?SIZES[sizeIdx].name:it.sub,
-               base:it.price, price:it.price, freqId:'onetime'});
+               base:it.quote?0:it.price, price:it.quote?0:it.price, quote:!!it.quote, freqId:'onetime'});
   }
   renderGroups();
   renderCart();
@@ -614,7 +620,7 @@ function renderCart(){
         <button class="di-edit" data-edit="${c.key}">✏️ Edit</button>
       </div>
       <div class="di-right">
-        <div class="di-price">${money(c.price)}</div>
+        <div class="di-price">${c.quote?'Quote':money(c.price)}</div>
         <button class="di-x" data-rm="${c.key}">✕</button>
       </div>
     </div>`;
@@ -798,6 +804,15 @@ const TIMES = [
   {id:'Afternoon', sub:'2pm – 4:30pm', ico:'<circle cx="12" cy="14" r="4"/><path d="M12 4v2M4.5 8.5l1.4 1.4M19.5 8.5l-1.4 1.4M2 18h20M8 21l1.5-1.5M16 21l-1.5-1.5"/>'},
 ];
 
+const AIRBNB_TIMES = [
+  {id:'Early Turnover', sub:'10am – 1pm', ico:'<circle cx="12" cy="14" r="4"/><path d="M12 4v2M4.5 8.5l1.4 1.4M19.5 8.5l-1.4 1.4M2 18h20"/>'},
+  {id:'Standard Turnover', sub:'11am – 3pm', ico:'<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/>'},
+  {id:'Late Turnover', sub:'1pm – 4pm', ico:'<circle cx="12" cy="14" r="4"/><path d="M12 4v2M4.5 8.5l1.4 1.4M19.5 8.5l-1.4 1.4M2 18h20M8 21l1.5-1.5M16 21l-1.5-1.5"/>'},
+];
+function activeTimes(){
+  return (cart.length && cart.every(c=>c.svcId==='airbnb')) ? AIRBNB_TIMES : TIMES;
+}
+
 function goStep(step){
   if(step==='catalog') document.body.removeAttribute('data-step');
   else document.body.setAttribute('data-step', step);
@@ -809,7 +824,7 @@ function goStep(step){
 
 /* ---- STEP 2: frequency ---- */
 function renderFreq(){
-  const blocks = cart.map(c=>{
+  const blocks = cart.filter(c=>!c.quote).map(c=>{
     return `<div class="fq-svc">
       <div class="fq-svc-top">
         <img src="${SVC_IMG[c.svcId]||''}" alt="" onerror="this.style.visibility='hidden'">
@@ -832,7 +847,7 @@ function renderFreq(){
     <button class="sch-back" data-back="catalog">← Back to services</button>
     <h1 class="sch-h1">How <em>Often?</em></h1>
     <p class="sch-sub">Choose a schedule for each service — recurring visits save you money.</p>
-    ${blocks}
+    ${blocks || '<p class="sch-sub">Nothing to schedule pricing for — we&rsquo;ll quote your job after reviewing photos or visiting the site.</p>'}
     <button class="sch-cta" data-next="schedule" style="margin-top:8px">Continue →</button>`;
 }
 
@@ -850,6 +865,9 @@ document.getElementById('freq-view').addEventListener('click', e=>{
 
 /* ---- STEP 3: schedule ---- */
 function renderSchedule(){
+  const T = activeTimes();
+  if(sched.time && !T.some(t=>t.id===sched.time)) sched.time=null;
+  const isAir = T===AIRBNB_TIMES;
   const first = new Date(sched.year, sched.month, 1).getDay();
   const daysIn = new Date(sched.year, sched.month+1, 0).getDate();
   const today = new Date(); today.setHours(0,0,0,0);
@@ -885,10 +903,11 @@ function renderSchedule(){
 
     <p class="sch-sec">Preferred time</p>
     <div class="time-opts">
-      ${TIMES.map(t=>`<div class="topt ${sched.time===t.id?'on':''}" data-time="${t.id}">
+      ${T.map(t=>`<div class="topt ${sched.time===t.id?'on':''}" data-time="${t.id}">
         <div class="tico"><svg viewBox="0 0 24 24">${t.ico}</svg></div><b>${t.id}</b><span>${t.sub}</span>
       </div>`).join('')}
     </div>
+    ${isAir?'<p class="gnote" style="margin-top:10px">Most hosts set checkout for 10&ndash;11am and check-in for 3&ndash;4pm, so we work inside that window. Booking back-to-back same day? Add Same-Day Turnaround so we hold a priority slot.</p>':''}
 
     <button class="sch-cta" data-next="review" ${ready?'':'disabled'} style="margin-top:20px">
       ${ready?'Review Order →':'Select date & time'}
