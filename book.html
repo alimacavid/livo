@@ -18,6 +18,12 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:110px}
 h1,h2,h3,h4{font-family:var(--heading)}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:400;height:56px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.tb-logo{display:flex;align-items:center;text-decoration:none}
+.tb-logo img{height:24px;width:auto;display:block}
+.tb-ph{font-family:var(--heading);font-weight:700;font-size:.78rem;color:var(--deep);text-decoration:none;white-space:nowrap}
+body{padding-top:56px}
+@media(max-width:600px){.topbar{height:52px;padding:0 14px}.tb-logo img{height:21px}.tb-ph{font-size:.72rem}body{padding-top:52px}}
 
 .wrap{max-width:900px;margin:0 auto;padding:26px 18px 20px}
 .hd h1{font-size:1.45rem;font-weight:800;color:var(--ink);margin:0 0 4px;letter-spacing:-.01em}
@@ -243,6 +249,12 @@ body[data-step="review"] #catalog-view{display:none}.sch-back{display:inline-fle
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 </head>
 <body>
+
+<header class="topbar">
+  <a href="https://livoland.com" class="tb-logo" aria-label="LIVO home"><img src="/livo-logo.png" alt="LIVO"></a>
+  <a href="tel:+18888025486" class="tb-ph">Call 888-802-LIVO</a>
+</header>
+
 
 <div class="wrap" id="catalog-view">
   <div class="hd">

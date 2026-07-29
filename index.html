@@ -133,6 +133,35 @@ body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1
 .fc.ac .fl,.fc.ac .fv,.fc.ac .fs{color:var(--ink)}
 .fc.ac .fl{opacity:.6}
 
+
+/* ── PINNED SCROLL HERO ── */
+#heroScroll{position:relative;height:210vh;background:#0c0c0c}
+.hs-sticky{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.hs-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;display:block}
+.hs-grad{position:absolute;inset:0;z-index:1;background:linear-gradient(to right,rgba(20,4,50,.6) 0%,rgba(20,4,50,.35) 28%,rgba(0,0,0,0) 48%);transition:opacity .55s var(--ease)}
+.hs-dim{position:absolute;inset:0;z-index:2;background:#000;opacity:0;transition:opacity .55s var(--ease)}
+.hs-panel{position:absolute;inset:0;z-index:3;display:flex;align-items:center;padding-top:70px;opacity:0;visibility:hidden;transform:translateY(20px);transition:opacity .55s var(--ease),transform .55s var(--ease),visibility .55s}
+.hs-panel.on{opacity:1;visibility:visible;transform:none}
+.hs-p1 .h-content{max-width:440px}
+.hs-p2{justify-content:center;text-align:center}
+.hs-h2{font-family:var(--heading);font-weight:800;font-size:clamp(2.1rem,5.2vw,4.6rem);line-height:1.08;letter-spacing:-.03em;color:var(--lime);margin:0}
+.hs-h2 em{display:block;font-style:italic;color:#fff;font-weight:800;font-size:clamp(1.3rem,3vw,2.6rem);margin-top:36px}
+.hs-cue{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:4;width:23px;height:37px;border:2px solid rgba(255,255,255,.5);border-radius:14px;transition:opacity .4s}
+.hs-cue::after{content:'';position:absolute;left:50%;top:7px;width:3px;height:7px;background:rgba(255,255,255,.85);border-radius:2px;transform:translateX(-50%);animation:hsdot 1.7s infinite}
+@keyframes hsdot{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,13px)}}
+#heroScroll.s2 .hs-grad{opacity:0}
+#heroScroll.s2 .hs-dim{opacity:.3}
+#heroScroll.s2 .hs-cue{opacity:0}
+@media(max-width:768px){
+  #heroScroll{height:195vh}
+  .hs-panel{padding-top:66px}
+  .hs-p1 .h-content{max-width:100%}
+  .hs-h2{font-size:clamp(1.9rem,8.4vw,2.8rem)}
+  .hs-h2 em{margin-top:22px;font-size:clamp(1.05rem,4.8vw,1.5rem)}
+  .hs-cue{bottom:18px;width:20px;height:32px}
+}
+@media(prefers-reduced-motion:reduce){.hs-panel,.hs-dim,.hs-grad{transition:none}.hs-cue::after{animation:none}}
+
 /* ADVANTAGE */
 #advantage{background:#fff;padding:120px 0;border-top:1px solid #f0edf4;border-bottom:1px solid #f0edf4}
 .ag1,.ag2{display:none}
@@ -1160,34 +1189,32 @@ footer::before{
   <a href="#final-cta" class="mm-cta" onclick="closeMM()">Book Now →</a>
 </div>
 
-<!-- HERO -->
-<section id="hero">
+<!-- HERO (pinned) -->
+<section id="heroScroll">
+  <div class="hs-sticky">
+    <img src="Livo-%20Clean%20up%20service.png" alt="LIVO team servicing a property" class="hs-img" loading="eager">
+    <div class="hs-grad"></div>
+    <div class="hs-dim"></div>
 
-  <img src="Livo-%20Clean%20up%20service.png" alt="LIVO team servicing a property" class="h-bg" loading="eager">
-
-  <div class="h-left">
-    <div class="container">
-      <div class="h-content">
-                        <h1 class="h-headline fade-in d1">Trusted Property Services<br><em>For Greater Vancouver.</em></h1>
-        <div class="h-ctas fade-in d2">
-          <a href="#final-cta" class="btn-lime">Book a Service →</a>
-          <a href="#services" class="btn-wh">See Services</a>
+    <div class="hs-panel hs-p1 on" id="hsP1">
+      <div class="container">
+        <div class="h-content">
+          <h1 class="h-headline">Trusted Property Services<br><em>For Greater Vancouver.</em></h1>
+          <div class="h-ctas">
+            <a href="#final-cta" class="btn-lime">Book a Service &rarr;</a>
+            <a href="#services" class="btn-wh">See Services</a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-</section>
-
-<!-- ADVANTAGE -->
-<section id="advantage">
-  <div class="container">
-    <div class="adv-hd fade-in">
-      <h2 class="adv-big">
-        Fall in Love<br>With Your Property.
-        <em>We make it happen.</em>
-      </h2>
+    <div class="hs-panel hs-p2" id="hsP2">
+      <div class="container">
+        <h2 class="hs-h2">Fall in Love<br>With Your Property.<em>We make it happen.</em></h2>
+      </div>
     </div>
+
+    <div class="hs-cue" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -1702,7 +1729,7 @@ footer::before{
       <div class="foot-col">
         <h4>Company</h4>
         <ul>
-          <li><a href="#advantage">Why LIVO</a></li>
+          <li><a href="#how">Why LIVO</a></li>
           <li><a href="#how">How It Works</a></li>
           <li><a href="#testimonials">Reviews</a></li>
           <li><a href="#area">Service Area</a></li>
@@ -1940,7 +1967,23 @@ function baNext(){cur=(cur+1)%slides.length;loadSlide(cur)}
 <!--
   ═══════════════════════════════════════════════════
   LIVO WEBSITE ADDITIONS
-  Paste everything below just before </body>
+  Paste everything below just before <script>
+(function(){
+  var sec=document.getElementById('heroScroll');if(!sec)return;
+  var p1=document.getElementById('hsP1'),p2=document.getElementById('hsP2'),t=false;
+  function upd(){
+    var span=sec.offsetHeight-window.innerHeight;
+    var prog=span>0?Math.min(1,Math.max(0,(-sec.getBoundingClientRect().top)/span)):0;
+    var two=prog>0.35;
+    sec.classList.toggle('s2',two);
+    p1.classList.toggle('on',!two);
+    p2.classList.toggle('on',two);
+  }
+  addEventListener('scroll',function(){if(!t){t=true;requestAnimationFrame(function(){upd();t=false;});}},{passive:true});
+  addEventListener('resize',upd);upd();
+})();
+</script>
+</body>
   ═══════════════════════════════════════════════════
 -->
 
