@@ -437,14 +437,38 @@ let lastRemoved = null; // {item, idx} for undo
 let undoTimer = null;
 
 // Frequency step (chosen once for the whole order)
-const FREQS = [
-  {id:'onetime', name:'One-Time', sub:'Single visit', discount:0},
-  {id:'weekly', name:'Weekly', sub:'Every week', discount:0.15},
-  {id:'biweekly', name:'Bi-Weekly', sub:'Every 2 weeks', discount:0.10},
-  {id:'monthly', name:'Monthly', sub:'Every month', discount:0.05},
-];
+const FREQ_SETS = {
+  // calendar-based — homes get cleaned on a rhythm
+  interior:[
+    {id:'onetime',  name:'One-Time',   sub:'Just this once',      discount:0},
+    {id:'weekly',   name:'Weekly',     sub:'Same day every week', discount:0.15},
+    {id:'biweekly', name:'Bi-Weekly',  sub:'Every other week',    discount:0.10},
+    {id:'monthly',  name:'Monthly',    sub:'Once a month',        discount:0.05},
+  ],
+  // booking-based — turnovers follow guests, not the calendar
+  airbnb:[
+    {id:'onetime',    name:'Single Turnover', sub:'Just this checkout',      discount:0},
+    {id:'every',      name:'Every Checkout',  sub:'After each guest leaves', discount:0.15},
+    {id:'peak',       name:'Peak Season',     sub:'Through your busy months',discount:0.10},
+    {id:'occasional', name:'Now & Then',      sub:'A few stays a month',     discount:0.05},
+  ],
+  // seasonal — nobody power washes weekly
+  power:[
+    {id:'onetime',  name:'One-Time',      sub:'Just this once',      discount:0},
+    {id:'seasonal', name:'Spring & Fall', sub:'Twice a year',        discount:0.10},
+    {id:'yearly',   name:'Yearly',        sub:'Once every spring',   discount:0.05},
+  ],
+  // mostly one-off, but sites and businesses need regular hauls
+  junk:[
+    {id:'onetime',  name:'One-Time',  sub:'Single pickup',        discount:0},
+    {id:'monthly',  name:'Monthly',   sub:'Regular haul-away',    discount:0.05},
+    {id:'biweekly', name:'Bi-Weekly', sub:'Ongoing site or shop', discount:0.10},
+  ],
+};
+const freqsFor = svcId => FREQ_SETS[svcId] || FREQ_SETS.interior;
+const FREQS = FREQ_SETS.interior;
 let orderFreq = 'onetime';
-const freqObj = id => FREQS.find(f=>f.id===id)||FREQS[0];
+const freqObj = (id, svcId) => freqsFor(svcId).find(f=>f.id===id) || freqsFor(svcId)[0];
 
 // Real service thumbnails
 const SVC_IMG = {
@@ -611,7 +635,7 @@ function renderCart(){
 
   box.innerHTML = cart.map(c=>{
     const img = SVC_IMG[c.svcId] || '';
-    const meta = `${c.size} · ${freqObj(c.freqId).name}`;
+    const meta = `${c.size} · ${freqObj(c.freqId, c.svcId).name}`;
     return `<div class="dr-item">
       ${img?`<img class="di-img" src="${img}" alt="" onerror="this.style.visibility='hidden'">`:'<div class="di-img"></div>'}
       <div class="di-mid">
@@ -757,7 +781,7 @@ async function submitBooking(){
     time: sched.time,
     firstTime,
     total: firstTime ? Math.round(cartTotal()*0.70) : cartTotal(),
-    items: cart.map(c=>({svcName:c.svcName, group:c.group, size:c.size, freq:freqObj(c.freqId).name, price:c.price})),
+    items: cart.map(c=>({svcName:c.svcName, group:c.group, size:c.size, freq:freqObj(c.freqId, c.svcId).name, price:c.price})),
   };
 
   submitting=true; cta.disabled=true; cta.textContent='Sending…';
@@ -831,7 +855,7 @@ function renderFreq(){
         <div><b>${c.svcName}</b><span>${c.group} · ${c.size}</span></div>
       </div>
       <div class="fq-opts">
-        ${FREQS.map(f=>{
+        ${freqsFor(c.svcId).map(f=>{
           const on=c.freqId===f.id;
           const price=Math.round(c.base*(1-f.discount));
           const save=f.discount?`<span class="fq-save">Save ${Math.round(f.discount*100)}%</span>`:'';
@@ -846,7 +870,7 @@ function renderFreq(){
   document.getElementById('freq-view').innerHTML = `
     <button class="sch-back" data-back="catalog">← Back to services</button>
     <h1 class="sch-h1">How <em>Often?</em></h1>
-    <p class="sch-sub">Choose a schedule for each service — recurring visits save you money.</p>
+    <p class="sch-sub">${cart.length && cart.every(c=>c.svcId==='airbnb') ? 'Tell us how your calendar runs — hosts who book every checkout pay the lowest rate per clean.' : 'Pick a rhythm for each service. The more regular the visit, the less you pay each time.'}</p>
     ${blocks || '<p class="sch-sub">Nothing to schedule pricing for — we&rsquo;ll quote your job after reviewing photos or visiting the site.</p>'}
     <button class="sch-cta" data-next="schedule" style="margin-top:8px">Continue →</button>`;
 }
@@ -856,7 +880,7 @@ document.getElementById('freq-view').addEventListener('click', e=>{
   const opt=e.target.closest('.fq-opt');
   if(opt){
     const c=cart.find(x=>x.key===opt.dataset.key);
-    if(c){ c.freqId=opt.dataset.fid; c.price=Math.round(c.base*(1-freqObj(c.freqId).discount)); }
+    if(c){ c.freqId=opt.dataset.fid; c.price=Math.round(c.base*(1-freqObj(c.freqId, c.svcId).discount)); }
     renderFreq(); renderCart();
     return;
   }
