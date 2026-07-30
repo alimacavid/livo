@@ -1041,6 +1041,7 @@ footer::before{
 .svc-ba-after,.svc-ba-before-img{width:100%;height:320px;object-fit:cover;display:block}
 .svc-ba-before{position:absolute;inset:0;overflow:hidden;width:50%}
 .svc-ba-before-img{position:absolute;top:0;left:0;height:320px;min-width:100vw}
+.svc-ba-slider.photo .svc-ba-after,.svc-ba-slider.photo .svc-ba-before-img{height:460px}
 .svc-ba-line{position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;z-index:10;pointer-events:none;box-shadow:0 0 12px rgba(0,0,0,.3)}
 .svc-ba-knob{
   position:absolute;top:50%;left:50%;
@@ -1146,6 +1147,7 @@ footer::before{
   .svc-page-title{padding:32px}
   .svc-back{padding:16px 32px}
   .svc-ba-after,.svc-ba-before-img{height:300px}
+  .svc-ba-slider.photo .svc-ba-after,.svc-ba-slider.photo .svc-ba-before-img{height:280px}
 }
 
 /* MAP CARD */
@@ -1516,10 +1518,10 @@ window.__hsRan = 1;
           <h2>Before <em>&amp;</em> After</h2>
           <p class="svc-ba-desc">Drag the slider to see the transformation.</p>
         </div>
-        <div class="svc-ba-slider" id="sba0" onmousedown="startBA(event,'sba0')" ontouchstart="startBA(event,'sba0')">
-          <div style="width:100%;height:500px;background:linear-gradient(135deg,#1a6040,#2d9e6b)"></div>
+        <div class="svc-ba-slider photo" id="sba0" onmousedown="startBA(event,'sba0')" ontouchstart="startBA(event,'sba0')">
+          <div class="svc-ba-after" style="background-image:url('power-after.jpg');background-size:cover;background-position:center"></div>
           <div class="svc-ba-before" id="sba0-b">
-            <div class="svc-ba-before-img" style="height:500px;background:linear-gradient(135deg,#4a3000,#8b6200)"></div>
+            <div class="svc-ba-before-img" style="background-image:url('power-before.jpg');background-size:cover;background-position:center"></div>
           </div>
           <div class="svc-ba-line" id="sba0-l"></div>
           <div class="svc-ba-knob" id="sba0-k">⇄</div>
@@ -1614,10 +1616,10 @@ window.__hsRan = 1;
           <h2>Before <em>&amp;</em> After</h2>
           <p class="svc-ba-desc">Drag the slider to see the transformation.</p>
         </div>
-        <div class="svc-ba-slider" id="sba5" onmousedown="startBA(event,'sba5')" ontouchstart="startBA(event,'sba5')">
-          <div style="width:100%;height:320px;background:linear-gradient(135deg,#2d1060,#5F2491)"></div>
+        <div class="svc-ba-slider photo" id="sba5" onmousedown="startBA(event,'sba5')" ontouchstart="startBA(event,'sba5')">
+          <div class="svc-ba-after" style="background-image:url('interior-after.jpg');background-size:cover;background-position:center"></div>
           <div class="svc-ba-before" id="sba5-b">
-            <div class="svc-ba-before-img" style="height:320px;background:linear-gradient(135deg,#4a3000,#8b6200)"></div>
+            <div class="svc-ba-before-img" style="background-image:url('interior-before.jpg');background-size:cover;background-position:center"></div>
           </div>
           <div class="svc-ba-line" id="sba5-l"></div>
           <div class="svc-ba-knob" id="sba5-k">⇄</div>
@@ -1663,10 +1665,10 @@ window.__hsRan = 1;
           <h2>Before <em>&amp;</em> After</h2>
           <p class="svc-ba-desc">Drag the slider to see the transformation.</p>
         </div>
-        <div class="svc-ba-slider" id="sba4" onmousedown="startBA(event,'sba4')" ontouchstart="startBA(event,'sba4')">
-          <div style="width:100%;height:320px;background:linear-gradient(135deg,#5F2491,#a0ac00)"></div>
+        <div class="svc-ba-slider photo" id="sba4" onmousedown="startBA(event,'sba4')" ontouchstart="startBA(event,'sba4')">
+          <div class="svc-ba-after" style="background-image:url('airbnb-after.jpg');background-size:cover;background-position:center"></div>
           <div class="svc-ba-before" id="sba4-b">
-            <div class="svc-ba-before-img" style="height:320px;background:linear-gradient(135deg,#4a3000,#8b6200)"></div>
+            <div class="svc-ba-before-img" style="background-image:url('airbnb-before.jpg');background-size:cover;background-position:center"></div>
           </div>
           <div class="svc-ba-line" id="sba4-l"></div>
           <div class="svc-ba-knob" id="sba4-k">⇄</div>
