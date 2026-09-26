@@ -98,14 +98,18 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
       <!-- ADD-ONS -->
       <section class="mt-10">
         <h2 class="text-xl font-extrabold">Popular add-ons</h2>
-        <p class="text-sm text-muted mt-0.5">Add these when you book.</p>
-        <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3">
+        <p class="text-sm text-muted mt-0.5">Tap to add. They carry over to your booking.</p>
+        <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3" data-addons>
           {d.addons.map((a) => (
-            <div class="shrink-0 w-40 md:w-auto rounded-panel bg-cloud p-4">
-              <div class="font-semibold text-[14px] leading-snug">{a.name}</div>
-              <div class="text-[12px] text-muted">{a.sub}</div>
-              <div class="mt-2 text-sm"><b>+${a.price}</b> <span class="text-muted text-[11px]">{a.unit}</span></div>
-            </div>
+            <button type="button" data-addon={a.id} data-aprice={a.price} aria-pressed="false"
+              class="group relative shrink-0 w-40 md:w-auto text-left rounded-panel border-2 border-transparent bg-cloud p-4 transition active:scale-[.98] aria-pressed:border-purple aria-pressed:bg-purple-soft">
+              <span class="absolute top-3 right-3 size-6 rounded-full grid place-items-center bg-white text-muted group-aria-pressed:bg-purple group-aria-pressed:text-white">
+                <Icon name="plus" class="size-3.5 group-aria-pressed:hidden" stroke={2.4} /><Icon name="check" class="size-3.5 hidden group-aria-pressed:block" stroke={3} />
+              </span>
+              <span class="block font-semibold text-[14px] leading-snug pr-7">{a.name}</span>
+              <span class="block text-[12px] text-muted">{a.sub}</span>
+              <span class="block mt-2 text-sm"><b>+${a.price}</b> <span class="text-muted text-[11px]">{a.unit}</span></span>
+            </button>
           ))}
         </div>
       </section>
@@ -177,14 +181,39 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
 </Base>
 
 <script>
-  const wrap = document.querySelector('[data-tiers]');
-  wrap?.addEventListener('change', (e) => {
-    const r = e.target as HTMLInputElement;
-    const price = r.dataset.price ? `$${r.dataset.price}` : 'Quote';
-    document.querySelectorAll('[data-price-out]').forEach((el) => (el.textContent = price));
-    document.querySelectorAll('[data-name-out]').forEach((el) => (el.textContent = r.dataset.name!));
-    document.querySelectorAll<HTMLAnchorElement>('[data-book]').forEach((a) => {
-      const u = new URL(a.href); u.searchParams.set('t', r.value); a.href = u.pathname + u.search;
+  // selected size + add-ons → live price, name and Book link
+  const st = { tier: '', price: null as number | null, name: '', addons: new Set<string>() };
+  const checked = document.querySelector<HTMLInputElement>('[data-tiers] input:checked');
+  if (checked) { st.tier = checked.value; st.price = checked.dataset.price ? +checked.dataset.price : null; st.name = checked.dataset.name!; }
+  else {
+    const a = document.querySelector<HTMLAnchorElement>('[data-book]');
+    const u = a ? new URL(a.href) : null; st.tier = u?.searchParams.get('t') ?? '';
+    const out = document.querySelector('[data-price-out]')?.textContent ?? '';
+    st.price = out.startsWith('$') ? +out.slice(1) : null; st.name = document.querySelector('[data-name-out]')?.textContent ?? '';
+  }
+  function update() {
+    let add = 0; const names: string[] = [];
+    document.querySelectorAll<HTMLButtonElement>('[data-addon]').forEach((b) => {
+      if (st.addons.has(b.dataset.addon!)) { add += +b.dataset.aprice!; names.push(b.querySelector('span.block')!.textContent!); }
     });
+    const price = st.price != null ? `$${st.price + add}` : 'Quote';
+    document.querySelectorAll('[data-price-out]').forEach((el) => (el.textContent = price));
+    document.querySelectorAll('[data-name-out]').forEach((el) => (el.textContent = st.name + (names.length ? ` + ${names.length} add-on${names.length > 1 ? 's' : ''}` : '')));
+    document.querySelectorAll<HTMLAnchorElement>('[data-book]').forEach((a) => {
+      const u = new URL(a.href); u.searchParams.set('t', st.tier);
+      st.addons.size ? u.searchParams.set('a', [...st.addons].join(',')) : u.searchParams.delete('a');
+      a.href = u.pathname + u.search;
+    });
+  }
+  document.querySelector('[data-tiers]')?.addEventListener('change', (e) => {
+    const r = e.target as HTMLInputElement;
+    st.tier = r.value; st.price = r.dataset.price ? +r.dataset.price : null; st.name = r.dataset.name!;
+    update();
   });
+  document.querySelectorAll<HTMLButtonElement>('[data-addon]').forEach((b) => b.addEventListener('click', () => {
+    const id = b.dataset.addon!;
+    st.addons.has(id) ? st.addons.delete(id) : st.addons.add(id);
+    b.setAttribute('aria-pressed', String(st.addons.has(id)));
+    update();
+  }));
 </script>

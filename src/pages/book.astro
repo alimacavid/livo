@@ -78,6 +78,8 @@ const data = DIVISIONS.map((d) => ({
   const tier = () => sub()?.tiers.find((t) => t.id === st.tier);
   const freq = () => div().freqs.find((f) => f.id === st.freq) ?? div().freqs[0];
   if (!sub()) st.sub = '';
+  // add-ons picked on the service page (?a=fridge,oven)
+  (q.get('a') ?? '').split(',').forEach((id) => { if (div().addons.some((a) => a.id === id)) st.addons[id] = 1; });
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (st.sub && st.tier) st.step = 'addons';
   else if (st.sub) st.step = 'size';
