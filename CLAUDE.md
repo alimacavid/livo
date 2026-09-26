@@ -10,7 +10,8 @@
 - Every sub-service has its own page + URL: `/services/<division>/<sub>` with price table, what's included, before/after, add-ons, FAQ.
 - Booking rebuilt at `/book` (6 steps: service → size → add-ons → frequency → date/time → details). Posts the SAME payload to the existing Supabase edge function `send-booking-confirmation` (address + notes go in `notes`). Old `/book.html` 301-redirects to `/book` (netlify.toml).
 - Stats (52+ projects etc.) and the 3 testimonials were NOT carried over — add back only with real reviews.
-- Branch: `v2-astro` (not merged). Pending Ali approval before it goes to `v1.0` staging, then `main`.
+- Later same day: popular add-ons on service pages made selectable (carry into /book via `?a=`); "LIVO Property Services" line added above home hero headline. A bigger home redesign was tried and reverted at Ali's request — he wants the home page kept minimal.
+- Branch state: `v2-astro`, `v1.0` and `main` all level. Ali approved go-live 2026-09-26 → livoland.com now runs the Astro site.
 
 ## Where things live
 - **All services + prices: `src/data/services.ts`** — the ONLY place prices exist. Sub-service pages, homepage "From $X", and the booking page all read it. Change a number there → whole site updates.
@@ -26,7 +27,8 @@
 - Netlify reads `netlify.toml` (build command + publish `dist`, Node 22). Branch deploys build automatically once pushed.
 
 ## Known issues / next
-- Push from Claude cloud sessions is refused until the Claude GitHub App has access to `alimacavid/livo`.
+- Claude GitHub App installed on `alimacavid/livo` (2026-09-26) — cloud sessions can push.
+- Netlify production must build with `netlify.toml` (npm run build → dist). If livoland.com shows a blank/404 after deploy, check Netlify site build settings aren't overriding it.
 - Prices are the v1 prices. Market research (`claude/livo-competitor-pricing-research.md` in the Livo project) says Junk, Power Washing and Airbnb are underpriced — Ali to decide.
 - Airbnb has no own photos beyond before/after; power washing sub-pages share one photo — shoot per-service photos.
 - careers.html is still the old standalone page (phone fixed only).
