@@ -1,41 +1,36 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-07-30
+2026-09-26
 
-## What changed (this session)
-Replaced gradient placeholders with real before/after photography across three service pages in `index.html`, and upgraded the Junk Removal service card image on the homepage.
+## 2026-09-26 — v2 rebuild in Astro + Tailwind (branch `v2-astro`)
+- What changed: whole front end rebuilt as an Astro 7 + Tailwind v4 static site. App-style mobile UI (bottom tab bar: Home / Services / Book / Call; sticky Book bar on service pages).
+- Hero now shows only "Fall in love with your property. We make it happen." ("Trusted Property Services" removed — Ali's decision).
+- Phone everywhere: **888-802-LIVO** (tel +18888025486). 604 number removed.
+- Every sub-service has its own page + URL: `/services/<division>/<sub>` with price table, what's included, before/after, add-ons, FAQ.
+- Booking rebuilt at `/book` (6 steps: service → size → add-ons → frequency → date/time → details). Posts the SAME payload to the existing Supabase edge function `send-booking-confirmation` (address + notes go in `notes`). Old `/book.html` 301-redirects to `/book` (netlify.toml).
+- Stats (52+ projects etc.) and the 3 testimonials were NOT carried over — add back only with real reviews.
+- Branch: `v2-astro` (not merged). Pending Ali approval before it goes to `v1.0` staging, then `main`.
 
-- **Airbnb Turnover** (`sba4`) → `airbnb-before.jpg` / `airbnb-after.jpg`
-- **Interior Cleaning** (`sba5`) → `interior-before.jpg` / `interior-after.jpg`
-- **Power Washing & Windows** (`sba0`) → `power-before.jpg` / `power-after.jpg`
-- **Junk Removal homepage card** → `junk-removal-team.jpg` replaced with the branded LIVO truck photo (same filename, no markup change)
+## Where things live
+- **All services + prices: `src/data/services.ts`** — the ONLY place prices exist. Sub-service pages, homepage "From $X", and the booking page all read it. Change a number there → whole site updates.
+- `draft: true` on a sub-service = price not yet approved by Ali (shows a "Draft prices" tag). Currently: After-Construction Clean-Up.
+- `price: null` = "Custom quote".
+- Layout / header / tab bar / footer: `src/layouts/Base.astro`
+- Brand tokens (colors, fonts, radius): `src/styles/global.css` (`@theme`). Custom classes use `@utility` (Tailwind v4 — `@apply` of a plain class fails).
+- Photos: `src/assets/photos/` (Astro auto-resizes to WebP). Static files (favicons, manifest, careers.html): `public/`
+- Old v1 files kept for reference only in `_legacy/` (not deployed).
 
-New CSS modifier `.svc-ba-slider.photo` scopes photo sliders to 460px tall on desktop and 280px on mobile, leaving the Junk Removal slider (`sba3`) on its original 500px inline sizing.
+## Build / deploy
+- `npm install` → `npm run build` → output `dist/`. `npm run dev` for local.
+- Netlify reads `netlify.toml` (build command + publish `dist`, Node 22). Branch deploys build automatically once pushed.
 
-## Current branch state
-- `v1.0` merged into `main` and deployed to livoland.com
-- Both branches level as of this session
-
-## Image encoding conventions
-- Before/after slider photos: 2000px wide, JPEG quality 88, 4:4:4 subsampling, progressive (~370–430 KB)
-- Detailed textures (concrete, stone) compress poorly — drop to quality 84 to stay under ~600 KB
-- Service card images: native resolution, quality 90
-- Cards use `object-fit: cover` at 400px tall, so 16:9 source images crop hard to centre
-
-## Known issues / cleanup
-- `AirBnB Before.png` and `AirBnB After.png` (2.1 MB each) are unused originals left in the repo root — safe to delete
-- `index_1.html`, `index_3.html`, `index_5.html`, `index.backup.html`, `livo-index-FINAL.html`, `livo-lite-v2.html` are stale copies
-- Homepage hero and several service hero images are still base64-embedded, keeping `index.html` at ~613 KB
-
-## Pending / not yet done
-- Real confirmation emails: needs EmailJS account (Service ID, Template ID, Public Key)
-- `livoland.ca` → `livoland.com` redirect may need Netlify DNS configuration
-
-## Known workflow notes
-- Do **not** use the GitHub web editor on `index.html` — it renders blank at this size. Use the upload page: fetch raw with a cache-bust, patch the string in memory, build a `File` via `DataTransfer`, assign through the native `files` setter, dispatch `change`, then set the commit message and click **Commit changes**.
-- Binary files cannot be pushed from the Claude sandbox — generate them, share via the outputs folder, and have Ali drag them onto the same upload page so they land in one commit.
-- Netlify rebuilds take roughly 70–90 seconds. Browsers cache `index.html` aggressively; hard-refresh to verify.
+## Known issues / next
+- Push from Claude cloud sessions is refused until the Claude GitHub App has access to `alimacavid/livo`.
+- Prices are the v1 prices. Market research (`claude/livo-competitor-pricing-research.md` in the Livo project) says Junk, Power Washing and Airbnb are underpriced — Ali to decide.
+- Airbnb has no own photos beyond before/after; power washing sub-pages share one photo — shoot per-service photos.
+- careers.html is still the old standalone page (phone fixed only).
+- Real confirmation emails: Resend/Twilio secrets on the Supabase function must be set.
 
 ## Workflow
-All work goes to `v1.0` first (staging: `v1-0--darling-marigold-ff0def.netlify.app`). Never merge to `main` without Ali's explicit approval.
+Work on a branch → Ali approves → `v1.0` (staging: `v1-0--darling-marigold-ff0def.netlify.app`) → Ali approves → `main` (livoland.com). Never merge to `main` without Ali's explicit approval.

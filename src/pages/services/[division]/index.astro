@@ -1,0 +1,51 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import SubRow from '../../../components/SubRow.astro';
+import { Image } from 'astro:assets';
+import { DIVISIONS, minPrice, type Division } from '../../../data/services';
+export function getStaticPaths() {
+  return DIVISIONS.map((d) => ({ params: { division: d.id }, props: { d } }));
+}
+const { d } = Astro.props as { d: Division };
+---
+<Base title={`${d.name} in Port Coquitlam, Coquitlam & Port Moody`} description={`${d.name} by LIVO — ${d.tagline} Upfront prices from $${minPrice(d)}. Serving the Tri-Cities and Greater Vancouver.`}>
+  <section class="px-3 md:px-6 pt-1 md:pt-6">
+    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-64 md:h-96 bg-purple-ink">
+      <Image src={d.image} alt={d.name} class="absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/40 to-transparent"></div>
+      <a href="/services" class="absolute top-3 left-3 size-10 rounded-full bg-white/90 backdrop-blur grid place-items-center" aria-label="Back to services"><Icon name="back" class="size-5" /></a>
+      <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
+        <h1 class="text-white text-3xl md:text-5xl font-extrabold">{d.name}</h1>
+        <p class="mt-1 text-white/80">{d.tagline} From <b class="text-lime">${minPrice(d)}</b>.</p>
+      </div>
+    </div>
+  </section>
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-8">
+    <h2 class="text-lg md:text-2xl font-extrabold">Choose a service</h2>
+    <div class="mt-4 grid md:grid-cols-2 gap-3">{d.subs.map((s) => <SubRow div={d} sub={s} />)}</div>
+  </section>
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10">
+    <h2 class="text-lg md:text-2xl font-extrabold">Add-ons</h2>
+    <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+      {d.addons.map((a) => (
+        <div class="rounded-panel bg-cloud p-4">
+          <div class="font-semibold text-[14px] leading-snug">{a.name}</div>
+          <div class="text-[12.5px] text-muted">{a.sub}</div>
+          <div class="mt-2 text-sm"><b>${a.price}</b> <span class="text-muted text-xs">{a.unit}</span></div>
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="mx-auto max-w-3xl px-4 md:px-6 mt-10">
+    <h2 class="text-lg md:text-2xl font-extrabold">Questions</h2>
+    <div class="mt-3 divide-y divide-line border-y border-line">
+      {d.faqs.map((f) => (
+        <details class="group py-4">
+          <summary class="flex items-center justify-between cursor-pointer list-none font-semibold text-[15px]">{f.q}<Icon name="plus" class="size-5 text-muted transition group-open:rotate-45" /></summary>
+          <p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</Base>

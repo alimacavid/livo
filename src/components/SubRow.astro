@@ -1,0 +1,19 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { subMin, type Division, type Sub } from '../data/services';
+interface Props { div: Division; sub: Sub }
+const { div, sub } = Astro.props;
+const p = subMin(sub);
+---
+<a href={`/services/${div.id}/${sub.slug}`} class="group flex items-center gap-4 p-3 pr-4 rounded-panel bg-white border border-line hover:shadow-soft active:scale-[.99] transition">
+  <div class="shrink-0 size-[72px] md:size-20 rounded-card overflow-hidden bg-cloud">
+    <Image src={sub.image} alt="" class="size-full object-cover" widths={[160]} sizes="80px" />
+  </div>
+  <div class="min-w-0 flex-1">
+    <div class="font-heading font-bold text-[15px] leading-snug">{sub.name}</div>
+    <div class="text-[13px] text-muted leading-snug mt-0.5 line-clamp-2">{sub.short}</div>
+    <div class="mt-1.5 text-[13px]">{p ? <>From <b>${p}</b> <span class="text-muted">· {sub.unit}</span></> : <span class="font-semibold text-purple">Custom quote</span>}</div>
+  </div>
+  <Icon name="chevron" class="size-5 text-muted group-hover:text-ink shrink-0" />
+</a>

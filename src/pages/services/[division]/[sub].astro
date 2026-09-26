@@ -1,0 +1,190 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import BeforeAfter from '../../../components/BeforeAfter.astro';
+import { Image } from 'astro:assets';
+import { DIVISIONS, PHONE, PHONE_TEL, subMin, type Division, type Sub } from '../../../data/services';
+
+export function getStaticPaths() {
+  return DIVISIONS.flatMap((d) => d.subs.map((s) => ({ params: { division: d.id, sub: s.slug }, props: { d, s } })));
+}
+const { d, s } = Astro.props as { d: Division; s: Sub };
+const from = subMin(s);
+const def = s.tiers.find((t) => t.popular) ?? s.tiers[0];
+const others = d.subs.filter((x) => x.slug !== s.slug);
+const bookUrl = (tier: string) => `/book?d=${d.id}&s=${s.slug}&t=${tier}`;
+const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
+---
+<Base title={`${s.name} — ${d.name} in the Tri-Cities`} description={`${s.name} by LIVO. ${s.short} ${from ? `From $${from}.` : 'Free custom quote.'} Port Coquitlam, Coquitlam, Port Moody and Greater Vancouver.`} tabBar={false}>
+
+  <!-- HERO -->
+  <section class="px-3 md:px-6 pt-1 md:pt-6">
+    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
+      <Image src={s.image} alt={s.name} class="absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
+      <a href={`/services/${d.id}`} class="absolute top-3 left-3 h-10 pl-2.5 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold"><Icon name="back" class="size-4" />{d.short}</a>
+      <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
+        <h1 class="text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight">{s.name}</h1>
+        <p class="mt-1.5 text-white/80 text-[15px]">{s.short}</p>
+        <div class="mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold">
+          {from ? <>From ${from} <span class="font-medium opacity-70">· {s.unit}</span></> : 'Free custom quote'}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-6xl px-4 md:px-6 md:grid md:grid-cols-[1fr_360px] md:gap-12">
+    <div>
+      <!-- INTRO -->
+      <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{s.desc}</p>
+
+      <!-- PRICE TABLE -->
+      <section class="mt-8" id="prices">
+        <div class="flex items-end justify-between">
+          <h2 class="text-xl font-extrabold">{s.recurring ? 'Recurring prices' : 'Prices'}</h2>
+          {s.draft && <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-1 rounded-full">Draft prices</span>}
+        </div>
+        <p class="text-sm text-muted mt-0.5">{s.recurring ? 'Per visit. Save more the more often we come.' : `Pick your ${s.tierLabel.toLowerCase()}. Prices include supplies & GST.`}</p>
+
+        {s.recurring ? (
+          <div class="mt-4 card overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-cloud text-[12px] text-muted">
+                <tr><th class="text-left font-semibold p-3">{s.tierLabel}</th>{recurringFreqs.map((f) => <th class="font-semibold p-3 text-right">{f.name}<span class="block text-lime-deep">−{Math.round(f.discount * 100)}%</span></th>)}</tr>
+              </thead>
+              <tbody class="divide-y divide-line">
+                {s.tiers.map((t) => (
+                  <tr><td class="p-3"><b class="font-semibold">{t.name}</b><span class="block text-xs text-muted">{t.sub}</span></td>
+                    {recurringFreqs.map((f) => <td class="p-3 text-right font-heading font-bold">${Math.round((t.price ?? 0) * (1 - f.discount))}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div class="mt-4 grid gap-2.5" role="radiogroup" aria-label={s.tierLabel} data-tiers>
+            {s.tiers.map((t) => (
+              <label class="relative flex items-center gap-4 p-4 rounded-panel border-2 border-line bg-white cursor-pointer transition has-[:checked]:border-purple has-[:checked]:bg-purple-soft/60">
+                <input type="radio" name="tier" value={t.id} data-price={t.price ?? ''} data-name={t.name} checked={t.id === def.id} class="peer sr-only" />
+                <span class="size-5 rounded-full border-2 border-gray grid place-items-center peer-checked:border-purple peer-checked:[&>span]:scale-100"><span class="size-2.5 rounded-full bg-purple scale-0 transition"></span></span>
+                <span class="flex-1 min-w-0">
+                  <span class="block font-semibold text-[15px]">{t.name} {t.popular && <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>}</span>
+                  <span class="block text-[13px] text-muted">{t.sub}</span>
+                </span>
+                <span class="font-heading font-extrabold text-lg">{t.price != null ? `$${t.price}` : <span class="text-sm text-purple">Quote</span>}</span>
+              </label>
+            ))}
+          </div>
+        )}
+        {s.quoteNote && <p class="mt-3 text-[13px] text-muted flex gap-2"><Icon name="camera" class="size-4 shrink-0 mt-0.5 text-purple" />{s.quoteNote}</p>}
+      </section>
+
+      <!-- INCLUDED -->
+      <section class="mt-10">
+        <h2 class="text-xl font-extrabold">What's included</h2>
+        <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
+          {s.included.map((i) => (
+            <li class="flex gap-3 text-[14.5px]"><span class="shrink-0 size-6 rounded-full bg-lime-soft text-lime-deep grid place-items-center"><Icon name="check" class="size-3.5" stroke={3} /></span>{i}</li>
+          ))}
+        </ul>
+      </section>
+
+      {s.before && s.after && (
+        <section class="mt-10">
+          <h2 class="text-xl font-extrabold">Before & after</h2>
+          <BeforeAfter before={s.before} after={s.after} alt={s.name} class="mt-4" />
+        </section>
+      )}
+
+      <!-- ADD-ONS -->
+      <section class="mt-10">
+        <h2 class="text-xl font-extrabold">Popular add-ons</h2>
+        <p class="text-sm text-muted mt-0.5">Add these when you book.</p>
+        <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3">
+          {d.addons.map((a) => (
+            <div class="shrink-0 w-40 md:w-auto rounded-panel bg-cloud p-4">
+              <div class="font-semibold text-[14px] leading-snug">{a.name}</div>
+              <div class="text-[12px] text-muted">{a.sub}</div>
+              <div class="mt-2 text-sm"><b>+${a.price}</b> <span class="text-muted text-[11px]">{a.unit}</span></div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- GOOD FOR -->
+      <section class="mt-10">
+        <h2 class="text-xl font-extrabold">Great for</h2>
+        <div class="mt-3 flex flex-wrap gap-2">{s.goodFor.map((g) => <span class="px-3.5 py-2 rounded-full bg-purple-soft text-purple text-[13px] font-semibold">{g}</span>)}</div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="mt-10">
+        <h2 class="text-xl font-extrabold">Questions</h2>
+        <div class="mt-2 divide-y divide-line border-y border-line">
+          {d.faqs.map((f) => (
+            <details class="group py-4">
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px]">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition group-open:rotate-45" /></summary>
+              <p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- MORE -->
+      {others.length > 0 && (
+        <section class="mt-10">
+          <h2 class="text-xl font-extrabold">More {d.short.toLowerCase()} services</h2>
+          <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 snap-x">
+            {others.map((o) => (
+              <a href={`/services/${d.id}/${o.slug}`} class="snap-start shrink-0 w-56 card overflow-hidden">
+                <div class="aspect-[16/10] bg-cloud overflow-hidden"><Image src={o.image} alt="" class="size-full object-cover" widths={[320, 480]} sizes="224px" /></div>
+                <div class="p-3.5"><div class="font-heading font-bold text-[14px]">{o.name}</div><div class="text-[12.5px] text-muted">{subMin(o) ? `From $${subMin(o)}` : 'Custom quote'}</div></div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+
+    <!-- DESKTOP BOOKING CARD -->
+    <aside class="hidden md:block">
+      <div class="sticky top-24 mt-8 card p-6">
+        <div class="text-sm text-muted">Your price</div>
+        <div class="font-heading font-extrabold text-4xl mt-1" data-price-out>{def.price != null ? `$${def.price}` : 'Quote'}</div>
+        <div class="text-sm text-muted" data-name-out>{def.name}</div>
+        <a href={bookUrl(def.id)} data-book class="btn-lime w-full mt-5">Book {s.name}</a>
+        <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
+        <ul class="mt-5 space-y-2 text-[13px] text-muted">
+          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-deep" stroke={2.5} />Pay after the job</li>
+          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-deep" stroke={2.5} />30% off your first booking</li>
+          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-deep" stroke={2.5} />Licensed & insured crew</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <!-- MOBILE STICKY BOOK BAR -->
+  <div slot="after" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
+    <div class="flex items-center gap-3 px-4 h-[76px]">
+      <div class="flex-1 min-w-0">
+        <div class="font-heading font-extrabold text-xl leading-none" data-price-out>{def.price != null ? `$${def.price}` : 'Quote'}</div>
+        <div class="text-[12px] text-muted truncate mt-1" data-name-out>{def.name}</div>
+      </div>
+      <a href={`tel:${PHONE_TEL}`} aria-label="Call" class="size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
+      <a href={bookUrl(def.id)} data-book class="btn-lime px-7">Book now</a>
+    </div>
+  </div>
+  <div class="md:hidden h-24"></div>
+</Base>
+
+<script>
+  const wrap = document.querySelector('[data-tiers]');
+  wrap?.addEventListener('change', (e) => {
+    const r = e.target as HTMLInputElement;
+    const price = r.dataset.price ? `$${r.dataset.price}` : 'Quote';
+    document.querySelectorAll('[data-price-out]').forEach((el) => (el.textContent = price));
+    document.querySelectorAll('[data-name-out]').forEach((el) => (el.textContent = r.dataset.name!));
+    document.querySelectorAll<HTMLAnchorElement>('[data-book]').forEach((a) => {
+      const u = new URL(a.href); u.searchParams.set('t', r.value); a.href = u.pathname + u.search;
+    });
+  });
+</script>

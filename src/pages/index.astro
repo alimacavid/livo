@@ -1,0 +1,168 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import BeforeAfter from '../components/BeforeAfter.astro';
+import { Image } from 'astro:assets';
+import heroVan from '../assets/photos/hero-van.png';
+import interiorBefore from '../assets/photos/interior-before.jpg';
+import interiorAfter from '../assets/photos/interior-after.jpg';
+import { DIVISIONS, AREAS, minPrice, subMin, PHONE, PHONE_TEL } from '../data/services';
+
+const popular = [
+  ['interior', 'move-in-move-out'],
+  ['interior', 'deep-cleaning'],
+  ['interior', 'post-construction-cleaning'],
+  ['airbnb', 'turnover-cleaning'],
+  ['power', 'driveway-cleaning'],
+  ['junk', 'junk-removal'],
+].map(([d, s]) => {
+  const div = DIVISIONS.find((x) => x.id === d)!;
+  return { div, sub: div.subs.find((x) => x.slug === s)! };
+});
+const trust = [
+  { icon: 'wallet', t: 'Upfront prices', s: 'See the price before you book' },
+  { icon: 'check', t: 'Pay after the job', s: 'Only when you are happy' },
+  { icon: 'shield', t: 'Licensed & insured', s: 'Uniformed, vetted crews' },
+  { icon: 'clock', t: 'Same-day response', s: 'Call or book online' },
+];
+---
+<Base title="LIVO Property Services — Cleaning, Power Washing & Junk Removal in the Tri-Cities" header="overlay">
+
+  <!-- ───── HERO ───── -->
+  <section class="px-3 md:px-6 pt-1 md:pt-6">
+    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] md:rounded-[32px] h-[min(76svh,640px)] md:h-[560px] bg-purple-ink">
+      <Image src={heroVan} alt="LIVO crew with the LIVO van" class="absolute inset-0 size-full object-cover object-[62%_center] md:object-center"
+        widths={[480, 800, 1200, 1800]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" fetchpriority="high" />
+      <div class="absolute inset-0 bg-gradient-to-t from-purple-ink via-purple-ink/55 to-transparent md:bg-gradient-to-r md:from-purple-ink/90 md:via-purple-ink/40"></div>
+      <div class="absolute inset-x-0 bottom-0 p-6 md:p-14 md:inset-y-0 md:flex md:flex-col md:justify-center md:max-w-xl">
+        <span class="inline-flex items-center gap-1.5 self-start rounded-full bg-white/12 backdrop-blur px-3 py-1 text-[12px] font-medium text-white/90 ring-1 ring-white/20">
+          <Icon name="pin" class="size-3.5" /> Tri-Cities & Greater Vancouver
+        </span>
+        <h1 class="mt-4 text-white font-extrabold text-[2.35rem] leading-[1.02] md:text-6xl">
+          Fall in love with your property.
+          <em class="block not-italic text-lime mt-1 text-[1.35rem] md:text-3xl font-bold">We make it happen.</em>
+        </h1>
+        <div class="mt-6 flex gap-3">
+          <a href="/book" class="btn-lime flex-1 md:flex-none">Book a service <Icon name="arrow" class="size-4" /></a>
+          <a href="/services" class="btn-ghost text-white hidden md:inline-flex">See services</a>
+        </div>
+        <p class="mt-4 text-[13px] text-white/70 flex items-center gap-2"><Icon name="check" class="size-4 text-lime" stroke={2.4} />Upfront prices · Pay after the job</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───── SERVICES ───── -->
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10 md:mt-20">
+    <div class="flex items-end justify-between">
+      <h2 class="text-[1.4rem] md:text-4xl font-extrabold">What do you need?</h2>
+      <a href="/services" class="text-sm font-semibold text-purple inline-flex items-center gap-1">All <Icon name="chevron" class="size-4" /></a>
+    </div>
+    <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+      {DIVISIONS.map((d) => (
+        <a href={`/services/${d.id}`} class="group relative overflow-hidden rounded-panel bg-cloud aspect-[4/5] md:aspect-[3/4] active:scale-[.98] transition" data-reveal>
+          <Image src={d.image} alt={d.name} class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105" widths={[320, 520, 700]} sizes="(min-width:768px) 280px, 50vw" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
+          <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple"><Icon name={d.icon} class="size-[18px]" /></span>
+          <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">
+            <div class="font-heading font-bold text-[15px] md:text-lg leading-tight">{d.name}</div>
+            <div class="mt-1 text-[12px] md:text-sm text-white/75">From <b class="text-lime">${minPrice(d)}</b></div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ───── POPULAR (swipe row) ───── -->
+  <section class="mt-10 md:mt-20">
+    <div class="mx-auto max-w-6xl px-4 md:px-6 flex items-end justify-between">
+      <h2 class="text-[1.4rem] md:text-4xl font-extrabold">Popular right now</h2>
+    </div>
+    <div class="mt-5 flex gap-3 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-px-4 md:scroll-px-6 px-4 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))] pb-2">
+      {popular.map(({ div, sub }) => (
+        <a href={`/services/${div.id}/${sub.slug}`} class="snap-start shrink-0 w-[68%] sm:w-[40%] md:w-[300px] card overflow-hidden active:scale-[.98] transition">
+          <div class="aspect-[16/10] overflow-hidden bg-cloud">
+            <Image src={sub.image} alt={sub.name} class="size-full object-cover" widths={[320, 600]} sizes="300px" />
+          </div>
+          <div class="p-4">
+            <div class="text-[11px] font-semibold text-muted uppercase tracking-wider">{div.short}</div>
+            <div class="mt-1 font-heading font-bold text-[15px] leading-snug">{sub.name}</div>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-sm text-muted">{subMin(sub) ? <>From <b class="text-ink">${subMin(sub)}</b></> : 'Custom quote'}</span>
+              <span class="size-8 rounded-full bg-lime grid place-items-center"><Icon name="arrow" class="size-4" stroke={2.2} /></span>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ───── TRUST ───── -->
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10 md:mt-20">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+      {trust.map((x) => (
+        <div class="rounded-panel bg-cloud p-4 md:p-6" data-reveal>
+          <span class="size-10 rounded-full bg-white grid place-items-center text-purple shadow-soft"><Icon name={x.icon} class="size-5" stroke={2} /></span>
+          <div class="mt-3 font-heading font-bold text-[14px] md:text-base">{x.t}</div>
+          <div class="mt-0.5 text-[12.5px] md:text-sm text-muted leading-snug">{x.s}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ───── HOW IT WORKS ───── -->
+  <section id="how" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+    <div class="eyebrow">How it works</div>
+    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Booked in 60 seconds.</h2>
+    <ol class="mt-6 grid md:grid-cols-3 gap-3 md:gap-5">
+      {[
+        ['Pick your service', 'Choose the service and your home size. The price shows right away.'],
+        ['Choose a time', 'Pick a date and time window. You get a text and email to confirm.'],
+        ['Pay after', 'A uniformed crew does the job. You pay when you are happy with it.'],
+      ].map(([t, s], i) => (
+        <li class="card p-5 flex md:block gap-4" data-reveal>
+          <span class="shrink-0 size-10 rounded-full bg-purple text-white font-heading font-extrabold grid place-items-center">{i + 1}</span>
+          <div class="md:mt-4">
+            <div class="font-heading font-bold">{t}</div>
+            <p class="mt-1 text-sm text-muted leading-relaxed">{s}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- ───── RESULTS ───── -->
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24">
+    <div class="md:grid md:grid-cols-5 md:gap-10 md:items-center">
+      <div class="md:col-span-2">
+        <div class="eyebrow">Real results</div>
+        <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">See the difference.</h2>
+        <p class="mt-2 text-muted text-sm md:text-base">Drag the slider. Real LIVO jobs, not stock photos.</p>
+      </div>
+      <BeforeAfter before={interiorBefore} after={interiorAfter} alt="Interior cleaning" class="mt-5 md:mt-0 md:col-span-3" />
+    </div>
+  </section>
+
+  <!-- ───── AREAS ───── -->
+  <section id="areas" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+    <div class="eyebrow">Where we work</div>
+    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Tri-Cities & Greater Vancouver.</h2>
+    <div class="mt-5 flex flex-wrap gap-2">
+      {AREAS.map((a, i) => (
+        <span class:list={['px-3.5 py-2 rounded-full text-[13px] font-medium', i < 3 ? 'bg-purple text-white' : 'bg-cloud text-ink']}>{a}</span>
+      ))}
+    </div>
+  </section>
+
+  <!-- ───── CTA ───── -->
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24">
+    <div class="hero-grad rounded-[28px] p-7 md:p-14 text-white relative overflow-hidden">
+      <div class="absolute -right-16 -top-16 size-64 rounded-full bg-lime/15 blur-2xl"></div>
+      <h2 class="text-white text-[1.6rem] md:text-5xl font-extrabold leading-tight max-w-lg">Ready when you are.</h2>
+      <p class="mt-2 text-white/75 max-w-md">Book online in a minute, or call us and we will set it up for you.</p>
+      <div class="mt-6 flex flex-col sm:flex-row gap-3">
+        <a href="/book" class="btn-lime">Book a service <Icon name="arrow" class="size-4" /></a>
+        <a href={`tel:${PHONE_TEL}`} class="btn-ghost text-white"><Icon name="phone" class="size-4" />{PHONE}</a>
+      </div>
+    </div>
+  </section>
+</Base>

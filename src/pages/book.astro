@@ -1,0 +1,349 @@
+---
+import Base from '../layouts/Base.astro';
+import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL } from '../data/services';
+
+// send only plain data to the browser (no images)
+const data = DIVISIONS.map((d) => ({
+  id: d.id, name: d.name, short: d.short, icon: d.icon,
+  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '' })),
+  addons: d.addons, freqs: d.freqs, times: d.times,
+}));
+---
+<Base title="Book a Service" tabBar={false} footer={false}>
+  <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
+
+  <div class="mx-auto max-w-xl px-4 pt-2 md:pt-8 pb-40">
+    <!-- progress -->
+    <div class="flex items-center gap-3">
+      <button id="bk-back" class="size-10 shrink-0 rounded-full bg-cloud grid place-items-center disabled:opacity-0 transition" aria-label="Back">
+        <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="flex-1">
+        <div class="flex justify-between text-[12px] font-semibold text-muted"><span id="bk-stepname">Service</span><span id="bk-count">1 / 6</span></div>
+        <div class="mt-1.5 h-1.5 rounded-full bg-cloud overflow-hidden"><div id="bk-bar" class="h-full bg-purple rounded-full transition-all duration-500" style="width:16%"></div></div>
+      </div>
+    </div>
+
+    <div id="bk-view" class="mt-7"></div>
+  </div>
+
+  <!-- bottom bar -->
+  <div slot="after" class="fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
+    <div class="mx-auto max-w-xl flex items-center gap-3 px-4 h-[80px]">
+      <button id="bk-sum" class="flex-1 min-w-0 text-left">
+        <div class="text-[11.5px] text-muted font-medium">Total</div>
+        <div class="flex items-baseline gap-2">
+          <span id="bk-total" class="font-heading font-extrabold text-2xl leading-none">$0</span>
+          <span id="bk-was" class="text-sm text-muted line-through"></span>
+        </div>
+      </button>
+      <button id="bk-next" class="btn-lime px-8 disabled:opacity-40 disabled:shadow-none">Continue</button>
+    </div>
+  </div>
+</Base>
+
+<script>
+  type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
+  type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
+  type Freq = { id: string; name: string; sub: string; discount: number };
+  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string };
+  type Div = { id: string; name: string; short: string; icon: string; subs: SubD[]; addons: Addon[]; freqs: Freq[]; times: { id: string; sub: string }[] };
+
+  const D = JSON.parse(document.getElementById('livo-data')!.textContent!) as { divisions: Div[]; firstTime: number; phone: string; tel: string };
+  const ENDPOINT = 'https://dlzmkkmnmrbvxoazzbpi.functions.supabase.co/send-booking-confirmation';
+  // public anon key — safe in the browser (same key the v1 booking page used)
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsem1ra21ubXJidnhvYXp6YnBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDkwNDEsImV4cCI6MjA5MzUyNTA0MX0.c0GlQn81n0Y_J-amOo24D4lmVih95qXWDy9Y20fkSYg';
+
+  const STEPS = ['service', 'size', 'addons', 'freq', 'when', 'details'] as const;
+  const NAMES: Record<string, string> = { service: 'Service', size: 'Size', addons: 'Add-ons', freq: 'How often', when: 'Date & time', details: 'Your details' };
+  type Step = (typeof STEPS)[number];
+
+  const q = new URLSearchParams(location.search);
+  const st = {
+    step: 'service' as Step | 'done',
+    div: D.divisions.find((d) => d.id === q.get('d'))?.id ?? D.divisions[0].id,
+    sub: q.get('s') ?? '',
+    tier: q.get('t') ?? '',
+    addons: {} as Record<string, number>,
+    freq: 'onetime',
+    date: '',
+    time: '',
+    month: (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })(),
+    firstTime: true,
+    c: { name: '', phone: '', email: '', address: '', notes: '' },
+    sending: false,
+  };
+  const div = () => D.divisions.find((d) => d.id === st.div)!;
+  const sub = () => div().subs.find((s) => s.slug === st.sub);
+  const tier = () => sub()?.tiers.find((t) => t.id === st.tier);
+  const freq = () => div().freqs.find((f) => f.id === st.freq) ?? div().freqs[0];
+  if (!sub()) st.sub = '';
+  if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
+  if (st.sub && st.tier) st.step = 'addons';
+  else if (st.sub) st.step = 'size';
+
+  const $ = (s: string) => document.querySelector(s) as HTMLElement;
+  const money = (n: number) => '$' + Math.round(n);
+  const isQuote = () => tier() != null && tier()!.price == null;
+
+  function totals() {
+    const base = tier()?.price ?? 0;
+    const add = div().addons.reduce((s, a) => s + (st.addons[a.id] ?? 0) * a.price, 0);
+    const sub = (base + add) * (1 - freq().discount);
+    const total = st.firstTime ? sub * (1 - D.firstTime) : sub;
+    return { base, add, sub: Math.round(sub), total: Math.round(total) };
+  }
+
+  const ic = (p: string, c = 'size-5') => `<svg viewBox="0 0 24 24" class="${c}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const CHECK = '<path d="m5 12.5 4.5 4.5L19 7.5"/>';
+  const radio = (on: boolean) => `<span class="size-5 shrink-0 rounded-full border-2 grid place-items-center ${on ? 'border-purple' : 'border-gray'}"><span class="size-2.5 rounded-full bg-purple transition ${on ? 'scale-100' : 'scale-0'}"></span></span>`;
+  const optCls = (on: boolean) => `w-full text-left flex items-center gap-4 p-4 rounded-[20px] border-2 transition active:scale-[.99] ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}`;
+  const h1 = (t: string, s = '') => `<h1 class="text-[1.65rem] md:text-3xl font-extrabold leading-tight">${t}</h1>${s ? `<p class="mt-1 text-muted text-[15px]">${s}</p>` : ''}`;
+
+  function vService() {
+    const d = div();
+    return `${h1('What do you need?', 'Pick a service. Prices show right away.')}
+      <div class="mt-5 flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+        ${D.divisions.map((x) => `<button data-div="${x.id}" class="shrink-0 h-10 px-4 rounded-full text-[13.5px] font-semibold transition ${x.id === d.id ? 'bg-purple text-white' : 'bg-cloud text-ink'}">${x.name}</button>`).join('')}
+      </div>
+      <div class="mt-4 grid gap-2.5">
+        ${d.subs.map((s) => {
+          const p = s.tiers.map((t) => t.price).filter((x) => x != null) as number[];
+          return `<button data-sub="${s.slug}" class="${optCls(st.sub === s.slug)}">${radio(st.sub === s.slug)}
+            <span class="flex-1 min-w-0"><span class="block font-semibold text-[15px]">${s.name}</span><span class="block text-[13px] text-muted leading-snug">${s.short}</span></span>
+            <span class="text-right shrink-0">${p.length ? `<span class="block text-[11px] text-muted">from</span><span class="font-heading font-extrabold">${money(Math.min(...p))}</span>` : `<span class="text-[13px] font-semibold text-purple">Quote</span>`}</span></button>`;
+        }).join('')}
+      </div>`;
+  }
+
+  function vSize() {
+    const s = sub()!;
+    return `${h1(s.tierLabel, s.name)}
+      <div class="mt-5 grid gap-2.5">
+        ${s.tiers.map((t) => `<button data-tier="${t.id}" class="${optCls(st.tier === t.id)}">${radio(st.tier === t.id)}
+          <span class="flex-1"><span class="block font-semibold text-[15px]">${t.name}${t.popular ? ' <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>' : ''}</span><span class="block text-[13px] text-muted">${t.sub ?? ''}</span></span>
+          <span class="font-heading font-extrabold text-lg">${t.price != null ? money(t.price) : '<span class="text-sm text-purple">Quote</span>'}</span></button>`).join('')}
+      </div>
+      ${s.quoteNote ? `<p class="mt-4 text-[13px] text-muted">${s.quoteNote}</p>` : ''}`;
+  }
+
+  function vAddons() {
+    const d = div();
+    return `${h1('Add anything else?', 'Optional. Tap to add.')}
+      <div class="mt-5 grid grid-cols-2 gap-2.5">
+        ${d.addons.map((a) => {
+          const n = st.addons[a.id] ?? 0; const on = n > 0;
+          return `<div class="relative p-4 rounded-[20px] border-2 transition ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white'}">
+            <button data-add="${a.id}" class="absolute inset-0 rounded-[20px]" aria-label="${on ? 'Remove' : 'Add'} ${a.name}"></button>
+            <div class="flex items-start justify-between gap-2">
+              <span class="font-semibold text-[14px] leading-snug">${a.name}</span>
+              <span class="size-6 shrink-0 rounded-full grid place-items-center ${on ? 'bg-purple text-white' : 'bg-cloud text-muted'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-3.5')}</span>
+            </div>
+            <div class="text-[12px] text-muted mt-0.5">${a.sub}</div>
+            <div class="mt-3 flex items-center justify-between">
+              <span class="text-[13px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
+            </div>
+            ${a.qty && on ? `<div class="relative mt-3 flex items-center justify-between rounded-full bg-white border border-line p-1">
+              <button data-dec="${a.id}" class="size-8 rounded-full bg-cloud grid place-items-center" aria-label="Less">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
+              <span class="font-bold text-sm">${n}</span>
+              <button data-inc="${a.id}" class="size-8 rounded-full bg-cloud grid place-items-center" aria-label="More">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>`;
+  }
+
+  function vFreq() {
+    const d = div(); const t = totals(); const base = t.base + t.add;
+    return `${h1('How often?', 'Regular clients save on every visit.')}
+      <div class="mt-5 grid grid-cols-2 gap-2.5">
+        ${d.freqs.map((f) => {
+          const on = st.freq === f.id;
+          return `<button data-freq="${f.id}" class="text-left p-4 rounded-[20px] border-2 transition active:scale-[.99] ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white'}">
+            <div class="flex items-center justify-between"><span class="font-semibold text-[15px]">${f.name}</span>${f.discount ? `<span class="text-[11px] font-bold bg-lime text-ink px-1.5 py-0.5 rounded">−${Math.round(f.discount * 100)}%</span>` : ''}</div>
+            <div class="text-[12.5px] text-muted">${f.sub}</div>
+            <div class="mt-3 font-heading font-extrabold">${isQuote() ? 'Quote' : money(base * (1 - f.discount))}<span class="text-[11px] font-sans font-medium text-muted"> /visit</span></div>
+          </button>`;
+        }).join('')}
+      </div>`;
+  }
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function vWhen() {
+    const { y, m } = st.month;
+    const first = new Date(y, m, 1).getDay(); const days = new Date(y, m + 1, 0).getDate();
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const canPrev = new Date(y, m, 1) > today;
+    let cells = '';
+    for (let i = 0; i < first; i++) cells += '<span></span>';
+    for (let dd = 1; dd <= days; dd++) {
+      const dt = new Date(y, m, dd); const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(dd).padStart(2, '0')}`;
+      const past = dt <= today; const sel = st.date === iso;
+      cells += `<button data-date="${iso}" ${past ? 'disabled' : ''} class="aspect-square rounded-full text-[14px] font-semibold transition ${sel ? 'bg-purple text-white shadow-lift' : past ? 'text-gray' : 'hover:bg-cloud'}">${dd}</button>`;
+    }
+    return `${h1('When should we come?', 'Pick a day and a time window.')}
+      <div class="mt-5 card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <button data-mon="-1" ${canPrev ? '' : 'disabled'} class="size-9 rounded-full bg-cloud grid place-items-center disabled:opacity-30">${ic('<path d="m15 6-6 6 6 6"/>', 'size-4')}</button>
+          <span class="font-heading font-bold">${MONTHS[m]} ${y}</span>
+          <button data-mon="1" class="size-9 rounded-full bg-cloud grid place-items-center">${ic('<path d="m9 6 6 6-6 6"/>', 'size-4')}</button>
+        </div>
+        <div class="grid grid-cols-7 text-center text-[11px] font-semibold text-muted mb-1">${['S','M','T','W','T','F','S'].map((x) => `<span>${x}</span>`).join('')}</div>
+        <div class="grid grid-cols-7 gap-1">${cells}</div>
+      </div>
+      <div class="mt-5 grid gap-2.5">
+        ${div().times.map((t) => `<button data-time="${t.id}" class="${optCls(st.time === t.id)}">${radio(st.time === t.id)}<span class="flex-1 font-semibold text-[15px]">${t.id}</span><span class="text-[13px] text-muted">${t.sub}</span></button>`).join('')}
+      </div>`;
+  }
+
+  function vDetails() {
+    const t = totals(); const s = sub()!; const tr = tier()!; const f = freq();
+    const fld = (id: string, label: string, type = 'text', ac = '') =>
+      `<label class="block"><span class="text-[12.5px] font-semibold text-muted">${label}</span>
+        <input id="c-${id}" type="${type}" ${ac ? `autocomplete="${ac}"` : ''} value="${(st.c as any)[id].replace(/"/g, '&quot;')}" class="mt-1 w-full h-12 px-4 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/10 transition" /></label>`;
+    const lines = [
+      [`${s.name} · ${tr.name}`, tr.price != null ? money(tr.price) : 'Quote'],
+      ...div().addons.filter((a) => st.addons[a.id]).map((a) => [`${a.name}${st.addons[a.id] > 1 ? ' × ' + st.addons[a.id] : ''}`, money(a.price * st.addons[a.id])]),
+    ];
+    return `${h1('Almost done', `${st.date ? new Date(st.date + 'T12:00').toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }) : ''} · ${st.time}`)}
+      <div class="mt-5 grid gap-3">
+        ${fld('name', 'Full name', 'text', 'name')}
+        ${fld('phone', 'Mobile number', 'tel', 'tel')}
+        ${fld('email', 'Email', 'email', 'email')}
+        ${fld('address', 'Service address', 'text', 'street-address')}
+        <label class="block"><span class="text-[12.5px] font-semibold text-muted">Notes (optional)</span>
+          <textarea id="c-notes" rows="2" class="mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/10">${st.c.notes}</textarea></label>
+      </div>
+      <div class="mt-6 card p-5">
+        <div class="font-heading font-bold">Summary</div>
+        <div class="mt-3 space-y-2 text-[14px]">
+          ${lines.map(([a, b]) => `<div class="flex justify-between gap-4"><span class="text-ink/80">${a}</span><span class="font-semibold">${b}</span></div>`).join('')}
+          ${f.discount ? `<div class="flex justify-between"><span class="text-ink/80">${f.name} discount</span><span class="font-semibold text-lime-deep">−${Math.round(f.discount * 100)}%</span></div>` : ''}
+        </div>
+        <button id="ft" class="mt-4 w-full flex items-center gap-3 p-3 rounded-[12px] ${st.firstTime ? 'bg-lime-soft' : 'bg-cloud'} text-left">
+          <span class="size-5 shrink-0 rounded-[6px] grid place-items-center ${st.firstTime ? 'bg-lime-deep text-white' : 'border-2 border-gray'}">${st.firstTime ? ic(CHECK, 'size-3.5') : ''}</span>
+          <span class="text-[13.5px]">First time with LIVO? <b>30% off</b></span>
+        </button>
+        <div class="mt-4 pt-4 border-t border-line flex justify-between items-baseline">
+          <span class="font-semibold">Total</span>
+          <span class="font-heading font-extrabold text-2xl">${isQuote() ? 'Quote' : money(t.total)}</span>
+        </div>
+        <p class="mt-1 text-[12px] text-muted">GST included. You pay after the job.</p>
+      </div>
+      <p id="bk-err" class="mt-4 text-sm text-red-600 min-h-5"></p>`;
+  }
+
+  function vDone(ref: string) {
+    return `<div class="text-center pt-10">
+      <div class="mx-auto size-20 rounded-full bg-lime grid place-items-center">${ic(CHECK, 'size-10')}</div>
+      <h1 class="mt-6 text-3xl font-extrabold">You're booked!</h1>
+      <p class="mt-2 text-muted">Confirmation sent by text and email.<br/>Reference <b class="text-purple">#${ref}</b></p>
+      <p class="mt-6 text-sm text-muted">We'll call shortly to confirm the details.</p>
+      <a href="/" class="btn-dark mt-8">Back to home</a>
+    </div>`;
+  }
+
+  function canNext() {
+    switch (st.step) {
+      case 'service': return !!sub();
+      case 'size': return !!tier();
+      case 'addons': case 'freq': return true;
+      case 'when': return !!(st.date && st.time);
+      case 'details': return !st.sending;
+    }
+    return false;
+  }
+
+  function render() {
+    const v = $('#bk-view');
+    if (st.step === 'done') return;
+    const i = STEPS.indexOf(st.step as Step);
+    $('#bk-stepname').textContent = NAMES[st.step];
+    $('#bk-count').textContent = `${i + 1} / ${STEPS.length}`;
+    $('#bk-bar').style.width = `${((i + 1) / STEPS.length) * 100}%`;
+    ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
+    v.innerHTML = ({ service: vService, size: vSize, addons: vAddons, freq: vFreq, when: vWhen, details: vDetails } as any)[st.step]();
+    const t = totals();
+    $('#bk-total').textContent = isQuote() ? 'Quote' : money(t.total);
+    $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
+    const nx = $('#bk-next') as HTMLButtonElement;
+    nx.disabled = !canNext();
+    nx.textContent = st.step === 'details' ? (st.sending ? 'Sending…' : 'Confirm booking') : 'Continue';
+  }
+
+  function go(step: Step) { st.step = step; render(); scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  $('#bk-view').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('button') as HTMLButtonElement | null; if (!b || b.disabled) return;
+    const ds = b.dataset;
+    if (ds.div) { st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = ''; }
+    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; render(); setTimeout(() => go('size'), 160); return; }
+    else if (ds.tier) { st.tier = ds.tier; }
+    else if (ds.add) { const a = div().addons.find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
+    else if (ds.inc) { st.addons[ds.inc] = (st.addons[ds.inc] ?? 0) + 1; }
+    else if (ds.dec) { st.addons[ds.dec] = Math.max(0, (st.addons[ds.dec] ?? 0) - 1); }
+    else if (ds.freq) { st.freq = ds.freq; }
+    else if (ds.mon) { let { y, m } = st.month; m += +ds.mon; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } st.month = { y, m }; }
+    else if (ds.date) { st.date = ds.date; }
+    else if (ds.time) { st.time = ds.time; }
+    else if (b.id === 'ft') { st.firstTime = !st.firstTime; }
+    render();
+  });
+  $('#bk-view').addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement; const k = el.id.replace('c-', '');
+    if (k in st.c) (st.c as any)[k] = el.value;
+  });
+  $('#bk-back').addEventListener('click', () => { const i = STEPS.indexOf(st.step as Step); if (i > 0) go(STEPS[i - 1]); });
+  $('#bk-next').addEventListener('click', () => {
+    if (!canNext()) return;
+    const i = STEPS.indexOf(st.step as Step);
+    if (st.step === 'details') submit(); else go(STEPS[i + 1]);
+  });
+
+  function normPhone(p: string) {
+    const d = p.replace(/\D/g, '');
+    if (d.length === 10) return '+1' + d;
+    if (d.length === 11 && d[0] === '1') return '+' + d;
+    return '';
+  }
+
+  async function submit() {
+    const err = $('#bk-err'); const c = st.c;
+    const phone = normPhone(c.phone);
+    const bad: string[] = [];
+    if (!c.name.trim()) bad.push('name');
+    if (!phone) bad.push('phone');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email.trim())) bad.push('email');
+    if (!c.address.trim()) bad.push('address');
+    document.querySelectorAll('#bk-view input').forEach((el) => el.classList.remove('!border-red-500'));
+    bad.forEach((k) => document.getElementById('c-' + k)?.classList.add('!border-red-500'));
+    if (bad.length) { err.textContent = 'Please check: ' + bad.join(', ') + '.'; return; }
+
+    const d = div(), s = sub()!, tr = tier()!, f = freq(), t = totals();
+    const k = 1 - f.discount;
+    const items = [
+      { svcName: d.name, group: s.name, size: tr.name, freq: f.name, price: Math.round((tr.price ?? 0) * k) },
+      ...d.addons.filter((a) => st.addons[a.id]).map((a) => ({ svcName: d.name, group: 'Add-on: ' + a.name, size: `× ${st.addons[a.id]}`, freq: f.name, price: Math.round(a.price * st.addons[a.id] * k) })),
+    ];
+    const payload = {
+      name: c.name.trim(), email: c.email.trim(), phone,
+      date: st.date, time: st.time, firstTime: st.firstTime,
+      total: isQuote() ? 0 : t.total, items,
+      notes: [`Address: ${c.address.trim()}`, c.notes.trim() && `Notes: ${c.notes.trim()}`, isQuote() && 'QUOTE REQUEST — price to be confirmed'].filter(Boolean).join('\n'),
+    };
+    st.sending = true; render(); $('#bk-err').textContent = '';
+    try {
+      const r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${ANON}`, apikey: ANON }, body: JSON.stringify(payload) });
+      const j = await r.json();
+      if (!r.ok || j.error) throw new Error(j.error);
+      st.step = 'done';
+      $('#bk-view').innerHTML = vDone(j.ref);
+      (document.querySelector('[slot="after"], #bk-next')!.closest('.fixed') as HTMLElement).style.display = 'none';
+      document.querySelector('.max-w-xl .flex.items-center.gap-3')?.classList.add('invisible');
+    } catch {
+      st.sending = false; render();
+      $('#bk-err').textContent = `Something went wrong. Please call ${D.phone} or try again.`;
+    }
+  }
+
+  render();
+</script>
