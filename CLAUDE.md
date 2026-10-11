@@ -3,7 +3,12 @@
 ## Last updated
 2026-10-11
 
-## 2026-10-11 — Services restructure + cleaner mobile home (LIVE)
+## ⚠ 2026-10-11 — LIVE vs TEST (read first)
+- Ali does NOT want today's work live. `main` (livoland.com) was restored to the 2026-09-26 site (commit 0a4209d content) on 2026-10-11.
+- Today's work (UI polish + services restructure, entries below) lives ONLY on `v1.0` (test: v1-0--darling-marigold-ff0def.netlify.app) and branch `services-v3`.
+- Never push to `main` unless Ali explicitly says to put it on livoland.com — and confirm once before doing it.
+
+## 2026-10-11 — Services restructure + cleaner mobile home (TEST ONLY — not on livoland.com)
 - Divisions now (7): Interior Cleaning (Standard, Deep, Recurring) · Move-In / Move-Out · After-Construction Clean-Up · Airbnb Turnover · Junk Removal · Commercial Cleaning (Office, Retail & Storefront, Strata & Common Areas, Commercial Clean-Up) · Restaurant & Kitchen (Kitchen Deep Clean, Scheduled Kitchen Cleaning, Front-of-House & Dining). 16 sub-services.
 - REMOVED (Ali, 2026-10-11): whole Power Washing & Windows division — power washing, windows, gutters, deck/fence, roof, exterior package. Old URLs 301 to /services (netlify.toml). Carpet & Upholstery stays inactive.
 - Move-In/Move-Out and After-Construction moved out of Interior into their own divisions (same prices; After-Construction still `draft`). Old URLs 301 to new ones. They share Interior add-ons (`INTERIOR_ADDONS`) and are one-time only.
@@ -14,9 +19,9 @@
 - Careers page service chips updated (Carpet + Power Washing removed).
 - Checked: all 27 pages 200, axe WCAG 2.2 AA 0 violations at 390px, no horizontal scroll, booking tested for all 7 divisions + quote submit payload.
 - Known gaps: Commercial uses team-van photo, Restaurant uses a home-kitchen photo — need real photos. careers.html says "Paid per job / contract-based" — check against current pay terms.
-- Branch: `services-v3` → `v1.0` → `main` (livoland.com). Ali approved go-live 2026-10-11. All three level.
+- Branch: `services-v3` = `v1.0` (test). Was briefly on `main`, then removed at Ali's request.
 
-## 2026-10-11 — UI polish: motion + accessibility (LIVE)
+## 2026-10-11 — UI polish: motion + accessibility (TEST ONLY — not on livoland.com)
 - What changed: no layout changes (Ali wants the mobile app kept minimal). Added motion + WCAG 2.2 AA fixes using UI/UX Pro Max guidance. Brand colors/fonts unchanged.
 - Motion (all in `src/styles/global.css`, one set of timing tokens `--ease-*`, `--dur-*`):
   - Native page-to-page transitions (`@view-transition`, no JS); header + bottom bar stay fixed between pages (`view-transition-name`).
@@ -29,7 +34,7 @@
 - Accessibility: skip link, visible focus ring everywhere (purple; lime on dark via `.on-dark`), `aria-current` on tabs/nav, desktop Services menu opens on keyboard focus + Esc closes, decorative images `alt=""`, reveal content stays visible without JS (`html.js`), new `--color-lime-ink #5C6600` for lime TEXT (old `lime-deep` as text failed contrast — use lime-deep for fills only), tab labels 11px darker gray, touch targets ≥44px, services chips highlight current section.
 - Booking: `aria-pressed` on every option, focus moves to each step heading + screen-reader announcement, keeps focus on the option you tapped, calendar days have full date labels, progress bar is a real progressbar, inline error under each field + focus first bad field, first-time discount is a real checkbox.
 - Checked: build OK; axe-core WCAG 2.2 AA scan = 0 violations on home, services, division, sub-service and booking steps at 390px; no horizontal scroll.
-- Branch: `ui-polish` → `v1.0` (staging) → `main` (livoland.com). Ali approved go-live 2026-10-11. `ui-polish`, `v1.0`, `main` all level.
+- Branch: included in `v1.0` (test). Was briefly on `main`, then removed at Ali's request.
 - Not in this change: Ali's 2026-10-07 service changes (remove Power Washing, add Commercial / Restaurant Kitchen, split Move-in/out + After-construction) — still to do in `src/data/services.ts`.
 
 ## 2026-09-26 — v2 rebuild in Astro + Tailwind (branch `v2-astro`)
