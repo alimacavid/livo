@@ -41,10 +41,10 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
       <!-- PRICE TABLE -->
       <section class="mt-8" id="prices">
         <div class="flex items-end justify-between">
-          <h2 class="text-xl font-extrabold">{s.recurring ? 'Recurring prices' : 'Prices'}</h2>
+          <h2 class="text-xl font-extrabold">{s.recurring ? 'Recurring prices' : from == null ? 'Get a quote' : 'Prices'}</h2>
           {s.draft && <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-1 rounded-full">Draft prices</span>}
         </div>
-        <p class="text-sm text-muted mt-0.5">{s.recurring ? 'Per visit. Save more the more often we come.' : `Pick your ${s.tierLabel.toLowerCase()}. Prices include supplies & GST.`}</p>
+        <p class="text-sm text-muted mt-0.5">{s.recurring ? 'Per visit. Save more the more often we come.' : from == null ? 'Free, no-obligation quote. Pick how you want it.' : `Pick your ${s.tierLabel.toLowerCase()}. Prices include supplies & GST.`}</p>
 
         {s.recurring ? (
           <div class="mt-4 card overflow-hidden">
@@ -96,7 +96,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
       )}
 
       <!-- ADD-ONS -->
-      <section class="mt-10">
+      {d.addons.length > 0 && <section class="mt-10">
         <h2 class="text-xl font-extrabold">Popular add-ons</h2>
         <p class="text-sm text-muted mt-0.5">Tap to add. They carry over to your booking.</p>
         <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3" data-addons>
@@ -112,7 +112,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
             </button>
           ))}
         </div>
-      </section>
+      </section>}
 
       <!-- GOOD FOR -->
       <section class="mt-10">
@@ -155,11 +155,11 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
         <div class="text-sm text-muted">Your price</div>
         <div class="font-heading font-extrabold text-4xl mt-1" data-price-out aria-live="polite">{def.price != null ? `$${def.price}` : 'Quote'}</div>
         <div class="text-sm text-muted" data-name-out>{def.name}</div>
-        <a href={bookUrl(def.id)} data-book class="sheen btn-lime w-full mt-5">Book {s.name}</a>
+        <a href={bookUrl(def.id)} data-book class="sheen btn-lime w-full mt-5">{from == null ? 'Request a quote' : `Book ${s.name}`}</a>
         <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
         <ul class="mt-5 space-y-2 text-[13px] text-muted">
           <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />Pay after the job</li>
-          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />30% off your first booking</li>
+          {from != null && <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />30% off your first booking</li>}
           <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />Licensed & insured crew</li>
         </ul>
       </div>
@@ -174,7 +174,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
         <div class="text-[12px] text-muted truncate mt-1" data-name-out>{def.name}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
-      <a href={bookUrl(def.id)} data-book class="sheen btn-lime px-7">Book now</a>
+      <a href={bookUrl(def.id)} data-book class="sheen btn-lime px-7">{from == null ? 'Get quote' : 'Book now'}</a>
     </div>
   </div>
   <div class="md:hidden h-24"></div>

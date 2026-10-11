@@ -8,8 +8,9 @@ export function getStaticPaths() {
   return DIVISIONS.map((d) => ({ params: { division: d.id }, props: { d } }));
 }
 const { d } = Astro.props as { d: Division };
+const from = minPrice(d);
 ---
-<Base title={`${d.name} in Port Coquitlam, Coquitlam & Port Moody`} description={`${d.name} by LIVO — ${d.tagline} Upfront prices from $${minPrice(d)}. Serving the Tri-Cities and Greater Vancouver.`}>
+<Base title={`${d.name} in Port Coquitlam, Coquitlam & Port Moody`} description={`${d.name} by LIVO — ${d.tagline} ${from ? `Upfront prices from $${from}.` : 'Free custom quotes.'} Serving the Tri-Cities and Greater Vancouver.`}>
   <section class="px-3 md:px-6 pt-1 md:pt-6">
     <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-64 md:h-96 bg-purple-ink">
       <Image src={d.image} alt="" class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
@@ -17,7 +18,7 @@ const { d } = Astro.props as { d: Division };
       <a href="/services" class="press absolute top-3 left-3 size-11 text-ink rounded-full bg-white/90 backdrop-blur grid place-items-center" aria-label="Back to services"><Icon name="back" class="size-5" /></a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
         <h1 class="rise text-white text-3xl md:text-5xl font-extrabold" style="--i:0">{d.name}</h1>
-        <p class="rise mt-1 text-white/85" style="--i:1">{d.tagline} From <b class="text-lime">${minPrice(d)}</b>.</p>
+        <p class="rise mt-1 text-white/85" style="--i:1">{d.tagline} {from ? <>From <b class="text-lime">${from}</b>.</> : <b class="text-lime">Free custom quote.</b>}</p>
       </div>
     </div>
   </section>
@@ -25,7 +26,7 @@ const { d } = Astro.props as { d: Division };
     <h2 class="text-lg md:text-2xl font-extrabold">Choose a service</h2>
     <div class="mt-4 grid md:grid-cols-2 gap-3">{d.subs.map((s) => <div data-reveal><SubRow div={d} sub={s} /></div>)}</div>
   </section>
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10">
+  {d.addons.length > 0 && <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10">
     <h2 class="text-lg md:text-2xl font-extrabold">Add-ons</h2>
     <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
       {d.addons.map((a) => (
@@ -36,7 +37,7 @@ const { d } = Astro.props as { d: Division };
         </div>
       ))}
     </div>
-  </section>
+  </section>}
   <section class="mx-auto max-w-3xl px-4 md:px-6 mt-10">
     <h2 class="text-lg md:text-2xl font-extrabold">Questions</h2>
     <div class="mt-3 divide-y divide-line border-y border-line">

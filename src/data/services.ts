@@ -13,9 +13,6 @@ import interiorBefore from '../assets/photos/interior-before.jpg';
 import interiorAfter from '../assets/photos/interior-after.jpg';
 import airbnbBefore from '../assets/photos/airbnb-before.jpg';
 import airbnbAfter from '../assets/photos/airbnb-after.jpg';
-import powerDriveway from '../assets/photos/power-driveway.jpg';
-import powerBefore from '../assets/photos/power-before.jpg';
-import powerAfter from '../assets/photos/power-after.jpg';
 import junkTruck from '../assets/photos/junk-truck.jpg';
 import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
@@ -73,6 +70,15 @@ const DAY_TIMES = [
   { id: 'Afternoon', sub: '2:00 – 4:30 pm' },
 ];
 
+const INTERIOR_ADDONS: Addon[] = [
+  { id: 'fridge', name: 'Inside Fridge', sub: 'Shelves + drawers', price: 40, unit: 'each' },
+  { id: 'oven', name: 'Inside Oven', sub: 'Racks + door glass', price: 45, unit: 'each' },
+  { id: 'kitchen', name: 'Kitchen Deep Clean', sub: 'Cabinets + degrease', price: 95, unit: 'each' },
+  { id: 'bath', name: 'Extra Bathroom Detail', sub: 'Tile, grout, glass', price: 75, unit: 'per bathroom', qty: true },
+  { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
+  { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole home', price: 79, unit: 'each' },
+];
+
 export const DIVISIONS: Division[] = [
   // ───────────────────────── INTERIOR ─────────────────────────
   {
@@ -126,6 +132,49 @@ export const DIVISIONS: Division[] = [
         goodFor: ['First-time clients', 'Seasonal reset', 'Before hosting guests'],
       },
       {
+        slug: 'recurring-cleaning',
+        name: 'Recurring Cleaning',
+        short: 'Weekly, bi-weekly or monthly — save up to 15%.',
+        desc: 'Same crew, same day, same standard. Put your home on a schedule and save on every visit.',
+        image: interiorKitchen,
+        unit: 'per visit',
+        tierLabel: 'Home size',
+        recurring: true,
+        tiers: HOME_SIZES([120, 150, 230, 310]),
+        included: [
+          'Everything in Standard Cleaning',
+          'Same crew whenever possible',
+          'Skip or reschedule with 48 hours notice',
+          'No contracts — cancel anytime',
+        ],
+        goodFor: ['Busy professionals', 'Families', 'Pet owners'],
+      },
+    ],
+    addons: INTERIOR_ADDONS,
+    freqs: [
+      { id: 'onetime', name: 'One-Time', sub: 'Just this once', discount: 0 },
+      { id: 'weekly', name: 'Weekly', sub: 'Every week', discount: 0.15 },
+      { id: 'biweekly', name: 'Bi-Weekly', sub: 'Every 2 weeks', discount: 0.1 },
+      { id: 'monthly', name: 'Monthly', sub: 'Once a month', discount: 0.05 },
+    ],
+    times: DAY_TIMES,
+    faqs: [
+      { q: 'Do I need to supply anything?', a: 'No. We bring all supplies and equipment. Eco-friendly products are available on request.' },
+      { q: 'Do I need to be home?', a: 'No. Many clients leave a key or door code. We send a text when we arrive and when we finish.' },
+      { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
+    ],
+  },
+
+  // ───────────────────────── MOVE-IN / MOVE-OUT ─────────────────────────
+  {
+    id: 'move',
+    name: 'Move-In / Move-Out',
+    short: 'Move',
+    tagline: 'Empty-home cleans that pass inspection.',
+    icon: 'box',
+    image: interiorKitchen,
+    subs: [
+      {
         slug: 'move-in-move-out',
         name: 'Move-In / Move-Out',
         short: 'Landlord-ready. Get your deposit back.',
@@ -150,6 +199,28 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['Tenants moving out', 'Landlords between tenants', 'Buyers before moving in'],
       },
+    ],
+    addons: INTERIOR_ADDONS,
+    freqs: [
+      { id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 },
+    ],
+    times: DAY_TIMES,
+    faqs: [
+      { q: 'Does the home need to be empty?', a: 'Yes, ideally. An empty home lets us clean inside every cabinet, closet and appliance properly.' },
+      { q: 'Will this help me get my deposit back?', a: 'That is what it is built for. We follow a landlord-style checklist so nothing gets missed at inspection.' },
+      { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
+    ],
+  },
+
+  // ───────────────────────── AFTER-CONSTRUCTION ─────────────────────────
+  {
+    id: 'construction',
+    name: 'After-Construction Clean-Up',
+    short: 'After-Construction',
+    tagline: 'Renovation dust and debris, gone.',
+    icon: 'hammer',
+    image: interiorVacuum,
+    subs: [
       {
         slug: 'post-construction-cleaning',
         name: 'After-Construction Clean-Up',
@@ -176,43 +247,15 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['Renovated homes', 'New builds', 'Contractors handing over'],
       },
-      {
-        slug: 'recurring-cleaning',
-        name: 'Recurring Cleaning',
-        short: 'Weekly, bi-weekly or monthly — save up to 15%.',
-        desc: 'Same crew, same day, same standard. Put your home on a schedule and save on every visit.',
-        image: interiorKitchen,
-        unit: 'per visit',
-        tierLabel: 'Home size',
-        recurring: true,
-        tiers: HOME_SIZES([120, 150, 230, 310]),
-        included: [
-          'Everything in Standard Cleaning',
-          'Same crew whenever possible',
-          'Skip or reschedule with 48 hours notice',
-          'No contracts — cancel anytime',
-        ],
-        goodFor: ['Busy professionals', 'Families', 'Pet owners'],
-      },
     ],
-    addons: [
-      { id: 'fridge', name: 'Inside Fridge', sub: 'Shelves + drawers', price: 40, unit: 'each' },
-      { id: 'oven', name: 'Inside Oven', sub: 'Racks + door glass', price: 45, unit: 'each' },
-      { id: 'kitchen', name: 'Kitchen Deep Clean', sub: 'Cabinets + degrease', price: 95, unit: 'each' },
-      { id: 'bath', name: 'Extra Bathroom Detail', sub: 'Tile, grout, glass', price: 75, unit: 'per bathroom', qty: true },
-      { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
-      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole home', price: 79, unit: 'each' },
-    ],
+    addons: INTERIOR_ADDONS,
     freqs: [
-      { id: 'onetime', name: 'One-Time', sub: 'Just this once', discount: 0 },
-      { id: 'weekly', name: 'Weekly', sub: 'Every week', discount: 0.15 },
-      { id: 'biweekly', name: 'Bi-Weekly', sub: 'Every 2 weeks', discount: 0.1 },
-      { id: 'monthly', name: 'Monthly', sub: 'Once a month', discount: 0.05 },
+      { id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 },
     ],
     times: DAY_TIMES,
     faqs: [
-      { q: 'Do I need to supply anything?', a: 'No. We bring all supplies and equipment. Eco-friendly products are available on request.' },
-      { q: 'Do I need to be home?', a: 'No. Many clients leave a key or door code. We send a text when we arrive and when we finish.' },
+      { q: 'How do you price it?', a: 'Starting prices are by home size. We confirm the final price from photos or a free site visit before we start.' },
+      { q: 'Do you remove construction debris too?', a: 'Small debris, yes. For larger loads, add our Junk Removal service.' },
       { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
     ],
   },
@@ -292,139 +335,6 @@ export const DIVISIONS: Division[] = [
     ],
   },
 
-  // ─────────────────── POWER WASHING & WINDOWS ───────────────────
-  {
-    id: 'power',
-    name: 'Power Washing & Windows',
-    short: 'Exterior',
-    tagline: 'Driveways, siding, windows, gutters.',
-    icon: 'spray',
-    image: powerDriveway,
-    subs: [
-      {
-        slug: 'driveway-cleaning',
-        name: 'Driveway & Walkway',
-        short: 'Oil, moss and grime lifted off concrete.',
-        desc: 'High-pressure surface cleaning that lifts oil stains, moss and years of grime from concrete, pavers and walkways.',
-        image: powerDriveway,
-        before: powerBefore,
-        after: powerAfter,
-        unit: 'flat rate',
-        tierLabel: 'Area',
-        tiers: [
-          { id: 'small', name: 'Small', sub: 'Up to 500 sq ft', price: 99 },
-          { id: 'medium', name: 'Medium', sub: '500–1,000 sq ft', price: 149, popular: true },
-          { id: 'large', name: 'Large', sub: '1,000+ sq ft', price: 219 },
-        ],
-        included: ['Surface cleaner for streak-free results', 'Moss and weed lines cleared', 'Oil and rust spots pre-treated', 'Final rinse of surrounding areas'],
-        goodFor: ['Before selling', 'Spring clean-up', 'Moss and slip hazards'],
-      },
-      {
-        slug: 'house-washing',
-        name: 'House Washing',
-        short: 'Soft-wash siding — mildew and algae gone.',
-        desc: 'A safe soft wash that removes dirt, mildew and green algae from siding without damaging paint or seals.',
-        image: powerDriveway,
-        before: powerBefore,
-        after: powerAfter,
-        unit: 'flat rate',
-        tierLabel: 'Home height',
-        tiers: [
-          { id: '1-2', name: '1–2 Storey', sub: 'Standard home', price: 249, popular: true },
-          { id: '3', name: '3+ Storey', sub: 'Large home', price: 349 },
-        ],
-        included: ['Low-pressure soft wash on all siding', 'Soffits and fascia rinsed', 'Doors and trim wiped', 'Plants pre-wet and protected'],
-        goodFor: ['Vinyl and Hardie siding', 'Before painting', 'Before listing'],
-      },
-      {
-        slug: 'window-cleaning',
-        name: 'Window Cleaning',
-        short: 'Streak-free glass, sills and screens.',
-        desc: 'Exterior glass, frames, sills and screens cleaned by hand for a streak-free finish. Add interior windows in the booking.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Number of windows',
-        tiers: [
-          { id: '10', name: 'Up to 10', sub: 'Condo / townhouse', price: 59 },
-          { id: '20', name: 'Up to 20', sub: 'Standard home', price: 118, popular: true },
-          { id: '30', name: 'Up to 30', sub: 'Large home', price: 177 },
-        ],
-        included: ['Exterior glass hand-cleaned', 'Frames and sills wiped', 'Screens brushed and rinsed', 'Ladder work up to 3 storeys'],
-        goodFor: ['Spring and fall', 'Before selling', 'After construction'],
-      },
-      {
-        slug: 'gutter-cleaning',
-        name: 'Gutter Cleaning',
-        short: 'Cleared and flow-tested.',
-        desc: 'Gutters cleared by hand, downspouts flushed and flow-tested to prevent overflow and water damage.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Home size',
-        tiers: [{ id: 'standard', name: 'Standard Home', sub: 'Up to 2 storeys', price: 89, popular: true }],
-        included: ['Debris removed by hand', 'Downspouts flushed', 'Flow test', 'Debris bagged and removed'],
-        goodFor: ['Every fall', 'Homes near trees', 'Overflowing gutters'],
-      },
-      {
-        slug: 'deck-fence-washing',
-        name: 'Deck & Fence Washing',
-        short: 'Grey, weathered wood brought back.',
-        desc: 'Removes grime, mildew and grey weathering from wood and composite decks and fences.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Size',
-        tiers: [{ id: 'standard', name: 'Standard Size', sub: 'Deck or fence', price: 149, popular: true }],
-        included: ['Pressure adjusted for wood or composite', 'Mildew treated', 'Railings and steps', 'Surrounding area rinsed'],
-        goodFor: ['Before staining', 'Spring prep', 'Slippery decks'],
-      },
-      {
-        slug: 'roof-soft-wash',
-        name: 'Roof Soft Wash',
-        short: 'Moss and black streaks removed safely.',
-        desc: 'A low-pressure treatment that kills moss and removes black streaks without damaging shingles.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Roof size',
-        tiers: [{ id: 'standard', name: 'Standard Roof', sub: 'Up to 2 storeys', price: 249, popular: true }],
-        included: ['Moss treatment', 'Low-pressure soft wash', 'Gutters rinsed after', 'Shingle-safe method'],
-        goodFor: ['Mossy roofs', 'Before selling', 'Extending roof life'],
-      },
-      {
-        slug: 'full-exterior-package',
-        name: 'Full Exterior Package',
-        short: 'Driveway + siding + windows in one visit.',
-        desc: 'Our most popular bundle: driveway, house wash and exterior windows done in one visit, for less than booking them separately.',
-        image: powerDriveway,
-        before: powerBefore,
-        after: powerAfter,
-        unit: 'flat rate',
-        tierLabel: 'Home size',
-        tiers: [
-          { id: 'standard', name: 'Standard Home', sub: 'Up to 2 storeys', price: 379, popular: true },
-          { id: 'large', name: 'Large Home', sub: '3+ storeys', price: 499 },
-        ],
-        included: ['Driveway and walkways', 'Full house soft wash', 'Exterior windows', 'One crew, one visit'],
-        goodFor: ['Selling your home', 'Annual refresh', 'Best value'],
-      },
-    ],
-    addons: [
-      { id: 'gutters', name: 'Gutter Cleaning', sub: 'Cleared + flushed', price: 89, unit: 'each' },
-      { id: 'windows', name: 'Exterior Windows', sub: 'Glass, sills, screens', price: 59, unit: 'per 10 windows', qty: true },
-      { id: 'deck', name: 'Deck or Fence Wash', sub: 'Wood or composite', price: 149, unit: 'each' },
-      { id: 'roof', name: 'Roof Soft Wash', sub: 'Moss treatment', price: 249, unit: 'each' },
-    ],
-    freqs: [
-      { id: 'onetime', name: 'One-Time', sub: 'Just this once', discount: 0 },
-      { id: 'seasonal', name: 'Spring & Fall', sub: 'Twice a year', discount: 0.1 },
-      { id: 'yearly', name: 'Yearly', sub: 'Every spring', discount: 0.05 },
-    ],
-    times: DAY_TIMES,
-    faqs: [
-      { q: 'Do I need to be home?', a: 'No. We only need access to an outdoor water tap.' },
-      { q: 'Is it safe for my siding and plants?', a: 'Yes. We soft-wash siding at low pressure and pre-wet and protect plants.' },
-      { q: 'What if it rains?', a: 'Light rain is fine. In heavy rain we reschedule at no charge.' },
-    ],
-  },
-
   // ───────────────────────── JUNK ─────────────────────────
   {
     id: 'junk',
@@ -488,13 +398,229 @@ export const DIVISIONS: Division[] = [
       { q: 'What if I have more than I thought?', a: 'We confirm the load size on site before we start. No surprises.' },
     ],
   },
+
+  // ───────────────────────── COMMERCIAL ─────────────────────────
+  {
+    id: 'commercial',
+    name: 'Commercial Cleaning',
+    short: 'Commercial',
+    tagline: 'Offices, stores and shared spaces.',
+    icon: 'building',
+    image: teamVan,
+    subs: [
+      {
+        slug: 'office-cleaning',
+        name: 'Office Cleaning',
+        short: 'Clean, healthy workspaces — after hours.',
+        desc: 'Desks, kitchens, washrooms and floors cleaned on a schedule that suits your business, including evenings and weekends, so your team walks into a clean office.',
+        image: teamVan,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Desks and surfaces wiped and sanitized',
+          'Staff kitchen and break room',
+          'Washrooms cleaned and restocked',
+          'Floors vacuumed and mopped',
+          'Garbage and recycling out',
+          'High-touch points disinfected',
+        ],
+        goodFor: ['Small and mid-size offices', 'Clinics and studios', 'Professional services'],
+      },
+      {
+        slug: 'retail-cleaning',
+        name: 'Retail & Storefront',
+        short: 'Spotless floors, glass and fitting rooms.',
+        desc: 'A clean store sells better. We clean sales floors, entrance glass, fitting rooms and staff areas before you open or after you close.',
+        image: teamVan,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Sales floor vacuumed and mopped',
+          'Entrance and display glass',
+          'Fitting rooms and counters',
+          'Washrooms and staff room',
+          'Garbage out',
+        ],
+        goodFor: ['Retail stores', 'Showrooms', 'Salons'],
+      },
+      {
+        slug: 'common-areas',
+        name: 'Strata & Common Areas',
+        short: 'Lobbies, hallways and amenity rooms.',
+        desc: 'Scheduled cleaning for the shared spaces in strata and rental buildings: lobbies, hallways, elevators, stairwells and amenity rooms.',
+        image: teamVan,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Lobby and entrance glass',
+          'Hallways and stairwells',
+          'Elevator interiors',
+          'Amenity and garbage rooms',
+          'Floors vacuumed and mopped',
+        ],
+        goodFor: ['Strata councils', 'Property managers', 'Rental buildings'],
+      },
+      {
+        slug: 'commercial-cleanup',
+        name: 'Commercial Clean-Up',
+        short: 'One-time deep clean or end-of-lease.',
+        desc: 'A one-time top-to-bottom clean for moving in, moving out, opening day or after a fit-out — so the space is ready to hand over or open.',
+        image: teamVan,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Full top-to-bottom clean',
+          'Inside cabinets and appliances',
+          'Walls spot-cleaned',
+          'Windows, sills and tracks (interior)',
+          'Floors detailed',
+        ],
+        goodFor: ['End of lease', 'After a fit-out', 'Grand openings'],
+      },
+    ],
+    addons: [],
+    freqs: [
+      { id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 },
+      { id: 'weekly', name: 'Weekly', sub: 'Quoted per visit', discount: 0 },
+      { id: 'biweekly', name: 'Bi-Weekly', sub: 'Quoted per visit', discount: 0 },
+      { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
+    ],
+    times: [
+      { id: 'Before Opening', sub: '6:00 – 9:00 am' },
+      { id: 'Daytime', sub: '9:00 am – 5:00 pm' },
+      { id: 'After Hours', sub: '6:00 – 10:00 pm' },
+    ],
+    faqs: [
+      { q: 'Can you clean after hours?', a: 'Yes. Most commercial cleaning happens before opening or after closing so your business is not disturbed.' },
+      { q: 'How do you price commercial work?', a: 'By the space and how often you need us. Send photos or book a free site visit and we quote, usually the same day.' },
+      { q: 'Are you insured?', a: 'Yes. LIVO is licensed and insured, and crews are uniformed and vetted.' },
+    ],
+  },
+
+  // ───────────────────────── RESTAURANT & KITCHEN ─────────────────────────
+  {
+    id: 'restaurant',
+    name: 'Restaurant & Kitchen',
+    short: 'Restaurant',
+    tagline: 'Industrial steam-cleaned commercial kitchens.',
+    icon: 'chef',
+    image: interiorKitchen,
+    subs: [
+      {
+        slug: 'kitchen-deep-clean',
+        name: 'Kitchen Deep Clean',
+        short: 'Industrial steam clean — grease and buildup gone.',
+        desc: 'We deep clean commercial kitchens with industrial steam cleaners that cut through grease and baked-on buildup on equipment, walls and floors, without harsh chemicals left behind.',
+        image: interiorKitchen,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Industrial steam cleaning',
+          'Cooking line, fryers and grills (exterior)',
+          'Walk-ins and coolers',
+          'Stainless steel, walls and backsplashes degreased',
+          'Floors and floor drains scrubbed',
+          'Sinks and prep areas sanitized',
+        ],
+        goodFor: ['Restaurants', 'Cafes and bakeries', 'Catering kitchens'],
+      },
+      {
+        slug: 'scheduled-kitchen-cleaning',
+        name: 'Scheduled Kitchen Cleaning',
+        short: 'Weekly or monthly, after close.',
+        desc: 'Keep the kitchen inspection-ready all year. Same crew, on a weekly, bi-weekly or monthly schedule, after you close.',
+        image: interiorKitchen,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Steam clean of cooking line and floors',
+          'Degreasing of walls and equipment exterior',
+          'Walk-ins wiped down',
+          'Floor drains cleaned',
+          'Same crew each visit',
+        ],
+        goodFor: ['Busy restaurants', 'Food courts', 'Commissary kitchens'],
+      },
+      {
+        slug: 'front-of-house',
+        name: 'Front-of-House & Dining',
+        short: 'Dining room, bar and washrooms.',
+        desc: 'A clean dining room, bar and washrooms for your guests — done after close so you open to a fresh space.',
+        image: interiorKitchen,
+        unit: 'custom quote',
+        tierLabel: 'Get a quote',
+        tiers: [
+          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+          { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+        ],
+        quoteNote: 'Every space is different — we quote from photos or a free site visit, usually the same day.',
+        included: [
+          'Tables, chairs and booths',
+          'Bar top and back bar',
+          'Washrooms cleaned and restocked',
+          'Floors vacuumed and mopped',
+          'Entrance glass',
+        ],
+        goodFor: ['Restaurants', 'Pubs and bars', 'Cafes'],
+      },
+    ],
+    addons: [],
+    freqs: [
+      { id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 },
+      { id: 'weekly', name: 'Weekly', sub: 'Quoted per visit', discount: 0 },
+      { id: 'biweekly', name: 'Bi-Weekly', sub: 'Quoted per visit', discount: 0 },
+      { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
+    ],
+    times: [
+      { id: 'Before Opening', sub: '5:00 – 9:00 am' },
+      { id: 'After Closing', sub: '10:00 pm – 2:00 am' },
+      { id: 'Closed Day', sub: 'Full day' },
+    ],
+    faqs: [
+      { q: 'Do you clean hoods and exhaust ducts?', a: 'No. Hood and duct cleaning is a specialist fire-safety service. We clean the kitchen, equipment exteriors, walls and floors.' },
+      { q: 'Will you work around our hours?', a: 'Yes. We clean before opening, after closing or on your closed day.' },
+      { q: 'What equipment do you use?', a: 'Industrial steam cleaners and commercial degreasers. Our crew arrives with everything in a branded LIVO van.' },
+    ],
+  },
 ];
 
 export const heroImage = teamVan;
 
 export const getDivision = (id: string) => DIVISIONS.find((d) => d.id === id)!;
-export const minPrice = (d: Division) =>
-  Math.min(...d.subs.flatMap((s) => s.tiers.map((t) => t.price ?? Infinity)));
+export const minPrice = (d: Division): number | null => {
+  const p = d.subs.flatMap((s) => s.tiers.map((t) => t.price)).filter((x): x is number => x != null);
+  return p.length ? Math.min(...p) : null;
+};
 export const subMin = (s: Sub) => {
   const p = s.tiers.map((t) => t.price).filter((x): x is number => x != null);
   return p.length ? Math.min(...p) : null;

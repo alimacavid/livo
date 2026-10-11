@@ -9,16 +9,18 @@ import interiorAfter from '../assets/photos/interior-after.jpg';
 import { DIVISIONS, AREAS, minPrice, subMin, PHONE, PHONE_TEL } from '../data/services';
 
 const popular = [
-  ['interior', 'move-in-move-out'],
+  ['move', 'move-in-move-out'],
   ['interior', 'deep-cleaning'],
-  ['interior', 'post-construction-cleaning'],
+  ['restaurant', 'kitchen-deep-clean'],
   ['airbnb', 'turnover-cleaning'],
-  ['power', 'driveway-cleaning'],
+  ['construction', 'post-construction-cleaning'],
   ['junk', 'junk-removal'],
 ].map(([d, s]) => {
   const div = DIVISIONS.find((x) => x.id === d)!;
   return { div, sub: div.subs.find((x) => x.slug === s)! };
 });
+// one-service divisions open straight to that service (one less tap)
+const divHref = (d: (typeof DIVISIONS)[number]) => d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services/${d.id}`;
 const trust = [
   { icon: 'wallet', t: 'Upfront prices', s: 'See the price before you book' },
   { icon: 'check', t: 'Pay after the job', s: 'Only when you are happy' },
@@ -26,7 +28,7 @@ const trust = [
   { icon: 'clock', t: 'Same-day response', s: 'Call or book online' },
 ];
 ---
-<Base title="LIVO Property Services — Cleaning, Power Washing & Junk Removal in the Tri-Cities" header="overlay">
+<Base title="LIVO Property Services — Cleaning & Junk Removal in the Tri-Cities" header="overlay">
 
   <!-- ───── HERO ───── -->
   <section class="px-3 md:px-6 pt-1 md:pt-6">
@@ -53,20 +55,21 @@ const trust = [
   </section>
 
   <!-- ───── SERVICES ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10 md:mt-20">
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-8 md:mt-20">
     <div class="flex items-end justify-between">
       <h2 class="text-[1.4rem] md:text-4xl font-extrabold">What do you need?</h2>
       <a href="/services" class="text-sm font-semibold text-purple inline-flex items-center gap-1">All <Icon name="chevron" class="size-4" /></a>
     </div>
-    <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-      {DIVISIONS.map((d) => (
-        <a href={`/services/${d.id}`} class="press group relative overflow-hidden rounded-panel bg-cloud aspect-[4/5] md:aspect-[3/4]" data-reveal>
+    <div class="mt-4 md:mt-5 grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-5">
+      {DIVISIONS.map((d, i) => (
+        <a href={divHref(d)} class:list={['press group relative overflow-hidden rounded-panel bg-cloud',
+            i === 0 ? 'md:col-span-2 aspect-square md:aspect-auto' : i === DIVISIONS.length - 1 ? 'col-span-2 md:col-span-1 aspect-[2/1] md:aspect-[3/4]' : 'aspect-square md:aspect-[3/4]']} data-reveal>
           <Image src={d.image} alt="" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105" widths={[320, 520, 700]} sizes="(min-width:768px) 280px, 50vw" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent"></div>
           <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple transition duration-500 group-hover:rotate-[-8deg] group-hover:scale-110"><Icon name={d.icon} class="size-[18px]" /></span>
           <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">
-            <div class="font-heading font-bold text-[15px] md:text-lg leading-tight">{d.name}</div>
-            <div class="mt-1 text-[12px] md:text-sm text-white/75">From <b class="text-lime">${minPrice(d)}</b></div>
+            <div class="font-heading font-bold text-[14px] md:text-lg leading-tight">{d.name}</div>
+            <div class="mt-1 text-[12px] md:text-sm text-white/80">{minPrice(d) ? <>From <b class="text-lime">${minPrice(d)}</b></> : <b class="text-lime font-semibold">Custom quote</b>}</div>
           </div>
         </a>
       ))}
@@ -74,7 +77,7 @@ const trust = [
   </section>
 
   <!-- ───── POPULAR (swipe row) ───── -->
-  <section class="mt-10 md:mt-20">
+  <section class="mt-8 md:mt-20">
     <div class="mx-auto max-w-6xl px-4 md:px-6 flex items-end justify-between">
       <h2 class="text-[1.4rem] md:text-4xl font-extrabold">Popular right now</h2>
     </div>
@@ -98,7 +101,7 @@ const trust = [
   </section>
 
   <!-- ───── TRUST ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10 md:mt-20">
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-8 md:mt-20">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
       {trust.map((x) => (
         <div class="rounded-panel bg-cloud p-4 md:p-6" data-reveal>
@@ -111,7 +114,7 @@ const trust = [
   </section>
 
   <!-- ───── HOW IT WORKS ───── -->
-  <section id="how" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+  <section id="how" class="hidden md:block mx-auto max-w-6xl px-4 md:px-6 mt-24 scroll-mt-20">
     <div class="eyebrow">How it works</div>
     <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Booked in 60 seconds.</h2>
     <ol class="mt-6 grid md:grid-cols-3 gap-3 md:gap-5">
@@ -132,7 +135,7 @@ const trust = [
   </section>
 
   <!-- ───── RESULTS ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24">
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-9 md:mt-24">
     <div class="md:grid md:grid-cols-5 md:gap-10 md:items-center">
       <div class="md:col-span-2">
         <div class="eyebrow">Real results</div>
@@ -144,18 +147,19 @@ const trust = [
   </section>
 
   <!-- ───── AREAS ───── -->
-  <section id="areas" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+  <section id="areas" class="mx-auto max-w-6xl px-4 md:px-6 mt-9 md:mt-24 scroll-mt-20">
     <div class="eyebrow">Where we work</div>
     <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Tri-Cities & Greater Vancouver.</h2>
-    <div class="mt-5 flex flex-wrap gap-2">
+    <ul class="mt-5 flex flex-wrap gap-2 outline-none" aria-label="Service areas">
       {AREAS.map((a, i) => (
-        <span class:list={['px-3.5 py-2 rounded-full text-[13px] font-medium', i < 3 ? 'bg-purple text-white' : 'bg-cloud text-ink']}>{a}</span>
+        <li class:list={['px-3.5 py-2 rounded-full text-[13px] font-medium', i < 3 ? 'bg-purple text-white' : 'bg-cloud text-ink', i >= 3 && 'hidden md:block area-more']}>{a}</li>
       ))}
-    </div>
+      <li class="md:hidden"><button type="button" data-more-areas class="press px-3.5 py-2 rounded-full text-[13px] font-semibold bg-cloud text-purple" aria-expanded="false">+{AREAS.length - 3} more</button></li>
+    </ul>
   </section>
 
   <!-- ───── CTA ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24">
+  <section class="hidden md:block mx-auto max-w-6xl px-4 md:px-6 mt-24">
     <div class="on-dark hero-grad rounded-[28px] p-7 md:p-14 text-white relative overflow-hidden" data-reveal>
       <div class="glow absolute -right-16 -top-16 size-64 rounded-full bg-lime/20 blur-2xl" aria-hidden="true"></div>
       <h2 class="text-white text-[1.6rem] md:text-5xl font-extrabold leading-tight max-w-lg">Ready when you are.</h2>
@@ -167,6 +171,14 @@ const trust = [
     </div>
   </section>
 </Base>
+
+<script>
+  document.querySelector<HTMLButtonElement>('[data-more-areas]')?.addEventListener('click', (e) => {
+    document.querySelectorAll('.area-more').forEach((el) => el.classList.remove('hidden'));
+    const ul = (e.currentTarget as HTMLElement).closest('ul')!; (e.currentTarget as HTMLElement).parentElement!.remove();
+    ul.setAttribute('tabindex', '-1'); ul.focus();
+  });
+</script>
 
 <style is:global>
   @keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-30px,24px) scale(1.15); } }

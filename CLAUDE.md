@@ -3,6 +3,19 @@
 ## Last updated
 2026-10-11
 
+## 2026-10-11 — Services restructure + cleaner mobile home (branch `services-v3`)
+- Divisions now (7): Interior Cleaning (Standard, Deep, Recurring) · Move-In / Move-Out · After-Construction Clean-Up · Airbnb Turnover · Junk Removal · Commercial Cleaning (Office, Retail & Storefront, Strata & Common Areas, Commercial Clean-Up) · Restaurant & Kitchen (Kitchen Deep Clean, Scheduled Kitchen Cleaning, Front-of-House & Dining). 16 sub-services.
+- REMOVED (Ali, 2026-10-11): whole Power Washing & Windows division — power washing, windows, gutters, deck/fence, roof, exterior package. Old URLs 301 to /services (netlify.toml). Carpet & Upholstery stays inactive.
+- Move-In/Move-Out and After-Construction moved out of Interior into their own divisions (same prices; After-Construction still `draft`). Old URLs 301 to new ones. They share Interior add-ons (`INTERIOR_ADDONS`) and are one-time only.
+- Commercial + Restaurant: custom quote only (`price: null`, tiers "Send Photos" / "Free Site Visit") — Ali's choice, no prices approved yet. No add-ons; frequencies have no discount. Hood/duct cleaning stated as out of scope in Restaurant FAQ. Time windows: Before Opening / Daytime / After Hours (commercial), Before Opening / After Closing / Closed Day (restaurant) — confirm with Ali.
+- Booking: add-ons step skipped when a division has none; "How often" skipped when only one option; step counter adjusts. Quote requests: button "Request quote", success "Quote request sent!", no 30% first-time toggle, `firstTime:false`, notes include "QUOTE REQUEST".
+- Home (mobile): "How it works" and bottom CTA hidden on mobile (tab bar has Book + Call); square app-style service tiles, last tile full width; one-service divisions open straight to the service; areas show 3 + "+12 more".
+- `minPrice()` now returns null when a division is quote-only → shows "Custom quote".
+- Careers page service chips updated (Carpet + Power Washing removed).
+- Checked: all 27 pages 200, axe WCAG 2.2 AA 0 violations at 390px, no horizontal scroll, booking tested for all 7 divisions + quote submit payload.
+- Known gaps: Commercial uses team-van photo, Restaurant uses a home-kitchen photo — need real photos. careers.html says "Paid per job / contract-based" — check against current pay terms.
+- Branch: `services-v3` → `v1.0` staging. Pending Ali approval for `main`.
+
 ## 2026-10-11 — UI polish: motion + accessibility (LIVE)
 - What changed: no layout changes (Ali wants the mobile app kept minimal). Added motion + WCAG 2.2 AA fixes using UI/UX Pro Max guidance. Brand colors/fonts unchanged.
 - Motion (all in `src/styles/global.css`, one set of timing tokens `--ease-*`, `--dur-*`):
@@ -45,8 +58,8 @@
 ## Known issues / next
 - Claude GitHub App installed on `alimacavid/livo` (2026-09-26) — cloud sessions can push.
 - Netlify production must build with `netlify.toml` (npm run build → dist). If livoland.com shows a blank/404 after deploy, check Netlify site build settings aren't overriding it.
-- Prices are the v1 prices. Market research (`claude/livo-competitor-pricing-research.md` in the Livo project) says Junk, Power Washing and Airbnb are underpriced — Ali to decide.
-- Airbnb has no own photos beyond before/after; power washing sub-pages share one photo — shoot per-service photos.
+- Prices are the v1 prices. Market research (`claude/livo-competitor-pricing-research.md` in the Livo project) says Junk and Airbnb are underpriced — Ali to decide.
+- Airbnb has no own photos beyond before/after; Commercial and Restaurant have no real photos yet — shoot per-service photos.
 - careers.html is still the old standalone page (phone fixed only).
 - Real confirmation emails: Resend/Twilio secrets on the Supabase function must be set.
 

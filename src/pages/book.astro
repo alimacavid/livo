@@ -55,9 +55,9 @@ const data = DIVISIONS.map((d) => ({
   // public anon key — safe in the browser (same key the v1 booking page used)
   const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsem1ra21ubXJidnhvYXp6YnBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDkwNDEsImV4cCI6MjA5MzUyNTA0MX0.c0GlQn81n0Y_J-amOo24D4lmVih95qXWDy9Y20fkSYg';
 
-  const STEPS = ['service', 'size', 'addons', 'freq', 'when', 'details'] as const;
+  const ALL_STEPS = ['service', 'size', 'addons', 'freq', 'when', 'details'] as const;
   const NAMES: Record<string, string> = { service: 'Service', size: 'Size', addons: 'Add-ons', freq: 'How often', when: 'Date & time', details: 'Your details' };
-  type Step = (typeof STEPS)[number];
+  type Step = (typeof ALL_STEPS)[number];
 
   const q = new URLSearchParams(location.search);
   const st = {
@@ -75,6 +75,8 @@ const data = DIVISIONS.map((d) => ({
     sending: false,
   };
   const div = () => D.divisions.find((d) => d.id === st.div)!;
+  // services with no add-ons / only one-time visits skip those steps
+  const steps = () => ALL_STEPS.filter((x) => (x !== 'addons' || div().addons.length > 0) && (x !== 'freq' || div().freqs.length > 1));
   const sub = () => div().subs.find((s) => s.slug === st.sub);
   const tier = () => sub()?.tiers.find((t) => t.id === st.tier);
   const freq = () => div().freqs.find((f) => f.id === st.freq) ?? div().freqs[0];
@@ -82,7 +84,7 @@ const data = DIVISIONS.map((d) => ({
   // add-ons picked on the service page (?a=fridge,oven)
   (q.get('a') ?? '').split(',').forEach((id) => { if (div().addons.some((a) => a.id === id)) st.addons[id] = 1; });
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
-  if (st.sub && st.tier) st.step = 'addons';
+  if (st.sub && st.tier) st.step = steps()[2];
   else if (st.sub) st.step = 'size';
 
   const $ = (s: string) => document.querySelector(s) as HTMLElement;
@@ -224,10 +226,10 @@ const data = DIVISIONS.map((d) => ({
           ${lines.map(([a, b]) => `<div class="flex justify-between gap-4"><span class="text-ink/80">${a}</span><span class="font-semibold">${b}</span></div>`).join('')}
           ${f.discount ? `<div class="flex justify-between"><span class="text-ink/80">${f.name} discount</span><span class="font-semibold text-lime-ink">−${Math.round(f.discount * 100)}%</span></div>` : ''}
         </div>
-        <button id="ft" role="checkbox" aria-checked="${st.firstTime}" class="press mt-4 w-full flex items-center gap-3 p-3 min-h-12 rounded-[12px] transition-colors ${st.firstTime ? 'bg-lime-soft' : 'bg-cloud'} text-left">
+        ${isQuote() ? '' : `<button id="ft" role="checkbox" aria-checked="${st.firstTime}" class="press mt-4 w-full flex items-center gap-3 p-3 min-h-12 rounded-[12px] transition-colors ${st.firstTime ? 'bg-lime-soft' : 'bg-cloud'} text-left">
           <span aria-hidden="true" class="size-5 shrink-0 rounded-[6px] grid place-items-center ${st.firstTime ? 'bg-purple text-white' : 'border-2 border-gray'}">${st.firstTime ? ic(CHECK, 'size-3.5') : ''}</span>
           <span class="text-[13.5px]">First time with LIVO? <b>30% off</b></span>
-        </button>
+        </button>`}
         <div class="mt-4 pt-4 border-t border-line flex justify-between items-baseline">
           <span class="font-semibold">Total</span>
           <span class="font-heading font-extrabold text-2xl">${isQuote() ? 'Quote' : money(t.total)}</span>
@@ -237,15 +239,15 @@ const data = DIVISIONS.map((d) => ({
       <div id="bk-err" role="alert" tabindex="-1" class="mt-4 text-sm text-red-700 font-medium outline-none empty:hidden rounded-[12px] bg-red-50 p-3"></div>`;
   }
 
-  function vDone(ref: string) {
+  function vDone(ref: string, quote = false) {
     return `<div class="text-center pt-10">
       <div class="relative mx-auto size-20">
         <div class="confetti absolute inset-0" aria-hidden="true">${Array.from({ length: 18 }, (_, i) => { const a = (i / 18) * Math.PI * 2, r = 70 + (i % 3) * 22; return `<i style="--x:${Math.round(Math.cos(a) * r)}px;--y:${Math.round(Math.sin(a) * r)}px;--r:${i * 47}deg;background:${['#C4D600', '#6B3FA0', '#2C2C2C'][i % 3]}"></i>`; }).join('')}</div>
         <div class="ring pop-in relative isolate size-20 rounded-full bg-lime grid place-items-center"><span class="draw">${ic(CHECK, 'size-10')}</span></div>
       </div>
-      <h1 tabindex="-1" class="rise outline-none mt-6 text-3xl font-extrabold" style="--i:2">You're booked!</h1>
+      <h1 tabindex="-1" class="rise outline-none mt-6 text-3xl font-extrabold" style="--i:2">${quote ? 'Quote request sent!' : "You're booked!"}</h1>
       <p class="rise mt-2 text-muted" style="--i:3">Confirmation sent by text and email.<br/>Reference <b class="text-purple">#${ref}</b></p>
-      <p class="rise mt-6 text-sm text-muted" style="--i:4">We'll call shortly to confirm the details.</p>
+      <p class="rise mt-6 text-sm text-muted" style="--i:4">${quote ? "We'll be in touch shortly with your quote." : "We'll call shortly to confirm the details."}</p>
       <a href="/" class="rise btn-dark mt-8" style="--i:5">Back to home</a>
     </div>`;
   }
@@ -264,12 +266,13 @@ const data = DIVISIONS.map((d) => ({
   function render() {
     const v = $('#bk-view');
     if (st.step === 'done') return;
-    const i = STEPS.indexOf(st.step as Step);
+    const i = steps().indexOf(st.step as Step);
     $('#bk-stepname').textContent = NAMES[st.step];
-    $('#bk-count').textContent = `${i + 1} / ${STEPS.length}`;
-    $('#bk-bar').style.width = `${((i + 1) / STEPS.length) * 100}%`;
+    $('#bk-count').textContent = `${i + 1} / ${steps().length}`;
+    $('#bk-bar').style.width = `${((i + 1) / steps().length) * 100}%`;
     $('#bk-prog').setAttribute('aria-valuenow', String(i + 1));
-    $('#bk-prog').setAttribute('aria-valuetext', `Step ${i + 1} of ${STEPS.length}: ${NAMES[st.step]}`);
+    $('#bk-prog').setAttribute('aria-valuemax', String(steps().length));
+    $('#bk-prog').setAttribute('aria-valuetext', `Step ${i + 1} of ${steps().length}: ${NAMES[st.step]}`);
     ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
     v.innerHTML = ({ service: vService, size: vSize, addons: vAddons, freq: vFreq, when: vWhen, details: vDetails } as any)[st.step]();
     const t = totals();
@@ -278,17 +281,17 @@ const data = DIVISIONS.map((d) => ({
     $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
     const nx = $('#bk-next') as HTMLButtonElement;
     nx.disabled = !canNext();
-    nx.textContent = st.step === 'details' ? (st.sending ? 'Sending…' : 'Confirm booking') : 'Continue';
+    nx.textContent = st.step === 'details' ? (st.sending ? 'Sending…' : isQuote() ? 'Request quote' : 'Confirm booking') : 'Continue';
   }
 
   function go(step: Step) {
-    const fwd = STEPS.indexOf(step) > STEPS.indexOf(st.step as Step);
+    const fwd = steps().indexOf(step) > steps().indexOf(st.step as Step);
     st.step = step; render();
     const v = $('#bk-view'); v.classList.remove('step-fwd', 'step-back'); void v.offsetWidth; v.classList.add(fwd ? 'step-fwd' : 'step-back');
     scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     // move focus to the new step's heading + announce it, for keyboard and screen-reader users
-    const i = STEPS.indexOf(step);
-    $('#bk-live').textContent = `Step ${i + 1} of ${STEPS.length}: ${NAMES[step]}`;
+    const i = steps().indexOf(step);
+    $('#bk-live').textContent = `Step ${i + 1} of ${steps().length}: ${NAMES[step]}`;
     v.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
   }
 
@@ -314,11 +317,11 @@ const data = DIVISIONS.map((d) => ({
     const el = e.target as HTMLInputElement; const k = el.id.replace('c-', '');
     if (k in st.c) (st.c as any)[k] = el.value;
   });
-  $('#bk-back').addEventListener('click', () => { const i = STEPS.indexOf(st.step as Step); if (i > 0) go(STEPS[i - 1]); });
+  $('#bk-back').addEventListener('click', () => { const i = steps().indexOf(st.step as Step); if (i > 0) go(steps()[i - 1]); });
   $('#bk-next').addEventListener('click', () => {
     if (!canNext()) return;
-    const i = STEPS.indexOf(st.step as Step);
-    if (st.step === 'details') submit(); else go(STEPS[i + 1]);
+    const i = steps().indexOf(st.step as Step);
+    if (st.step === 'details') submit(); else go(steps()[i + 1]);
   });
 
   function normPhone(p: string) {
@@ -351,7 +354,7 @@ const data = DIVISIONS.map((d) => ({
     ];
     const payload = {
       name: c.name.trim(), email: c.email.trim(), phone,
-      date: st.date, time: st.time, firstTime: st.firstTime,
+      date: st.date, time: st.time, firstTime: !isQuote() && st.firstTime,
       total: isQuote() ? 0 : t.total, items,
       notes: [`Address: ${c.address.trim()}`, c.notes.trim() && `Notes: ${c.notes.trim()}`, isQuote() && 'QUOTE REQUEST — price to be confirmed'].filter(Boolean).join('\n'),
     };
@@ -361,7 +364,7 @@ const data = DIVISIONS.map((d) => ({
       const j = await r.json();
       if (!r.ok || j.error) throw new Error(j.error);
       st.step = 'done';
-      $('#bk-view').innerHTML = vDone(j.ref); $('#bk-view').querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
+      $('#bk-view').innerHTML = vDone(j.ref, isQuote()); $('#bk-view').querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
       (document.querySelector('[slot="after"], #bk-next')!.closest('.fixed') as HTMLElement).style.display = 'none';
       document.querySelector('.max-w-xl .flex.items-center.gap-3')?.classList.add('invisible');
     } catch {
