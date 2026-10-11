@@ -1,7 +1,23 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-09-26
+2026-10-11
+
+## 2026-10-11 — UI polish: motion + accessibility (branch `ui-polish`, NOT merged)
+- What changed: no layout changes (Ali wants the mobile app kept minimal). Added motion + WCAG 2.2 AA fixes using UI/UX Pro Max guidance. Brand colors/fonts unchanged.
+- Motion (all in `src/styles/global.css`, one set of timing tokens `--ease-*`, `--dur-*`):
+  - Native page-to-page transitions (`@view-transition`, no JS); header + bottom bar stay fixed between pages (`view-transition-name`).
+  - Hero: text rises in one piece at a time (`.rise` + `--i`), photo slow zoom (`.kenburns`), light sweep on main lime buttons (`.sheen`), drifting glow on CTA.
+  - Cards stagger in on scroll (`data-reveal`, auto stagger), spring press on tap (`.press`), active tab indicator pop.
+  - Prices "bump" when they change (service page sticky bar + booking total).
+  - Booking steps slide left/right with direction; success screen: tick draws itself + ring + confetti.
+  - Before/after slider nudges once when first seen.
+  - Everything turns off with "Reduce motion" (prefers-reduced-motion).
+- Accessibility: skip link, visible focus ring everywhere (purple; lime on dark via `.on-dark`), `aria-current` on tabs/nav, desktop Services menu opens on keyboard focus + Esc closes, decorative images `alt=""`, reveal content stays visible without JS (`html.js`), new `--color-lime-ink #5C6600` for lime TEXT (old `lime-deep` as text failed contrast — use lime-deep for fills only), tab labels 11px darker gray, touch targets ≥44px, services chips highlight current section.
+- Booking: `aria-pressed` on every option, focus moves to each step heading + screen-reader announcement, keeps focus on the option you tapped, calendar days have full date labels, progress bar is a real progressbar, inline error under each field + focus first bad field, first-time discount is a real checkbox.
+- Checked: build OK; axe-core WCAG 2.2 AA scan = 0 violations on home, services, division, sub-service and booking steps at 390px; no horizontal scroll.
+- Branch: `ui-polish` (from main). Pending: Ali approval → `v1.0` staging → Ali approval → `main`.
+- Not in this change: Ali's 2026-10-07 service changes (remove Power Washing, add Commercial / Restaurant Kitchen, split Move-in/out + After-construction) — still to do in `src/data/services.ts`.
 
 ## 2026-09-26 — v2 rebuild in Astro + Tailwind (branch `v2-astro`)
 - What changed: whole front end rebuilt as an Astro 7 + Tailwind v4 static site. App-style mobile UI (bottom tab bar: Home / Services / Book / Call; sticky Book bar on service pages).

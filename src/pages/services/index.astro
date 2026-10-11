@@ -6,12 +6,12 @@ import { DIVISIONS } from '../../data/services';
 ---
 <Base title="All Services" description="Every LIVO service with upfront prices: interior cleaning, move-out cleaning, after-construction clean-up, Airbnb turnovers, power washing, window and gutter cleaning, and junk removal.">
   <section class="mx-auto max-w-6xl px-4 md:px-6 pt-4 md:pt-12">
-    <h1 class="text-[1.9rem] md:text-5xl font-extrabold">Services</h1>
-    <p class="mt-1 text-muted">Upfront prices. Pay after the job.</p>
+    <h1 class="rise text-[1.9rem] md:text-5xl font-extrabold" style="--i:0">Services</h1>
+    <p class="rise mt-1 text-muted" style="--i:1">Upfront prices. Pay after the job.</p>
     <!-- jump chips -->
     <div class="sticky top-16 z-30 -mx-4 px-4 md:mx-0 md:px-0 py-3 bg-white/90 backdrop-blur-xl">
       <div class="flex gap-2 overflow-x-auto no-scrollbar">
-        {DIVISIONS.map((d) => <a href={`#${d.id}`} class="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-cloud text-[13px] font-semibold hover:bg-purple-soft"><Icon name={d.icon} class="size-4 text-purple" />{d.name}</a>)}
+        {DIVISIONS.map((d) => <a href={`#${d.id}`} class="press shrink-0 inline-flex items-center gap-1.5 h-11 px-4 rounded-full bg-cloud text-[13px] font-semibold hover:bg-purple-soft transition-colors aria-[current]:bg-purple aria-[current]:text-white" data-chip><Icon name={d.icon} class="size-4 text-purple" />{d.name}</a>)}
       </div>
     </div>
   </section>
@@ -26,9 +26,19 @@ import { DIVISIONS } from '../../data/services';
           <a href={`/services/${d.id}`} class="text-sm font-semibold text-purple shrink-0">Details</a>
         </div>
         <div class="mt-4 grid md:grid-cols-2 gap-3">
-          {d.subs.map((s) => <SubRow div={d} sub={s} />)}
+          {d.subs.map((s) => <div data-reveal><SubRow div={d} sub={s} /></div>)}
         </div>
       </section>
     ))}
   </div>
 </Base>
+
+<script>
+  // highlight the chip for the section you're looking at
+  const chips = [...document.querySelectorAll<HTMLAnchorElement>('[data-chip]')];
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    chips.forEach((c) => c.getAttribute('href') === '#' + e.target.id ? (c.setAttribute('aria-current', 'true'), c.parentElement!.scrollTo({ left: c.offsetLeft - 16, behavior: 'smooth' })) : c.removeAttribute('aria-current'));
+  }), { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('section[id]').forEach((s) => io.observe(s));
+</script>
