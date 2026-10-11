@@ -3,7 +3,7 @@
 ## Last updated
 2026-10-11
 
-## 2026-10-11 — Services restructure + cleaner mobile home (branch `services-v3`)
+## 2026-10-11 — Services restructure + cleaner mobile home (LIVE)
 - Divisions now (7): Interior Cleaning (Standard, Deep, Recurring) · Move-In / Move-Out · After-Construction Clean-Up · Airbnb Turnover · Junk Removal · Commercial Cleaning (Office, Retail & Storefront, Strata & Common Areas, Commercial Clean-Up) · Restaurant & Kitchen (Kitchen Deep Clean, Scheduled Kitchen Cleaning, Front-of-House & Dining). 16 sub-services.
 - REMOVED (Ali, 2026-10-11): whole Power Washing & Windows division — power washing, windows, gutters, deck/fence, roof, exterior package. Old URLs 301 to /services (netlify.toml). Carpet & Upholstery stays inactive.
 - Move-In/Move-Out and After-Construction moved out of Interior into their own divisions (same prices; After-Construction still `draft`). Old URLs 301 to new ones. They share Interior add-ons (`INTERIOR_ADDONS`) and are one-time only.
@@ -14,7 +14,7 @@
 - Careers page service chips updated (Carpet + Power Washing removed).
 - Checked: all 27 pages 200, axe WCAG 2.2 AA 0 violations at 390px, no horizontal scroll, booking tested for all 7 divisions + quote submit payload.
 - Known gaps: Commercial uses team-van photo, Restaurant uses a home-kitchen photo — need real photos. careers.html says "Paid per job / contract-based" — check against current pay terms.
-- Branch: `services-v3` → `v1.0` staging. Pending Ali approval for `main`.
+- Branch: `services-v3` → `v1.0` → `main` (livoland.com). Ali approved go-live 2026-10-11. All three level.
 
 ## 2026-10-11 — UI polish: motion + accessibility (LIVE)
 - What changed: no layout changes (Ali wants the mobile app kept minimal). Added motion + WCAG 2.2 AA fixes using UI/UX Pro Max guidance. Brand colors/fonts unchanged.
