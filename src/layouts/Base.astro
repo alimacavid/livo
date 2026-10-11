@@ -14,7 +14,7 @@ interface Props {
 }
 const {
   title,
-  description = 'Home, move-out, after-construction, Airbnb, commercial and restaurant kitchen cleaning, plus junk removal, across Port Coquitlam, Coquitlam, Port Moody and Greater Vancouver. Upfront prices. Pay after the job.',
+  description = 'Interior cleaning, Airbnb turnovers, power washing and junk removal across Port Coquitlam, Coquitlam, Port Moody and Greater Vancouver. Upfront prices. Pay after the job.',
   tabBar = true,
   header = 'solid',
   footer = true,
@@ -32,7 +32,6 @@ const tabs = [
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <script is:inline>document.documentElement.classList.add('js')</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
@@ -41,7 +40,6 @@ const tabs = [
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#ffffff" />
-  <meta name="color-scheme" content="light" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="LIVO" />
@@ -60,9 +58,8 @@ const tabs = [
   })} />
 </head>
 <body class={tabBar ? 'pb-[88px] md:pb-0' : ''}>
-  <a href="#main" class="sr-only-focusable fixed top-2 left-2 z-[100] btn-dark h-11 px-5 text-sm">Skip to content</a>
   <!-- ───── Header ───── -->
-  <header id="top" data-mode={header} style="view-transition-name: site-header"
+  <header id="top" data-mode={header}
     class:list={['sticky top-0 z-40 transition-colors',
       header === 'overlay' ? 'bg-white/0 md:bg-white/85' : 'bg-white/85',
       'backdrop-blur-xl border-b border-transparent data-[scrolled]:border-line data-[scrolled]:bg-white/90']}>
@@ -71,13 +68,13 @@ const tabs = [
         <Image src={logo} alt="LIVO" class="h-8 w-auto" widths={[140, 280]} sizes="70px" loading="eager" />
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
-        <div class="relative group" data-dd>
-          <a href="/services" aria-current={path.startsWith('/services') ? 'page' : undefined} class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1 aria-[current]:text-purple">Services <Icon name="down" class="size-4 transition group-hover:rotate-180 group-focus-within:rotate-180" /></a>
-          <div class="invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0 transition duration-200 absolute left-0 top-full pt-2">
+        <div class="relative group">
+          <a href="/services" class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1">Services <Icon name="down" class="size-4" /></a>
+          <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition absolute left-0 top-full pt-2">
             <div class="card p-2 w-72">
               {DIVISIONS.map((d) => (
                 <a href={`/services/${d.id}`} class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-cloud">
-                  <span class="size-9 rounded-lg bg-purple-soft text-purple grid place-items-center" aria-hidden="true"><Icon name={d.icon} class="size-[18px]" /></span>
+                  <span class="size-9 rounded-lg bg-purple-soft text-purple grid place-items-center"><Icon name={d.icon} class="size-[18px]" /></span>
                   <span><span class="block font-semibold">{d.name}</span><span class="block text-xs text-muted">{d.subs.length} services</span></span>
                 </a>
               ))}
@@ -96,14 +93,14 @@ const tabs = [
     </div>
   </header>
 
-  <main id="main" tabindex="-1" class="outline-none"><slot /></main>
+  <main><slot /></main>
 
   <!-- ───── Footer ───── -->
-  {footer && <footer class="on-dark bg-purple-ink text-white/75 mt-20">
+  {footer && <footer class="bg-purple-ink text-white/70 mt-20">
     <div class="mx-auto max-w-6xl px-5 md:px-6 py-12 grid gap-10 md:grid-cols-4">
       <div class="md:col-span-1">
         <div class="font-heading font-extrabold text-2xl text-white">LIVO<span class="text-lime">.</span></div>
-        <p class="mt-3 text-sm leading-relaxed">Property services across the Tri-Cities and Greater Vancouver. One crew. One standard.</p>
+        <p class="mt-3 text-sm leading-relaxed">Property services across the Tri-Cities and Greater Vancouver. Four divisions. One standard.</p>
         <a href={`tel:${PHONE_TEL}`} class="mt-4 inline-flex items-center gap-2 text-white font-semibold"><Icon name="phone" class="size-4" />{PHONE}</a>
       </div>
       {DIVISIONS.slice(0, 3).map((d) => (
@@ -127,21 +124,19 @@ const tabs = [
 
   <!-- ───── Mobile tab bar (app style) ───── -->
   {tabBar && (
-    <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 pb-safe bg-white/95 backdrop-blur-xl border-t border-line" aria-label="Main" style="view-transition-name: tab-bar">
-      <ul class="relative grid grid-cols-4 h-[68px] px-2" data-tabs>
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 pb-safe bg-white/90 backdrop-blur-xl border-t border-line" aria-label="Main">
+      <ul class="grid grid-cols-4 h-[68px] px-2">
         {tabs.map((t) => (
           <li class="flex">
             {t.main ? (
-              <a href={t.href} aria-current={t.on ? 'page' : undefined} class="press flex-1 flex flex-col items-center justify-center gap-1">
-                <span class="sheen relative overflow-hidden h-9 px-4 rounded-full bg-lime text-ink grid place-items-center shadow-[0_6px_16px_-6px_rgb(196_214_0/.9)]"><Icon name={t.icon} class="size-[18px]" stroke={2} /></span>
-                <span class="text-[11px] font-semibold text-ink">{t.label}</span>
+              <a href={t.href} class="flex-1 flex flex-col items-center justify-center gap-1">
+                <span class="h-9 px-4 rounded-full bg-lime text-ink grid place-items-center shadow-[0_6px_16px_-6px_rgb(196_214_0/.9)]"><Icon name={t.icon} class="size-[18px]" stroke={2} /></span>
+                <span class="text-[10.5px] font-semibold text-ink">{t.label}</span>
               </a>
             ) : (
-              <a href={t.href} aria-current={t.on ? 'page' : undefined} aria-label={t.icon === 'phone' ? `Call ${PHONE}` : undefined}
-                class:list={['press relative flex-1 flex flex-col items-center justify-center gap-1 transition-colors', t.on ? 'text-purple' : 'text-[#55555A]']}>
-                {t.on && <span class="tab-dot absolute top-1.5 h-1 w-6 rounded-full bg-purple" aria-hidden="true"></span>}
+              <a href={t.href} class:list={['flex-1 flex flex-col items-center justify-center gap-1 transition', t.on ? 'text-purple' : 'text-muted']}>
                 <span class="h-9 grid place-items-center"><Icon name={t.icon} class="size-[22px]" stroke={t.on ? 2.1 : 1.7} /></span>
-                <span class="text-[11px] font-semibold">{t.label}</span>
+                <span class="text-[10.5px] font-semibold">{t.label}</span>
               </a>
             )}
           </li>
@@ -156,24 +151,14 @@ const tabs = [
     const h = document.getElementById('top');
     const onS = () => h && (window.scrollY > 8 ? h.setAttribute('data-scrolled', '') : h.removeAttribute('data-scrolled'));
     addEventListener('scroll', onS, { passive: true }); onS();
-    // reveal on scroll — siblings get a small stagger
+    // reveal on scroll
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
-      if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', String([...(el.parentElement?.children ?? [])].indexOf(el) % 6));
-      io.observe(el);
-    });
-    // Esc closes the desktop services menu
-    document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => dd.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { dd.setAttribute('data-closed', ''); dd.querySelector<HTMLElement>('a')?.focus(); }
-    }));
-    document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => {
-      const open = () => dd.removeAttribute('data-closed');
-      dd.addEventListener('mouseleave', open); dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget as Node)) open(); });
-    });
+    document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
   </script>
   <style is:global>
-    .tab-dot { animation: pop-in 420ms var(--ease-spring) both; }
-    [data-dd][data-closed] > div:last-child { visibility: hidden !important; opacity: 0 !important; }
+    [data-reveal] { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
+    [data-reveal].in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
   </style>
 </body>
 </html>

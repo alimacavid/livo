@@ -19,15 +19,15 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
 
   <!-- HERO -->
   <section class="px-3 md:px-6 pt-1 md:pt-6">
-    <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
-      <Image src={s.image} alt="" class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
+      <Image src={s.image} alt={s.name} class="absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
-      <a href={`/services/${d.id}`} class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label={`Back to ${d.name}`}><Icon name="back" class="size-4" />{d.short}</a>
+      <a href={`/services/${d.id}`} class="absolute top-3 left-3 h-10 pl-2.5 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold"><Icon name="back" class="size-4" />{d.short}</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
-        <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
-        <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
-        <div class="rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold" style="--i:2">
-          {from ? <>From ${from} <span class="font-medium">· {s.unit}</span></> : 'Free custom quote'}
+        <h1 class="text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight">{s.name}</h1>
+        <p class="mt-1.5 text-white/80 text-[15px]">{s.short}</p>
+        <div class="mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold">
+          {from ? <>From ${from} <span class="font-medium opacity-70">· {s.unit}</span></> : 'Free custom quote'}
         </div>
       </div>
     </div>
@@ -41,16 +41,16 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
       <!-- PRICE TABLE -->
       <section class="mt-8" id="prices">
         <div class="flex items-end justify-between">
-          <h2 class="text-xl font-extrabold">{s.recurring ? 'Recurring prices' : from == null ? 'Get a quote' : 'Prices'}</h2>
+          <h2 class="text-xl font-extrabold">{s.recurring ? 'Recurring prices' : 'Prices'}</h2>
           {s.draft && <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-1 rounded-full">Draft prices</span>}
         </div>
-        <p class="text-sm text-muted mt-0.5">{s.recurring ? 'Per visit. Save more the more often we come.' : from == null ? 'Free, no-obligation quote. Pick how you want it.' : `Pick your ${s.tierLabel.toLowerCase()}. Prices include supplies & GST.`}</p>
+        <p class="text-sm text-muted mt-0.5">{s.recurring ? 'Per visit. Save more the more often we come.' : `Pick your ${s.tierLabel.toLowerCase()}. Prices include supplies & GST.`}</p>
 
         {s.recurring ? (
           <div class="mt-4 card overflow-hidden">
             <table class="w-full text-sm">
               <thead class="bg-cloud text-[12px] text-muted">
-                <tr><th class="text-left font-semibold p-3">{s.tierLabel}</th>{recurringFreqs.map((f) => <th class="font-semibold p-3 text-right">{f.name}<span class="block text-lime-ink">−{Math.round(f.discount * 100)}%</span></th>)}</tr>
+                <tr><th class="text-left font-semibold p-3">{s.tierLabel}</th>{recurringFreqs.map((f) => <th class="font-semibold p-3 text-right">{f.name}<span class="block text-lime-deep">−{Math.round(f.discount * 100)}%</span></th>)}</tr>
               </thead>
               <tbody class="divide-y divide-line">
                 {s.tiers.map((t) => (
@@ -63,9 +63,9 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
         ) : (
           <div class="mt-4 grid gap-2.5" role="radiogroup" aria-label={s.tierLabel} data-tiers>
             {s.tiers.map((t) => (
-              <label class="press relative flex items-center gap-4 p-4 rounded-panel border-2 border-line bg-white cursor-pointer transition-colors hover:border-gray has-[:checked]:border-purple has-[:checked]:bg-purple-soft/60">
+              <label class="relative flex items-center gap-4 p-4 rounded-panel border-2 border-line bg-white cursor-pointer transition has-[:checked]:border-purple has-[:checked]:bg-purple-soft/60">
                 <input type="radio" name="tier" value={t.id} data-price={t.price ?? ''} data-name={t.name} checked={t.id === def.id} class="peer sr-only" />
-                <span aria-hidden="true" class="size-5 rounded-full border-2 border-gray grid place-items-center transition-colors peer-checked:border-purple peer-checked:[&>span]:scale-100"><span class="size-2.5 rounded-full bg-purple scale-0 transition duration-300 ease-[var(--ease-spring)]"></span></span>
+                <span class="size-5 rounded-full border-2 border-gray grid place-items-center peer-checked:border-purple peer-checked:[&>span]:scale-100"><span class="size-2.5 rounded-full bg-purple scale-0 transition"></span></span>
                 <span class="flex-1 min-w-0">
                   <span class="block font-semibold text-[15px]">{t.name} {t.popular && <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>}</span>
                   <span class="block text-[13px] text-muted">{t.sub}</span>
@@ -83,7 +83,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
         <h2 class="text-xl font-extrabold">What's included</h2>
         <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
           {s.included.map((i) => (
-            <li class="flex gap-3 text-[14.5px]"><span class="shrink-0 size-6 rounded-full bg-lime-soft text-lime-ink grid place-items-center"><Icon name="check" class="size-3.5" stroke={3} /></span>{i}</li>
+            <li class="flex gap-3 text-[14.5px]"><span class="shrink-0 size-6 rounded-full bg-lime-soft text-lime-deep grid place-items-center"><Icon name="check" class="size-3.5" stroke={3} /></span>{i}</li>
           ))}
         </ul>
       </section>
@@ -96,14 +96,14 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
       )}
 
       <!-- ADD-ONS -->
-      {d.addons.length > 0 && <section class="mt-10">
+      <section class="mt-10">
         <h2 class="text-xl font-extrabold">Popular add-ons</h2>
         <p class="text-sm text-muted mt-0.5">Tap to add. They carry over to your booking.</p>
         <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3" data-addons>
           {d.addons.map((a) => (
             <button type="button" data-addon={a.id} data-aprice={a.price} aria-pressed="false"
-              class="press group relative shrink-0 w-40 md:w-auto text-left rounded-panel border-2 border-transparent bg-cloud p-4 transition-colors aria-pressed:border-purple aria-pressed:bg-purple-soft">
-              <span aria-hidden="true" class="absolute top-3 right-3 size-6 rounded-full grid place-items-center bg-white text-muted transition duration-300 group-aria-pressed:bg-purple group-aria-pressed:text-white group-aria-pressed:rotate-[360deg]">
+              class="group relative shrink-0 w-40 md:w-auto text-left rounded-panel border-2 border-transparent bg-cloud p-4 transition active:scale-[.98] aria-pressed:border-purple aria-pressed:bg-purple-soft">
+              <span class="absolute top-3 right-3 size-6 rounded-full grid place-items-center bg-white text-muted group-aria-pressed:bg-purple group-aria-pressed:text-white">
                 <Icon name="plus" class="size-3.5 group-aria-pressed:hidden" stroke={2.4} /><Icon name="check" class="size-3.5 hidden group-aria-pressed:block" stroke={3} />
               </span>
               <span class="block font-semibold text-[14px] leading-snug pr-7">{a.name}</span>
@@ -112,7 +112,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
             </button>
           ))}
         </div>
-      </section>}
+      </section>
 
       <!-- GOOD FOR -->
       <section class="mt-10">
@@ -126,7 +126,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
         <div class="mt-2 divide-y divide-line border-y border-line">
           {d.faqs.map((f) => (
             <details class="group py-4">
-              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary>
+              <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px]">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition group-open:rotate-45" /></summary>
               <p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p>
             </details>
           ))}
@@ -153,28 +153,28 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
     <aside class="hidden md:block">
       <div class="sticky top-24 mt-8 card p-6">
         <div class="text-sm text-muted">Your price</div>
-        <div class="font-heading font-extrabold text-4xl mt-1" data-price-out aria-live="polite">{def.price != null ? `$${def.price}` : 'Quote'}</div>
+        <div class="font-heading font-extrabold text-4xl mt-1" data-price-out>{def.price != null ? `$${def.price}` : 'Quote'}</div>
         <div class="text-sm text-muted" data-name-out>{def.name}</div>
-        <a href={bookUrl(def.id)} data-book class="sheen btn-lime w-full mt-5">{from == null ? 'Request a quote' : `Book ${s.name}`}</a>
+        <a href={bookUrl(def.id)} data-book class="btn-lime w-full mt-5">Book {s.name}</a>
         <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
         <ul class="mt-5 space-y-2 text-[13px] text-muted">
-          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />Pay after the job</li>
-          {from != null && <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />30% off your first booking</li>}
-          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />Licensed & insured crew</li>
+          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-deep" stroke={2.5} />Pay after the job</li>
+          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-deep" stroke={2.5} />30% off your first booking</li>
+          <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-deep" stroke={2.5} />Licensed & insured crew</li>
         </ul>
       </div>
     </aside>
   </div>
 
   <!-- MOBILE STICKY BOOK BAR -->
-  <div slot="after" style="view-transition-name: tab-bar" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
+  <div slot="after" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
     <div class="flex items-center gap-3 px-4 h-[76px]">
       <div class="flex-1 min-w-0">
         <div class="font-heading font-extrabold text-xl leading-none" data-price-out>{def.price != null ? `$${def.price}` : 'Quote'}</div>
         <div class="text-[12px] text-muted truncate mt-1" data-name-out>{def.name}</div>
       </div>
-      <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
-      <a href={bookUrl(def.id)} data-book class="sheen btn-lime px-7">{from == null ? 'Get quote' : 'Book now'}</a>
+      <a href={`tel:${PHONE_TEL}`} aria-label="Call" class="size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
+      <a href={bookUrl(def.id)} data-book class="btn-lime px-7">Book now</a>
     </div>
   </div>
   <div class="md:hidden h-24"></div>
@@ -197,10 +197,7 @@ const recurringFreqs = d.freqs.filter((f) => f.discount > 0);
       if (st.addons.has(b.dataset.addon!)) { add += +b.dataset.aprice!; names.push(b.querySelector('span.block')!.textContent!); }
     });
     const price = st.price != null ? `$${st.price + add}` : 'Quote';
-    document.querySelectorAll<HTMLElement>('[data-price-out]').forEach((el) => {
-      if (el.textContent === price) return;
-      el.textContent = price; el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
-    });
+    document.querySelectorAll('[data-price-out]').forEach((el) => (el.textContent = price));
     document.querySelectorAll('[data-name-out]').forEach((el) => (el.textContent = st.name + (names.length ? ` + ${names.length} add-on${names.length > 1 ? 's' : ''}` : '')));
     document.querySelectorAll<HTMLAnchorElement>('[data-book]').forEach((a) => {
       const u = new URL(a.href); u.searchParams.set('t', st.tier);
