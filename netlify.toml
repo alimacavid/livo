@@ -18,16 +18,137 @@
   status = 301
   force = true
 
-# 2026-10-11 services restructure — old service URLs
+# 2026-10-12 services renamed for clarity + SEO (Interior → House Cleaning etc.)
+# specific rules first, then wildcards
+[[redirects]]
+  from = "/services/interior"
+  to = "/services/house-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/standard-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/deep-cleaning"
+  to = "/services/house-cleaning/deep-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/recurring-cleaning"
+  to = "/services/house-cleaning/recurring-cleaning"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/services/interior/move-in-move-out"
-  to = "/services/move/move-in-move-out"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
   status = 301
   force = true
 
 [[redirects]]
   from = "/services/interior/post-construction-cleaning"
-  to = "/services/construction/post-construction-cleaning"
+  to = "/services/construction-cleaning/post-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/*"
+  to = "/services/house-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/airbnb"
+  to = "/services/airbnb-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/airbnb/*"
+  to = "/services/airbnb-cleaning/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk"
+  to = "/services/junk-removal"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk/junk-removal"
+  to = "/services/junk-removal/junk-removal-by-load"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk/*"
+  to = "/services/junk-removal/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/move"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/move/*"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/construction"
+  to = "/services/construction-cleaning/post-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/construction/*"
+  to = "/services/construction-cleaning/post-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial"
+  to = "/services/commercial-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/common-areas"
+  to = "/services/commercial-cleaning/strata-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/*"
+  to = "/services/commercial-cleaning/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant"
+  to = "/services/restaurant-kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant/*"
+  to = "/services/restaurant-kitchen-cleaning/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/house-cleaning/standard-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 

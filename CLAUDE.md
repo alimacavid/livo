@@ -1,7 +1,31 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-10-11
+2026-10-12
+
+## 2026-10-12 — Residential/Commercial split, quotes with photos, saved customers (TEST ONLY — `v1.0`)
+Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali approved every recommendation in it.
+- **Two customer types.** Homepage "What do you need?" has Residential | Commercial tabs (`CARDS` in `src/data/services.ts`). Commercial tab = Commercial Cleaning, Restaurant & Kitchen, Post-Construction, Junk & Debris (→ Renovation Debris). Hero: "Book a home service" + "Get a business quote". Services page, menu and footer grouped the same way.
+- **Renames + new URLs (SEO):** interior → `house-cleaning` (Regular Cleaning, Deep Cleaning, Weekly & Bi-Weekly Cleaning), move → `move-cleaning/move-in-move-out-cleaning`, construction → `construction-cleaning/post-construction-cleaning`, airbnb → `airbnb-cleaning` (Turnover Cleaning, Deep Reset), junk → `junk-removal` (`junk-removal-by-load`, `renovation-debris`), commercial → `commercial-cleaning` (`strata-cleaning` was common-areas), restaurant → `restaurant-kitchen-cleaning`. Every old URL (live + old test) 301s in `netlify.toml`.
+- **Each division has** `segment`, `intro` (first sentence with the SEO phrase), `seoTitle`, `keyword`, `notIncluded`, `crossSell` (component `src/components/Extras.astro`). FAQPage schema on category pages; business schema (legal name, 15 areas, services) in `Base.astro`.
+- **Quote flow.** `quote: true` on a sub-service = customer sends a quote request instead of booking. All Commercial, Restaurant, Renovation Debris and Post-Construction are quotes. Post-Construction keeps "from $349 / $499 / $649" as estimates (draft tag removed, household add-ons removed). Booking page steps for quotes: service → how to quote/size → **photos & details** (up to 10 photos, ≥1 unless "Free Site Visit"; business name required for business) → how often → **preferred date** → details. Quote prices never show $0.
+- **Discount:** 15% first booking (was 30%), residential fixed-price bookings only. `FIRST_TIME_DISCOUNT` in services.ts.
+- **Removed claims:** "Get your deposit back", "Upfront prices", "Real LIVO jobs, not stock photos", "Licensed & insured" (badge, footer, sidebar, commercial FAQ), "GST included" — none confirmed. Put "Licensed & insured" back only once liability insurance + WorkSafeBC are in place; add "+ GST" only if LIVO is GST-registered.
+- **Saved customer details.** "Save my details" box (on by default) at the end of booking; `/my-livo` = sign in with phone + 6-digit text code (no password), saved places (Book here / Remove), past jobs (Book again / Ask again). Booking page fills name/phone/email and lets the customer pick a saved place (`?place=`). New `/privacy` page (BC PIPA).
+- **Bottom tab bar** now 5 items: Home, Services, Book, My LIVO, Call. Desktop menu has My LIVO.
+- **Video slots** ready: `HERO_VIDEO` in services.ts (homepage) and `video` on a division (e.g. restaurant). Plays muted, pause button, off for reduce-motion and data-saver. No clips yet.
+- **TEST MODE (important):** `src/lib/api.ts` checks the address. Anywhere except livoland.com (v1.0 test site, previews, localhost) nothing is sent or saved on a server: bookings/quotes return `TEST-xxxxxx`, photo upload is simulated, sign-in code is always **123456** and shown on screen, the "account" lives in the browser (localStorage `livo-test-account`). Yellow "Test version" bar shows on /book and /my-livo. Ali chose this (free) over a paid test database (2026-10-12): the Supabase connector only sees the paid org, not "Javids Free".
+- **Backend written, NOT deployed:** `supabase/migrations/0002_quotes_customers.sql` (bookings gets kind/segment/address/photos…, new customers, places, login_codes, customer_sessions, private `quote-photos` bucket), `supabase/functions/send-booking-confirmation` v2 (quotes, photos, saved details, LIVO alert with 7-day photo links), new `supabase/functions/customer-auth`. Both type-check (deno check); NOT yet run against a database.
+- Checked: build OK (29 pages); axe WCAG 2.2 AA = 0 violations on home, services, category, service, booking (incl. photo step), My LIVO (phone + code), privacy at 390 px; no horizontal scroll; full test-mode journeys pass (home booking $360 → $306 with 15%, restaurant quote with photo, sign out/in, Book here).
+- Known gaps: homepage before/after shows two different spots (sink vs shower) — needs a matching real pair. Commercial pages still use the team-van photo, Restaurant a home kitchen. Privacy page has no email contact yet (phone only).
+
+### GO-LIVE CHECKLIST for this change (do in order, only after Ali says "go live")
+1. Back up live: tag `main` (e.g. `backup/pre-v1.0-2026-10`).
+2. Apply `0002_quotes_customers.sql` to project `livo`; run Supabase security advisors.
+3. Deploy `send-booking-confirmation` (v2) and `customer-auth` with verify_jwt=false (they check their own input/session).
+4. Set secrets: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM` (sign-in codes need these — without Twilio nobody can sign in), `RESEND_API_KEY`, `RESEND_FROM`, `LIVO_ALERT_PHONE`, `LIVO_ALERT_EMAIL`.
+5. Merge `v1.0` → `main`. On livoland.com make one real booking, one quote with a photo, and one sign-in; then delete those test rows.
+6. Update SUPABASE_MIGRATIONS.md (0002 applied) and this file.
 
 ## ⚠ 2026-10-11 — LIVE vs TEST (read first)
 - Ali does NOT want today's work live. `main` (livoland.com) was restored to the 2026-09-26 site (commit 0a4209d content) on 2026-10-11.
@@ -49,8 +73,11 @@
 
 ## Where things live
 - **All services + prices: `src/data/services.ts`** — the ONLY place prices exist. Sub-service pages, homepage "From $X", and the booking page all read it. Change a number there → whole site updates.
-- `draft: true` on a sub-service = price not yet approved by Ali (shows a "Draft prices" tag). Currently: After-Construction Clean-Up.
-- `price: null` = "Custom quote".
+- `draft: true` on a sub-service = price not yet approved by Ali (shows a "Draft prices" tag). Currently: none.
+- `price: null` = "Quote"; `quote: true` = request a quote with photos instead of booking.
+- Customer types / homepage cards: `segment` on each division + `CARDS` in `src/data/services.ts`.
+- Bookings, quotes, photo upload, sign-in: `src/lib/api.ts` (test mode everywhere except livoland.com).
+- Pages: `/` `/services` `/services/<division>` `/services/<division>/<sub>` `/book` `/my-livo` `/privacy`.
 - Layout / header / tab bar / footer: `src/layouts/Base.astro`
 - Brand tokens (colors, fonts, radius): `src/styles/global.css` (`@theme`). Custom classes use `@utility` (Tailwind v4 — `@apply` of a plain class fails).
 - Photos: `src/assets/photos/` (Astro auto-resizes to WebP). Static files (favicons, manifest, careers.html): `public/`

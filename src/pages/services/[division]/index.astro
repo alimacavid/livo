@@ -2,51 +2,64 @@
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import SubRow from '../../../components/SubRow.astro';
+import Extras from '../../../components/Extras.astro';
 import { Image } from 'astro:assets';
-import { DIVISIONS, minPrice, type Division } from '../../../data/services';
+import { DIVISIONS, minPrice, isQuoteSub, type Division } from '../../../data/services';
 export function getStaticPaths() {
   return DIVISIONS.map((d) => ({ params: { division: d.id }, props: { d } }));
 }
 const { d } = Astro.props as { d: Division };
 const from = minPrice(d);
+const allQuote = d.subs.every(isQuoteSub);
+const priceLine = allQuote && from == null ? 'Free quote, usually the same day.' : allQuote ? `From $${from}, final price after photos.` : `Instant prices from $${from}.`;
 ---
-<Base title={`${d.name} in Port Coquitlam, Coquitlam & Port Moody`} description={`${d.name} by LIVO — ${d.tagline} ${from ? `Upfront prices from $${from}.` : 'Free custom quotes.'} Serving the Tri-Cities and Greater Vancouver.`}>
+<Base title={d.seoTitle} description={`${d.intro} ${priceLine} LIVO Property Services.`}>
   <section class="px-3 md:px-6 pt-1 md:pt-6">
     <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-64 md:h-96 bg-purple-ink">
-      <Image src={d.image} alt="" class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      <Image src={d.image} alt={`${d.name} by LIVO`} class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      {d.video && <video class="absolute inset-0 size-full object-cover motion-reduce:hidden" src={d.video} muted loop playsinline autoplay aria-hidden="true"></video>}
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/40 to-transparent"></div>
-      <a href="/services" class="press absolute top-3 left-3 size-11 text-ink rounded-full bg-white/90 backdrop-blur grid place-items-center" aria-label="Back to services"><Icon name="back" class="size-5" /></a>
+      <a href={`/services#${d.segment}`} class="press absolute top-3 left-3 size-11 text-ink rounded-full bg-white/90 backdrop-blur grid place-items-center" aria-label="Back to services"><Icon name="back" class="size-5" /></a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
-        <h1 class="rise text-white text-3xl md:text-5xl font-extrabold" style="--i:0">{d.name}</h1>
-        <p class="rise mt-1 text-white/85" style="--i:1">{d.tagline} {from ? <>From <b class="text-lime">${from}</b>.</> : <b class="text-lime">Free custom quote.</b>}</p>
+        <div class="rise text-[11px] font-bold uppercase tracking-[.2em] text-white/75" style="--i:0">{d.segment === 'residential' ? 'Residential' : 'Commercial'}</div>
+        <h1 class="rise mt-1 text-white text-3xl md:text-5xl font-extrabold" style="--i:0">{d.name}</h1>
+        <p class="rise mt-1 text-white/85" style="--i:1">{d.tagline} <b class="text-lime">{allQuote && from == null ? 'Free quote.' : `From $${from}.`}</b></p>
       </div>
     </div>
   </section>
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-8">
-    <h2 class="text-lg md:text-2xl font-extrabold">Choose a service</h2>
-    <div class="mt-4 grid md:grid-cols-2 gap-3">{d.subs.map((s) => <div data-reveal><SubRow div={d} sub={s} /></div>)}</div>
-  </section>
-  {d.addons.length > 0 && <section class="mx-auto max-w-6xl px-4 md:px-6 mt-10">
-    <h2 class="text-lg md:text-2xl font-extrabold">Add-ons</h2>
-    <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-      {d.addons.map((a) => (
-        <div class="rounded-panel bg-cloud p-4">
-          <div class="font-semibold text-[14px] leading-snug">{a.name}</div>
-          <div class="text-[12.5px] text-muted">{a.sub}</div>
-          <div class="mt-2 text-sm"><b>${a.price}</b> <span class="text-muted text-xs">{a.unit}</span></div>
-        </div>
-      ))}
-    </div>
-  </section>}
-  <section class="mx-auto max-w-3xl px-4 md:px-6 mt-10">
-    <h2 class="text-lg md:text-2xl font-extrabold">Questions</h2>
-    <div class="mt-3 divide-y divide-line border-y border-line">
-      {d.faqs.map((f) => (
-        <details class="group py-4">
-          <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary>
-          <p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p>
-        </details>
-      ))}
-    </div>
-  </section>
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <p class="mt-6 text-[15.5px] leading-relaxed text-ink/85 max-w-3xl">{d.intro}</p>
+    <section class="mt-6">
+      <h2 class="text-lg md:text-2xl font-extrabold">Choose a service</h2>
+      <div class="mt-4 grid md:grid-cols-2 gap-3">{d.subs.map((s) => <div data-reveal><SubRow div={d} sub={s} /></div>)}</div>
+    </section>
+    {d.addons.length > 0 && <section class="mt-10">
+      <h2 class="text-lg md:text-2xl font-extrabold">Add-ons</h2>
+      <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+        {d.addons.map((a) => (
+          <div class="rounded-panel bg-cloud p-4">
+            <div class="font-semibold text-[14px] leading-snug">{a.name}</div>
+            <div class="text-[12.5px] text-muted">{a.sub}</div>
+            <div class="mt-2 text-sm"><b>${a.price}</b> <span class="text-muted text-xs">{a.unit}</span></div>
+          </div>
+        ))}
+      </div>
+    </section>}
+    <div class="max-w-3xl"><Extras d={d} /></div>
+    <section class="max-w-3xl mt-10">
+      <h2 class="text-lg md:text-2xl font-extrabold">Questions</h2>
+      <div class="mt-3 divide-y divide-line border-y border-line">
+        {d.faqs.map((f) => (
+          <details class="group py-4">
+            <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary>
+            <p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: d.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  })} />
 </Base>
