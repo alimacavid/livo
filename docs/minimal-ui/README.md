@@ -23,3 +23,5 @@ Validation uses the existing system Playwright/Chrome and a temporary axe-core 4
 The existing hosted `v1.0` test site is the baseline, so the new UI was verified against the local production build rather than claiming these changes are already deployed there. `main`, live infrastructure, prices and service data are unchanged.
 
 Existing gaps: the homepage before/after still shows different locations; commercial and restaurant imagery is reused; the static legacy Careers page is outside the requested Astro page changes. `npm ci` reports 3 existing high-severity advisories; dependencies remain locked and unchanged as requested.
+
+Hosted verification: [PR preview](https://deploy-preview-5--darling-marigold-ff0def.netlify.app), **12 axe scans / 0 violations**, **3/3 journeys**, **8 reduced-motion entry states / 0 running animations or hidden reveals**. [Deployed evidence](deployed-preview-results.json). Netlify’s injected review drawer was hidden in the test browser because it intercepted mobile controls; no app or Netlify configuration was changed.

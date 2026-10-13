@@ -9,7 +9,7 @@
 - Category/service headers now put text on white before clean photos. Shared section gaps: 40px mobile / 96px desktop. Lighter service rows, add-ons, footer, and booking presentation; existing brand colors/fonts and five mobile navigation destinations retained.
 - Included items expand accessibly after the first four on mobile. Reduced motion disables animation and explicitly renders reveal content and success icons in their final visible state. Selection/field boundaries and touch targets improved.
 - No changes to service data/prices/names, API, URLs, Netlify settings, Supabase, booking payloads, quote steps, sign-in logic, or test mode. Existing yellow test bars retained.
-- Verification evidence and screenshots: `docs/minimal-ui/`. Checks run against the local production build in test mode; the existing hosted `v1.0` site remains the baseline until this PR is merged.
+- Verification evidence and screenshots: `docs/minimal-ui/`. Checks run against the local production build and Netlify PR preview in test mode; the existing hosted `v1.0` site remains the baseline until this PR is merged.
 
 
 ## 2026-10-12 — Residential/Commercial split, quotes with photos, saved customers (TEST ONLY — `v1.0`)

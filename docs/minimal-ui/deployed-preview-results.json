@@ -1,0 +1,115 @@
+{
+  "base": "https://deploy-preview-5--darling-marigold-ff0def.netlify.app",
+  "scans": [
+    {
+      "name": "home",
+      "violations": []
+    },
+    {
+      "name": "services",
+      "violations": []
+    },
+    {
+      "name": "category",
+      "violations": []
+    },
+    {
+      "name": "fixed",
+      "violations": []
+    },
+    {
+      "name": "quote",
+      "violations": []
+    },
+    {
+      "name": "book",
+      "violations": []
+    },
+    {
+      "name": "my-livo",
+      "violations": []
+    },
+    {
+      "name": "privacy",
+      "violations": []
+    },
+    {
+      "name": "book-details",
+      "violations": []
+    },
+    {
+      "name": "quote-photo-attached",
+      "violations": []
+    },
+    {
+      "name": "my-livo-code",
+      "violations": []
+    },
+    {
+      "name": "my-livo-profile",
+      "violations": []
+    }
+  ],
+  "screenshots": [],
+  "overflow": [],
+  "errors": [],
+  "journeys": [
+    {
+      "name": "Deep Cleaning booking",
+      "pass": true,
+      "discount": "15%",
+      "reference": "TEST-4534F1"
+    },
+    {
+      "name": "Kitchen Deep Clean quote with photo and business",
+      "pass": true
+    },
+    {
+      "name": "My LIVO 10-digit phone + 123456, saved places and Book again",
+      "pass": true
+    }
+  ],
+  "reducedMotion": [
+    {
+      "name": "home",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "services",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "category",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "fixed",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "quote",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "book",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "my-livo",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "privacy",
+      "animations": 0,
+      "hiddenReveals": 0
+    }
+  ],
+  "netlifyReviewDrawerHiddenInTestBrowser": true
+}
