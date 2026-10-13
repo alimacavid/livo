@@ -46,11 +46,18 @@ const tileCls = (list: Card[], i: number) =>
           <span class="rise block" style="--i:1">Fall in love with your property.</span>
           <em class="rise block not-italic text-lime mt-1 text-[1.35rem] md:text-3xl font-bold" style="--i:2">We make it happen.</em>
         </h1>
-        <div class="rise mt-6 grid grid-cols-1 sm:flex gap-2.5" style="--i:3">
-          <a href="/book?seg=residential" class="sheen btn-lime">Book a home service <Icon name="arrow" class="size-4" /></a>
-          <a href="#services" data-pick="commercial" class="btn-ghost text-white">Get a business quote</a>
+        <p class="rise mt-6 text-[13px] font-semibold text-white/90" style="--i:3">Who is it for?</p>
+        <div class="rise mt-2 grid grid-cols-2 gap-2 p-1.5 rounded-[24px] bg-white shadow-lift md:max-w-[460px]" style="--i:3">
+          <a href="/book?seg=residential" class="sheen press relative overflow-hidden flex flex-col gap-2.5 p-3.5 md:p-4 rounded-[18px] bg-lime text-ink">
+            <span class="flex items-center justify-between"><span class="size-10 rounded-full bg-white/70 grid place-items-center" aria-hidden="true"><Icon name="home" class="size-5" stroke={2} /></span><Icon name="arrow" class="size-5" stroke={2.2} /></span>
+            <span><span class="block font-heading font-extrabold text-[15px] md:text-[17px] leading-tight whitespace-nowrap">For my home</span><span class="block mt-0.5 text-[12.5px] md:text-[13px] font-medium text-ink/75 leading-snug"><span class="md:hidden">Instant price</span><span class="hidden md:inline">Instant price · book online</span></span></span>
+          </a>
+          <a href="/book?seg=commercial" class="press flex flex-col gap-2.5 p-3.5 md:p-4 rounded-[18px] bg-purple text-white">
+            <span class="flex items-center justify-between"><span class="size-10 rounded-full bg-white/15 grid place-items-center" aria-hidden="true"><Icon name="building" class="size-5" stroke={2} /></span><Icon name="arrow" class="size-5" stroke={2.2} /></span>
+            <span><span class="block font-heading font-extrabold text-[15px] md:text-[17px] leading-tight whitespace-nowrap">For my business</span><span class="block mt-0.5 text-[12.5px] md:text-[13px] font-medium text-white/85 leading-snug"><span class="md:hidden">Free quote</span><span class="hidden md:inline">Free quote · same day</span></span></span>
+          </a>
         </div>
-        <p class="rise mt-4 text-[13px] text-white/80 flex items-center gap-2" style="--i:4"><Icon name="check" class="size-4 text-lime" stroke={2.4} />Instant prices or a free quote · Pay after the job</p>
+        <p class="rise mt-3 text-[13px] text-white/80 flex items-center gap-2" style="--i:4"><Icon name="check" class="size-4 text-lime" stroke={2.4} />Pay after the job · Uniformed LIVO crews</p>
       </div>
     </div>
   </section>
