@@ -1,4 +1,6 @@
 ---
+// Design v2 (2026-10-12) — UI/UX Pro Max: "Vibrant & Block-based" + "Bento grid",
+// "Conversion-Optimized" page pattern, in LIVO brand colours (purple / lime / ink).
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import BeforeAfter from '../components/BeforeAfter.astro';
@@ -6,203 +8,190 @@ import { Image } from 'astro:assets';
 import heroVan from '../assets/photos/hero-van.png';
 import interiorBefore from '../assets/photos/interior-before.jpg';
 import interiorAfter from '../assets/photos/interior-after.jpg';
-import { AREAS, CARDS, HERO_VIDEO, PHONE, PHONE_TEL, getDivision, subMin, type Card } from '../data/services';
+import { AREAS, CARDS, HERO_VIDEO, PHONE, PHONE_TEL, type Card } from '../data/services';
 
-// residential, fixed-price services only (quote-only work never shows here)
-const popular = [
-  ['move-cleaning', 'move-in-move-out-cleaning'],
-  ['house-cleaning', 'deep-cleaning'],
-  ['airbnb-cleaning', 'turnover-cleaning'],
-  ['junk-removal', 'junk-removal-by-load'],
-].map(([d, s]) => {
-  const div = getDivision(d);
-  return { div, sub: div.subs.find((x) => x.slug === s)! };
-});
-const trust = [
-  { icon: 'wallet', t: 'Instant prices or a free quote', s: 'Homes priced online, businesses quoted same day' },
-  { icon: 'check', t: 'Pay after the job', s: 'Only when you are happy' },
-  { icon: 'user', t: 'Uniformed LIVO crews', s: 'Branded van, LIVO polo and cap' },
-  { icon: 'clock', t: 'Same-day response', s: 'Call or book online' },
+// bento colour blocks, in order after the big photo tile
+const TONES = [
+  { bg: 'bg-lime', text: 'text-ink', sub: 'text-ink/80', chip: 'bg-white/60 text-ink' },
+  { bg: 'bg-purple', text: 'text-white', sub: 'text-white/85', chip: 'bg-white/15 text-white' },
+  { bg: 'bg-ink', text: 'text-white', sub: 'text-lime', chip: 'bg-white/10 text-lime' },
+  { bg: 'bg-purple-soft', text: 'text-purple', sub: 'text-purple', chip: 'bg-white text-purple' },
 ];
-const tileCls = (list: Card[], i: number) =>
-  list.length % 2 === 1 && i === 0 ? 'col-span-2 aspect-[2/1] md:col-span-1 md:aspect-[3/4]' : 'aspect-square md:aspect-[3/4]';
+const price = (c: Card) => (c.price != null ? `From $${c.price}` : 'Free quote');
+// after the 2x2 photo tile, an odd number of tiles leaves a gap → last one spans 2
+const wide = (list: Card[], i: number) => i > 0 && (list.length - 1) % 2 === 1 && i === list.length - 1;
+const steps = [
+  { n: '1', t: 'Pick your service', s: 'Homes get a price on screen. Businesses send a few photos.' },
+  { n: '2', t: 'Choose a day', s: 'Text and email confirm it. Quotes come back the same day.' },
+  { n: '3', t: 'Pay after the job', s: 'A uniformed LIVO crew does the work. You pay when you are happy.' },
+];
+const trust = [
+  { icon: 'wallet', t: 'Instant prices', s: 'or a free quote for business' },
+  { icon: 'check', t: 'Pay after', s: 'only when you are happy' },
+  { icon: 'user', t: 'LIVO crews', s: 'uniformed, in the LIVO van' },
+];
 ---
 <Base title="LIVO Property Services — House, Commercial Cleaning & Junk Removal in Coquitlam">
 
-  <!-- ───── HERO (minimal: words on white, photo clean, two choices) ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 pt-3 md:pt-12 md:grid md:grid-cols-[1fr_1.05fr] md:gap-14 md:items-center">
-    <div>
-      <p class="rise text-[12px] md:text-[13px] font-semibold text-muted" style="--i:0">LIVO Property Services · Tri-Cities</p>
-      <h1 class="rise mt-2 font-extrabold text-ink text-[2.15rem] leading-[1.05] md:text-[3.6rem] tracking-tight" style="--i:1">Fall in love with your property.</h1>
-      <p class="rise mt-2 font-heading font-bold text-purple text-[1.15rem] md:text-2xl" style="--i:2">We make it happen.</p>
+  <!-- ───── HERO: one bold purple block ───── -->
+  <section class="px-3 md:px-6 pt-1 md:pt-6">
+    <div class="on-dark hero-grad relative mx-auto max-w-6xl overflow-hidden rounded-[32px] md:rounded-[40px] text-white px-5 pt-7 pb-5 md:p-12 md:grid md:grid-cols-[1.05fr_1fr] md:gap-12 md:items-center">
+      <!-- geometric accents -->
+      <span aria-hidden="true" class="absolute -top-16 -right-16 size-36 md:-top-20 md:size-80 rounded-full bg-lime/90"></span>
 
-      <div class="hidden md:grid mt-9 grid-cols-2 gap-3 max-w-[460px]" data-choices>
-        <a href="/book?seg=residential" class="sheen press relative overflow-hidden group flex items-center justify-between gap-3 h-[76px] px-5 rounded-[20px] bg-lime text-ink">
-          <span><span class="block font-heading font-extrabold text-[16px]">For my home</span><span class="block text-[13px] text-ink/85">Instant price</span></span>
-          <Icon name="arrow" class="size-5 transition group-hover:translate-x-0.5" stroke={2.2} />
+      <div class="relative">
+        <p class="rise text-[12px] md:text-[13px] font-heading font-bold uppercase tracking-[.2em] text-white/80" style="--i:0">LIVO Property Services</p>
+        <h1 class="rise mt-3 text-white font-extrabold text-[2.6rem] leading-[1] md:text-[4.2rem] tracking-tight max-w-[8.5ch] md:max-w-[11ch]" style="--i:1">Fall in love with your property.</h1>
+        <p class="rise mt-3 font-heading font-extrabold text-lime text-[1.3rem] md:text-[1.75rem]" style="--i:2">We make it happen.</p>
+
+        <div class="hidden md:grid mt-10 grid-cols-2 gap-3 max-w-[480px]">
+          <a href="/book?seg=residential" class="sheen press relative overflow-hidden group flex flex-col justify-between h-[128px] p-5 rounded-[24px] bg-lime text-ink">
+            <span class="flex items-center justify-between"><Icon name="home" class="size-6" stroke={2} /><span class="size-10 rounded-full bg-ink text-lime grid place-items-center transition group-hover:translate-x-1"><Icon name="arrow" class="size-5" stroke={2.4} /></span></span>
+            <span><span class="block font-heading font-extrabold text-xl">For my home</span><span class="block text-sm font-medium">Instant price</span></span>
+          </a>
+          <a href="/book?seg=commercial" class="press group flex flex-col justify-between h-[128px] p-5 rounded-[24px] bg-white text-purple">
+            <span class="flex items-center justify-between"><Icon name="building" class="size-6" stroke={2} /><span class="size-10 rounded-full bg-purple text-white grid place-items-center transition group-hover:translate-x-1"><Icon name="arrow" class="size-5" stroke={2.4} /></span></span>
+            <span><span class="block font-heading font-extrabold text-xl">For my business</span><span class="block text-sm font-medium">Free quote</span></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="rise relative mt-6 md:mt-0 overflow-hidden rounded-[24px] md:rounded-[28px] aspect-[16/10] md:aspect-[4/5] ring-4 ring-white/10" style="--i:3">
+        <Image src={heroVan} alt="LIVO crew with the LIVO van" class="kenburns absolute inset-0 size-full object-cover object-[60%_75%]"
+          widths={[480, 800, 1200]} sizes="(min-width:768px) 520px, 100vw" loading="eager" fetchpriority="high" />
+        {HERO_VIDEO && <video data-hero-video class="absolute inset-0 size-full object-cover motion-reduce:hidden" src={HERO_VIDEO} muted loop playsinline preload="none" aria-hidden="true"></video>}
+        {HERO_VIDEO && <button type="button" data-video-toggle aria-label="Pause video" class="press motion-reduce:hidden absolute top-3 right-3 size-11 rounded-full bg-white/85 backdrop-blur text-ink grid place-items-center"><Icon name="pause" class="size-4" stroke={2.4} /></button>}
+      </div>
+
+      <!-- mobile choices -->
+      <div class="md:hidden relative mt-3 grid grid-cols-2 gap-2.5">
+        <a href="/book?seg=residential" class="sheen press relative overflow-hidden flex flex-col justify-between h-[112px] p-4 rounded-[22px] bg-lime text-ink">
+          <span class="flex items-center justify-between"><Icon name="home" class="size-[22px]" stroke={2} /><span class="size-9 rounded-full bg-ink text-lime grid place-items-center"><Icon name="arrow" class="size-[18px]" stroke={2.4} /></span></span>
+          <span><span class="block font-heading font-extrabold text-[16px] leading-tight whitespace-nowrap">For my home</span><span class="block text-[13px] font-medium">Instant price</span></span>
         </a>
-        <a href="/book?seg=commercial" class="press group flex items-center justify-between gap-3 h-[76px] px-5 rounded-[20px] bg-purple-soft text-purple">
-          <span><span class="block font-heading font-extrabold text-[16px]">For my business</span><span class="block text-[13px] text-purple">Free quote</span></span>
-          <Icon name="arrow" class="size-5 transition group-hover:translate-x-0.5" stroke={2.2} />
+        <a href="/book?seg=commercial" class="press flex flex-col justify-between h-[112px] p-4 rounded-[22px] bg-white text-purple">
+          <span class="flex items-center justify-between"><Icon name="building" class="size-[22px]" stroke={2} /><span class="size-9 rounded-full bg-purple text-white grid place-items-center"><Icon name="arrow" class="size-[18px]" stroke={2.4} /></span></span>
+          <span><span class="block font-heading font-extrabold text-[16px] leading-tight whitespace-nowrap">For my business</span><span class="block text-[13px] font-medium">Free quote</span></span>
         </a>
       </div>
-      <p class="hidden md:flex mt-4 text-[13px] text-muted items-center gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.4} />Pay after the job</p>
-    </div>
-
-    <div class="rise relative mt-5 md:mt-0 overflow-hidden rounded-[24px] md:rounded-[32px] bg-cloud h-[min(30svh,260px)] md:h-[430px]" style="--i:3">
-      <Image src={heroVan} alt="LIVO crew with the LIVO van" class="kenburns absolute inset-0 size-full object-cover object-[60%_70%] md:object-[55%_85%]"
-        widths={[480, 800, 1200, 1600]} sizes="(min-width:768px) 600px, 100vw" loading="eager" fetchpriority="high" />
-      {HERO_VIDEO && <video data-hero-video class="absolute inset-0 size-full object-cover motion-reduce:hidden" src={HERO_VIDEO} muted loop playsinline preload="none" aria-hidden="true"></video>}
-      {HERO_VIDEO && <button type="button" data-video-toggle aria-label="Pause video" class="press motion-reduce:hidden absolute top-3 right-3 size-11 rounded-full bg-white/85 backdrop-blur text-ink grid place-items-center"><Icon name="pause" class="size-4" stroke={2.4} /></button>}
-    </div>
-
-    <!-- mobile choices (under the photo, thumb reach) -->
-    <div class="md:hidden rise mt-3 grid grid-cols-2 gap-2.5" style="--i:4">
-      <a href="/book?seg=residential" class="sheen press relative overflow-hidden flex flex-col justify-between h-[96px] p-4 rounded-[20px] bg-lime text-ink">
-        <span class="flex items-center justify-between"><Icon name="home" class="size-5" stroke={2} /><Icon name="arrow" class="size-[18px]" stroke={2.2} /></span>
-        <span><span class="block font-heading font-extrabold text-[15px] leading-tight whitespace-nowrap">For my home</span><span class="block text-[12.5px] text-ink/85">Instant price</span></span>
-      </a>
-      <a href="/book?seg=commercial" class="press flex flex-col justify-between h-[96px] p-4 rounded-[20px] bg-purple-soft text-purple">
-        <span class="flex items-center justify-between"><Icon name="building" class="size-5" stroke={2} /><Icon name="arrow" class="size-[18px]" stroke={2.2} /></span>
-        <span><span class="block font-heading font-extrabold text-[15px] leading-tight whitespace-nowrap">For my business</span><span class="block text-[12.5px] text-purple">Free quote</span></span>
-      </a>
     </div>
   </section>
 
-  <!-- ───── SERVICES: Residential | Commercial ───── -->
-  <section id="services" class="mx-auto max-w-6xl px-4 md:px-6 mt-8 md:mt-20 scroll-mt-20">
-    <div class="flex items-end justify-between">
-      <h2 class="text-[1.4rem] md:text-4xl font-extrabold">What do you need?</h2>
-      <a href="/services" class="text-sm font-semibold text-purple inline-flex items-center gap-1 min-h-11">All <Icon name="chevron" class="size-4" /></a>
+  <!-- ───── SERVICES: bento grid ───── -->
+  <section id="services" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+    <div class="flex items-end justify-between gap-4">
+      <h2 class="text-[2rem] md:text-5xl font-extrabold leading-none">What do you need?</h2>
+      <a href="/services" class="shrink-0 text-sm font-bold text-purple inline-flex items-center gap-1 min-h-11">All <Icon name="chevron" class="size-4" /></a>
     </div>
 
-    <div role="tablist" aria-label="Customer type" class="mt-4 grid grid-cols-2 p-1 rounded-full bg-cloud md:max-w-sm" data-seg-tabs>
-      <button role="tab" id="tab-residential" aria-controls="panel-residential" aria-selected="true" data-seg="residential" class="press h-11 rounded-full text-[14px] font-heading font-bold transition-colors aria-selected:bg-white aria-selected:shadow-soft aria-selected:text-purple text-muted">Residential</button>
-      <button role="tab" id="tab-commercial" aria-controls="panel-commercial" aria-selected="false" tabindex="-1" data-seg="commercial" class="press h-11 rounded-full text-[14px] font-heading font-bold transition-colors aria-selected:bg-white aria-selected:shadow-soft aria-selected:text-purple text-muted">Commercial</button>
+    <div role="tablist" aria-label="Customer type" class="mt-5 grid grid-cols-2 p-1.5 rounded-full bg-ink md:max-w-sm" data-seg-tabs>
+      <button role="tab" id="tab-residential" aria-controls="panel-residential" aria-selected="true" data-seg="residential" class="press h-11 rounded-full text-[14px] font-heading font-bold transition-colors text-white/75 aria-selected:bg-lime aria-selected:text-ink">Residential</button>
+      <button role="tab" id="tab-commercial" aria-controls="panel-commercial" aria-selected="false" tabindex="-1" data-seg="commercial" class="press h-11 rounded-full text-[14px] font-heading font-bold transition-colors text-white/75 aria-selected:bg-lime aria-selected:text-ink">Commercial</button>
     </div>
 
     {(['residential', 'commercial'] as const).map((seg) => (
       <div role="tabpanel" id={`panel-${seg}`} aria-labelledby={`tab-${seg}`} hidden={seg === 'commercial'} data-panel={seg}>
-        <p class="mt-3 text-[13.5px] text-muted">{seg === 'residential' ? 'Homes, condos and rentals. Prices show right away.' : 'Offices, stores, strata and restaurants. Free quote, usually the same day.'}</p>
-        <div class:list={['mt-3 md:mt-5 grid grid-cols-2 gap-2.5 md:gap-5', seg === 'residential' ? 'md:grid-cols-5' : 'md:grid-cols-4']}>
-          {CARDS[seg].map((c, i) => (
-            <a href={c.href} class:list={['press group relative overflow-hidden rounded-panel bg-cloud', tileCls(CARDS[seg], i)]}>
-              <Image src={c.div.image} alt="" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105" widths={[320, 520, 700]} sizes="(min-width:768px) 220px, 50vw" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
-              <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple" aria-hidden="true"><Icon name={c.div.icon} class="size-[18px]" /></span>
-              <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-4 text-white">
-                <div class="font-heading font-bold text-[14px] md:text-base leading-tight">{c.name}</div>
-                <div class="mt-1 text-[12px] md:text-[13px] text-white/85">{c.price != null ? <>From <b class="text-lime">${c.price}</b></> : <b class="text-lime font-semibold">Free quote</b>}</div>
-              </div>
-            </a>
-          ))}
+        <div class="mt-4 grid grid-cols-2 md:grid-cols-4 auto-rows-[148px] md:auto-rows-[190px] gap-2.5 md:gap-4">
+          {CARDS[seg].map((c, i) => {
+            if (i === 0) return (
+              <a href={c.href} class="press group relative col-span-2 row-span-2 overflow-hidden rounded-[28px] bg-purple-ink" data-reveal>
+                <Image src={c.div.image} alt="" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-[1.03]" widths={[480, 800]} sizes="(min-width:768px) 560px, 100vw" />
+                <div class="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-[20px] bg-white p-3.5 pr-3">
+                  <span class="size-11 shrink-0 rounded-full bg-purple text-white grid place-items-center" aria-hidden="true"><Icon name={c.div.icon} class="size-5" /></span>
+                  <span class="flex-1 min-w-0"><span class="block font-heading font-extrabold text-[17px] leading-tight">{c.name}</span><span class="block text-[14px] font-semibold text-purple">{price(c)}</span></span>
+                  <span class="size-10 shrink-0 rounded-full bg-lime text-ink grid place-items-center transition group-hover:translate-x-0.5" aria-hidden="true"><Icon name="arrow" class="size-5" stroke={2.4} /></span>
+                </div>
+              </a>
+            );
+            const t = TONES[(i - 1) % TONES.length];
+            return (
+              <a href={c.href} class:list={['press group flex flex-col justify-between p-4 md:p-5 rounded-[24px] transition-[filter] hover:brightness-[1.04]', t.bg, wide(CARDS[seg], i) && 'col-span-2 md:col-span-1']} data-reveal>
+                <span class="flex items-start justify-between">
+                  <span class:list={['size-10 rounded-full grid place-items-center', t.chip]} aria-hidden="true"><Icon name={c.div.icon} class="size-5" stroke={2} /></span>
+                  <Icon name="arrow" class:list={['size-5 transition group-hover:translate-x-0.5', t.text]} stroke={2.2} />
+                </span>
+                <span>
+                  <span class:list={['block font-heading font-extrabold text-[15px] md:text-[17px] leading-tight', t.text]}>{c.name}</span>
+                  <span class:list={['block mt-1 text-[13.5px] font-semibold', t.sub]}>{price(c)}</span>
+                </span>
+              </a>
+            );
+          })}
         </div>
       </div>
     ))}
 
-    <a href="/my-livo" class="press mt-4 flex items-center gap-3 rounded-panel border border-line p-3.5 pr-4 hover:border-gray transition-colors">
-      <span class="size-10 shrink-0 rounded-full bg-purple-soft text-purple grid place-items-center" aria-hidden="true"><Icon name="user" class="size-5" /></span>
-      <span class="flex-1 min-w-0"><span class="block font-semibold text-[14.5px]">Booked before?</span><span class="block text-[13px] text-muted">Sign in with your phone. Your details are filled in.</span></span>
-      <Icon name="chevron" class="size-5 text-muted" />
+    <a href="/my-livo" class="press mt-4 inline-flex items-center gap-2 min-h-11 text-[15px] font-semibold text-ink">
+      <span class="size-8 rounded-full bg-purple-soft text-purple grid place-items-center" aria-hidden="true"><Icon name="user" class="size-4" /></span>
+      Booked before? <span class="text-purple underline underline-offset-4">Sign in</span>
     </a>
   </section>
 
-  <!-- ───── POPULAR (swipe row, residential prices) ───── -->
-  <section class="mt-8 md:mt-20">
-    <div class="mx-auto max-w-6xl px-4 md:px-6 flex items-end justify-between">
-      <h2 class="text-[1.4rem] md:text-4xl font-extrabold">Popular right now</h2>
-    </div>
-    <div class="mt-5 flex gap-3 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-px-4 md:scroll-px-6 px-4 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))] pb-2">
-      {popular.map(({ div, sub }) => (
-        <a href={`/services/${div.id}/${sub.slug}`} class="press group snap-start shrink-0 w-[68%] sm:w-[40%] md:w-[300px] card overflow-hidden hover:shadow-lift transition-shadow">
-          <div class="aspect-[16/10] overflow-hidden bg-cloud">
-            <Image src={sub.image} alt="" class="size-full object-cover transition duration-700 group-hover:scale-105" widths={[320, 600]} sizes="300px" />
-          </div>
-          <div class="p-4">
-            <div class="text-[11px] font-semibold text-muted uppercase tracking-wider">{div.short}</div>
-            <div class="mt-1 font-heading font-bold text-[15px] leading-snug">{sub.name}</div>
-            <div class="mt-2 flex items-center justify-between">
-              <span class="text-sm text-muted">From <b class="text-ink">${subMin(sub)}</b></span>
-              <span class="size-8 rounded-full bg-lime grid place-items-center transition duration-300 group-hover:translate-x-1" aria-hidden="true"><Icon name="arrow" class="size-4" stroke={2.2} /></span>
-            </div>
-          </div>
-        </a>
+  <!-- ───── HOW IT WORKS: 3 bold steps ───── -->
+  <section id="how" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+    <h2 class="text-[2rem] md:text-5xl font-extrabold leading-none">Three steps. Done.</h2>
+    <ol class="mt-6 grid md:grid-cols-3 gap-2.5 md:gap-4">
+      {steps.map((x, i) => (
+        <li class:list={['flex md:flex-col gap-4 rounded-[24px] p-5 md:p-7', i === 2 ? 'bg-lime' : 'bg-cloud']} data-reveal>
+          <span class:list={['font-heading font-extrabold text-[2.6rem] md:text-6xl leading-none shrink-0 w-10', i === 2 ? 'text-ink' : 'text-purple']} aria-hidden="true">{x.n}</span>
+          <span>
+            <span class="block font-heading font-extrabold text-lg md:text-xl"><span class="sr-only">Step {x.n}: </span>{x.t}</span>
+            <span class="block mt-1 text-[15px] text-ink/80 leading-snug">{x.s}</span>
+          </span>
+        </li>
       ))}
-    </div>
-  </section>
-
-  <!-- ───── TRUST ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-8 md:mt-20">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-      {trust.map((x) => (
-        <div class="rounded-panel bg-cloud p-4 md:p-6" data-reveal>
-          <span class="size-10 rounded-full bg-white grid place-items-center text-purple shadow-soft"><Icon name={x.icon} class="size-5" stroke={2} /></span>
-          <div class="mt-3 font-heading font-bold text-[14px] md:text-base leading-snug">{x.t}</div>
-          <div class="mt-0.5 text-[12.5px] md:text-sm text-muted leading-snug">{x.s}</div>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <!-- ───── HOW IT WORKS (desktop) ───── -->
-  <section id="how" class="hidden md:block mx-auto max-w-6xl px-4 md:px-6 mt-24 scroll-mt-20">
-    <div class="eyebrow">How it works</div>
-    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Two simple ways to start.</h2>
-    <div class="mt-6 grid md:grid-cols-2 gap-5">
-      {[
-        ['Residential', 'Book online', [['Pick your service', 'The price shows right away.'], ['Choose a time', 'Text and email confirm it.'], ['Pay after', 'A uniformed crew does the job.']]],
-        ['Commercial', 'Get a free quote', [['Send photos', 'Tell us about the space.'], ['Get your quote', 'Usually the same day.'], ['Pick a date', 'We work around your hours.']]],
-      ].map(([lane, title, steps]) => (
-        <div class="card p-6" data-reveal>
-          <div class="text-[12px] font-bold uppercase tracking-wider text-muted">{lane as string}</div>
-          <div class="mt-1 font-heading font-extrabold text-xl">{title as string}</div>
-          <ol class="mt-5 space-y-4">
-            {(steps as string[][]).map(([t, s], i) => (
-              <li class="flex gap-4">
-                <span class="shrink-0 size-9 rounded-full bg-purple text-white font-heading font-extrabold grid place-items-center" aria-hidden="true">{i + 1}</span>
-                <div><div class="font-heading font-bold">{t}</div><p class="text-sm text-muted">{s}</p></div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ))}
-    </div>
+    </ol>
   </section>
 
   <!-- ───── RESULTS ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-9 md:mt-24">
+  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24">
     <div class="md:grid md:grid-cols-5 md:gap-10 md:items-center">
       <div class="md:col-span-2">
-        <div class="eyebrow">Results</div>
-        <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">See the difference.</h2>
-        <p class="mt-2 text-muted text-sm md:text-base">Drag the slider to compare.</p>
+        <h2 class="text-[2rem] md:text-5xl font-extrabold leading-none">See the difference.</h2>
+        <p class="mt-3 text-muted text-[15px] md:text-base">Drag the slider to compare.</p>
       </div>
       <BeforeAfter before={interiorBefore} after={interiorAfter} alt="House cleaning" class="mt-5 md:mt-0 md:col-span-3" />
     </div>
   </section>
 
+  <!-- ───── WHY LIVO: dark block ───── -->
+  <section class="px-3 md:px-6 mt-12 md:mt-24">
+    <div class="on-dark mx-auto max-w-6xl rounded-[32px] bg-ink text-white p-6 md:p-12">
+      <h2 class="text-white text-[2rem] md:text-5xl font-extrabold leading-none">Why LIVO</h2>
+      <ul class="mt-6 grid md:grid-cols-3 gap-5 md:gap-8">
+        {trust.map((x) => (
+          <li class="flex items-center gap-4" data-reveal>
+            <span class="size-12 shrink-0 rounded-full bg-lime text-ink grid place-items-center" aria-hidden="true"><Icon name={x.icon} class="size-6" stroke={2} /></span>
+            <span><span class="block font-heading font-extrabold text-lg">{x.t}</span><span class="block text-[15px] text-white/75">{x.s}</span></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
   <!-- ───── AREAS ───── -->
-  <section id="areas" class="mx-auto max-w-6xl px-4 md:px-6 mt-9 md:mt-24 scroll-mt-20">
-    <div class="eyebrow">Where we work</div>
-    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Tri-Cities & Greater Vancouver.</h2>
+  <section id="areas" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
+    <h2 class="text-[2rem] md:text-5xl font-extrabold leading-none">Where we work</h2>
+    <p class="mt-3 text-muted text-[15px] md:text-base">Tri-Cities and Greater Vancouver.</p>
     <ul class="mt-5 flex flex-wrap gap-2 outline-none" aria-label="Service areas">
       {AREAS.map((a, i) => (
-        <li class:list={['px-3.5 py-2 rounded-full text-[13px] font-medium', i < 3 ? 'bg-purple text-white' : 'bg-cloud text-ink', i >= 3 && 'hidden md:block area-more']}>{a}</li>
+        <li class:list={['px-4 py-2.5 rounded-full text-[14px] font-semibold', i < 3 ? 'bg-purple text-white' : 'bg-cloud text-ink', i >= 3 && 'hidden md:block area-more']}>{a}</li>
       ))}
-      <li class="md:hidden"><button type="button" data-more-areas class="press px-3.5 py-2 min-h-11 rounded-full text-[13px] font-semibold bg-cloud text-purple" aria-expanded="false">+{AREAS.length - 3} more</button></li>
+      <li class="md:hidden"><button type="button" data-more-areas class="press px-4 py-2.5 min-h-11 rounded-full text-[14px] font-semibold bg-purple-soft text-purple" aria-expanded="false">+{AREAS.length - 3} more</button></li>
     </ul>
   </section>
 
-  <!-- ───── CTA (desktop) ───── -->
-  <section class="hidden md:block mx-auto max-w-6xl px-4 md:px-6 mt-24">
-    <div class="on-dark hero-grad rounded-[28px] p-7 md:p-14 text-white relative overflow-hidden" data-reveal>
-      <div class="glow absolute -right-16 -top-16 size-64 rounded-full bg-lime/20 blur-2xl" aria-hidden="true"></div>
-      <h2 class="text-white text-[1.6rem] md:text-5xl font-extrabold leading-tight max-w-lg">Ready when you are.</h2>
-      <p class="mt-2 text-white/80 max-w-md">Book a home service online in a minute, ask for a business quote, or call us and we will set it up for you.</p>
-      <div class="mt-6 flex flex-col sm:flex-row gap-3">
-        <a href="/book?seg=residential" class="sheen btn-lime">Book a home service <Icon name="arrow" class="size-4" /></a>
-        <a href="/book?seg=commercial" class="btn-ghost text-white">Get a business quote</a>
-        <a href={`tel:${PHONE_TEL}`} class="btn-ghost text-white"><Icon name="phone" class="size-4" />{PHONE}</a>
+  <!-- ───── FINAL CTA: lime block ───── -->
+  <section class="px-3 md:px-6 mt-12 md:mt-24">
+    <div class="relative mx-auto max-w-6xl overflow-hidden rounded-[32px] bg-lime text-ink p-6 md:p-12">
+      <span aria-hidden="true" class="absolute -bottom-16 -right-10 size-48 md:size-72 rounded-full bg-purple"></span>
+      <div class="relative">
+        <h2 class="text-[2rem] md:text-5xl font-extrabold leading-none max-w-[12ch]">Ready when you are.</h2>
+        <p class="mt-3 text-[15px] md:text-base font-medium max-w-sm">Book online in a minute, or call and we set it up for you.</p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-2.5 max-w-[260px] sm:max-w-none">
+          <a href="/book" class="btn-dark">Book now <Icon name="arrow" class="size-4" /></a>
+          <a href={`tel:${PHONE_TEL}`} class="btn bg-white text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
+        </div>
       </div>
     </div>
   </section>
@@ -217,7 +206,10 @@ const tileCls = (list: Card[], i: number) =>
       t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1;
       if (on && focus) t.focus();
     });
-    document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== seg));
+    document.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => {
+      p.hidden = p.dataset.panel !== seg;
+      if (!p.hidden) p.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'));
+    });
     try { sessionStorage.setItem('livo-seg', seg); } catch { /* ignore */ }
   }
   tabs.forEach((t) => {
@@ -226,7 +218,6 @@ const tileCls = (list: Card[], i: number) =>
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); pick(t.dataset.seg === 'residential' ? 'commercial' : 'residential', true); }
     });
   });
-  document.querySelectorAll<HTMLAnchorElement>('[data-pick]').forEach((a) => a.addEventListener('click', () => pick(a.dataset.pick!)));
   let start = location.hash === '#commercial' ? 'commercial' : '';
   try { start ||= sessionStorage.getItem('livo-seg') ?? ''; } catch { /* ignore */ }
   if (start) pick(start);
@@ -250,11 +241,5 @@ const tileCls = (list: Card[], i: number) =>
     paused ? v?.play() : v?.pause();
     tg.dataset.paused = paused ? '0' : '1';
     tg.setAttribute('aria-label', paused ? 'Pause video' : 'Play video');
-    tg.innerHTML = paused ? '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>' : '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>';
   });
 </script>
-
-<style is:global>
-  @keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-30px,24px) scale(1.15); } }
-  .glow { animation: drift 9s ease-in-out infinite; }
-</style>
