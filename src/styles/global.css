@@ -55,7 +55,7 @@
 }
 
 @utility btn { @apply inline-flex items-center justify-center gap-2 rounded-full font-heading font-bold text-[15px] px-6 h-12 select-none; transition: transform var(--dur-fast) var(--ease-spring), background-color var(--dur-base), box-shadow var(--dur-base), opacity var(--dur-base); &:active { transform: scale(.96); } }
-@utility btn-lime { @apply btn bg-lime text-ink hover:bg-lime-soft ; position: relative; overflow: hidden; }
+@utility btn-lime { @apply btn bg-lime text-ink hover:brightness-95; position: relative; overflow: hidden; }
 @utility btn-ghost { @apply btn border border-current/25 hover:border-current/60; }
 @utility btn-dark { @apply btn bg-ink text-white hover:bg-black; }
 @utility eyebrow { @apply text-[11px] font-bold uppercase tracking-[.16em] text-purple; }

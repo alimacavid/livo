@@ -72,8 +72,8 @@ const trust = [
       <div role="tabpanel" id={`panel-${seg}`} aria-labelledby={`tab-${seg}`} hidden={seg === 'commercial'} data-panel={seg}>
         <div class:list={['mt-3 md:mt-5 grid grid-cols-2 gap-2.5 md:gap-5', seg === 'residential' ? 'md:grid-cols-5' : 'md:grid-cols-4']}>
           {CARDS[seg].map((c, i) => (
-            <a href={c.href} class="press group block min-w-0" data-reveal>
-              <div class="aspect-[4/3] overflow-hidden rounded-panel bg-cloud">
+            <a href={c.href} class:list={['press group block min-w-0', CARDS[seg].length % 2 === 1 && i === CARDS[seg].length - 1 && 'col-span-2 md:col-span-1']} data-reveal>
+              <div class:list={['overflow-hidden rounded-panel bg-cloud', CARDS[seg].length % 2 === 1 && i === CARDS[seg].length - 1 ? 'aspect-[2/1] md:aspect-[4/3]' : 'aspect-[4/3]']}>
                 <Image src={c.div.image} alt="" class="size-full object-cover transition duration-500 group-hover:scale-[1.03]" widths={[320, 520, 700]} sizes="(min-width:768px) 220px, 50vw" loading="lazy" />
               </div>
               <div class="pt-3 font-heading font-bold text-[15px] md:text-base leading-snug">{c.name}</div>
