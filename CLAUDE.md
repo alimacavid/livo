@@ -3,6 +3,15 @@
 ## Last updated
 2026-10-12
 
+## 2026-10-12 — Minimal mobile UI (TEST ONLY — `v1.0`)
+- Branch `codex/minimal-ui`, based on `v1.0`; PR targets `v1.0` only.
+- Homepage hero preserved. Removed the popular row, boxed returning-customer prompt, service-photo overlays, and boxed trust messages. Mobile order: hero, services, results, Why LIVO, areas, footer.
+- Category/service headers now put text on white before clean photos. Shared section gaps: 40px mobile / 96px desktop. Lighter service rows, add-ons, footer, and booking presentation; existing brand colors/fonts and five mobile navigation destinations retained.
+- Included items expand accessibly after the first four on mobile. Reduced motion disables animation and explicitly renders reveal content and success icons in their final visible state. Selection/field boundaries and touch targets improved.
+- No changes to service data/prices/names, API, URLs, Netlify settings, Supabase, booking payloads, quote steps, sign-in logic, or test mode. Existing yellow test bars retained.
+- Verification evidence and screenshots: `docs/minimal-ui/`. Checks run against the local production build in test mode; the existing hosted `v1.0` site remains the baseline until this PR is merged.
+
+
 ## 2026-10-12 — Residential/Commercial split, quotes with photos, saved customers (TEST ONLY — `v1.0`)
 Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali approved every recommendation in it.
 - **Two customer types.** Homepage "What do you need?" has Residential | Commercial tabs (`CARDS` in `src/data/services.ts`). Commercial tab = Commercial Cleaning, Restaurant & Kitchen, Post-Construction, Junk & Debris (→ Renovation Debris). Hero (redesigned 2026-10-12 evening, Ali: "too crowded"): minimal — small line "LIVO Property Services · Tri-Cities", headline in dark text on white (no text over the photo), "We make it happen." in purple, clean rounded photo, then two tiles: lime "For my home · Instant price" (→ /book?seg=residential) and light-purple "For my business · Free quote" (→ /book?seg=commercial). Mobile order: words → photo → tiles; desktop: words + tiles left, photo right. Header is solid (no longer overlay). Services page, menu and footer grouped the same way.

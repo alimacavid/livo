@@ -15,29 +15,29 @@ const groups = [
     <!-- jump chips -->
     <div class="sticky top-16 z-30 -mx-4 px-4 md:mx-0 md:px-0 py-3 bg-white/90 backdrop-blur-xl">
       <div class="flex gap-2 overflow-x-auto no-scrollbar">
-        {groups.map((g) => g.list.map((d) => <a href={`#${d.id}`} class="press shrink-0 inline-flex items-center gap-1.5 h-11 px-4 rounded-full bg-cloud text-[13px] font-semibold hover:bg-purple-soft transition-colors aria-[current]:bg-purple aria-[current]:text-white" data-chip><Icon name={d.icon} class="size-4 text-purple" />{d.name}</a>))}
+        {groups.map((g) => g.list.map((d) => <a href={`#${d.id}`} class="press shrink-0 inline-flex items-center gap-1.5 h-11 px-4 rounded-full bg-cloud text-[15px] font-semibold hover:bg-purple-soft transition-colors aria-[current]:bg-purple aria-[current]:text-white" data-chip><Icon name={d.icon} class="size-4" />{d.name}</a>))}
       </div>
     </div>
   </section>
   <div class="mx-auto max-w-6xl px-4 md:px-6 mt-2">
     {groups.map((g) => (
-      <div id={g.id} class="scroll-mt-32 mt-6 first:mt-2">
+      <div id={g.id} class="scroll-mt-32 section-gap first:mt-6">
         <div class="flex items-center gap-3">
-          <h2 class="text-[13px] font-bold uppercase tracking-wider text-purple">{g.label}</h2>
+          <h2 class="text-base font-bold text-ink">{g.label}</h2>
           <span class="h-px flex-1 bg-line" aria-hidden="true"></span>
         </div>
-        <p class="mt-1 text-[13px] text-muted">{g.line}</p>
-        <div class="space-y-10 mt-5">
+        <p class="mt-1 text-[15px] text-muted">{g.line}</p>
+        <div class="service-groups mt-6">
           {g.list.map((d) => (
             <section id={d.id} class="scroll-mt-32">
               <div class="flex items-end justify-between gap-4">
                 <div>
                   <h3 class="text-xl md:text-2xl font-extrabold">{d.name}</h3>
-                  <p class="text-sm text-muted">{d.tagline}</p>
+                  <p class="text-[15px] text-muted">{d.tagline}</p>
                 </div>
-                <a href={`/services/${d.id}`} class="text-sm font-semibold text-purple shrink-0 min-h-11 inline-flex items-center">Details</a>
+                <a href={`/services/${d.id}`} class="text-[15px] font-semibold text-purple shrink-0 min-h-11 inline-flex items-center">Details</a>
               </div>
-              <div class="mt-4 grid md:grid-cols-2 gap-3">
+              <div class="mt-4 grid md:grid-cols-2 gap-x-8">
                 {d.subs.map((s) => <div data-reveal><SubRow div={d} sub={s} /></div>)}
               </div>
             </section>
@@ -53,7 +53,7 @@ const groups = [
   const chips = [...document.querySelectorAll<HTMLAnchorElement>('[data-chip]')];
   const io = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
-    chips.forEach((c) => c.getAttribute('href') === '#' + e.target.id ? (c.setAttribute('aria-current', 'true'), c.parentElement!.scrollTo({ left: c.offsetLeft - 16, behavior: 'smooth' })) : c.removeAttribute('aria-current'));
+    chips.forEach((c) => c.getAttribute('href') === '#' + e.target.id ? (c.setAttribute('aria-current', 'true'), c.parentElement!.scrollTo({ left: c.offsetLeft - 16, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })) : c.removeAttribute('aria-current'));
   }), { rootMargin: '-40% 0px -55% 0px' });
   document.querySelectorAll('section[id]').forEach((s) => io.observe(s));
 </script>

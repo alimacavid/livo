@@ -14,7 +14,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 <Base title="Book a Service or Get a Quote" description="Book house cleaning, move out cleaning, Airbnb cleaning or junk removal online, or send photos for a free commercial cleaning quote. LIVO Property Services, Coquitlam." tabBar={false} footer={false}>
   <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, commercialDivs: COMMERCIAL_DIVS, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
 
-  <div class="mx-auto max-w-xl px-4 pt-2 md:pt-8 pb-40">
+  <div class="booking-page mx-auto max-w-xl px-4 pt-2 md:pt-8 pb-40">
     <!-- progress -->
     <div class="flex items-center gap-3" id="bk-top">
       <button id="bk-back" class="press size-11 shrink-0 rounded-full bg-cloud grid place-items-center disabled:opacity-0 disabled:pointer-events-none transition-opacity" aria-label="Previous step">

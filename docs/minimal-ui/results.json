@@ -1,0 +1,434 @@
+{
+  "base": "http://127.0.0.1:4322",
+  "scans": [
+    {
+      "name": "home",
+      "violations": []
+    },
+    {
+      "name": "services",
+      "violations": []
+    },
+    {
+      "name": "category",
+      "violations": []
+    },
+    {
+      "name": "fixed",
+      "violations": []
+    },
+    {
+      "name": "quote",
+      "violations": []
+    },
+    {
+      "name": "book",
+      "violations": []
+    },
+    {
+      "name": "my-livo",
+      "violations": []
+    },
+    {
+      "name": "privacy",
+      "violations": []
+    },
+    {
+      "name": "book-photos",
+      "violations": []
+    },
+    {
+      "name": "book-details",
+      "violations": []
+    },
+    {
+      "name": "quote-photo-attached",
+      "violations": []
+    },
+    {
+      "name": "my-livo-code",
+      "violations": []
+    },
+    {
+      "name": "my-livo-profile",
+      "violations": []
+    }
+  ],
+  "screenshots": [
+    "home-375x667.png",
+    "services-375x667.png",
+    "category-375x667.png",
+    "fixed-375x667.png",
+    "quote-375x667.png",
+    "book-375x667.png",
+    "my-livo-375x667.png",
+    "privacy-375x667.png",
+    "book-photos-375x667.png",
+    "home-390x844.png",
+    "services-390x844.png",
+    "category-390x844.png",
+    "fixed-390x844.png",
+    "quote-390x844.png",
+    "book-390x844.png",
+    "my-livo-390x844.png",
+    "privacy-390x844.png",
+    "book-photos-390x844.png",
+    "home-1280x800.png",
+    "services-1280x800.png",
+    "category-1280x800.png",
+    "fixed-1280x800.png",
+    "quote-1280x800.png",
+    "book-1280x800.png",
+    "my-livo-1280x800.png",
+    "privacy-1280x800.png",
+    "book-photos-1280x800.png"
+  ],
+  "overflow": [
+    {
+      "name": "home",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "services",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "category",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "fixed",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "quote",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "book",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "my-livo",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "privacy",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "book-photos",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "services",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "category",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "fixed",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "quote",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "book",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "my-livo",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "privacy",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "book-photos",
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "name": "home",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "services",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "category",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "fixed",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "quote",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "book",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "my-livo",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "privacy",
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "name": "book-photos",
+      "width": 1280,
+      "scrollWidth": 1280
+    }
+  ],
+  "errors": [],
+  "journeys": [
+    {
+      "name": "Deep Cleaning booking",
+      "pass": true,
+      "discount": "15%",
+      "reference": "TEST-A92903"
+    },
+    {
+      "name": "Kitchen Deep Clean quote with photo and business",
+      "pass": true
+    },
+    {
+      "name": "My LIVO 10-digit phone + 123456, saved places and Book again",
+      "pass": true
+    }
+  ],
+  "reducedMotion": [
+    {
+      "name": "home",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "services",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "category",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "fixed",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "quote",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "book",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "my-livo",
+      "animations": 0,
+      "hiddenReveals": 0
+    },
+    {
+      "name": "privacy",
+      "animations": 0,
+      "hiddenReveals": 0
+    }
+  ],
+  "allPageOverflow": [
+    {
+      "url": "/book",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/my-livo",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/privacy",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/airbnb-cleaning/deep-reset",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/airbnb-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/airbnb-cleaning/turnover-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/commercial-cleaning/commercial-cleanup",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/commercial-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/commercial-cleaning/office-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/commercial-cleaning/retail-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/commercial-cleaning/strata-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/construction-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/construction-cleaning/post-construction-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/house-cleaning/deep-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/house-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/house-cleaning/recurring-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/house-cleaning/regular-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/junk-removal",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/junk-removal/junk-removal-by-load",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/junk-removal/renovation-debris",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/move-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/move-cleaning/move-in-move-out-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/restaurant-kitchen-cleaning/front-of-house",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/restaurant-kitchen-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/restaurant-kitchen-cleaning/kitchen-deep-clean",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/services/restaurant-kitchen-cleaning/scheduled-kitchen-cleaning",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/404.html",
+      "width": 375,
+      "scrollWidth": 375
+    },
+    {
+      "url": "/careers.html",
+      "width": 375,
+      "scrollWidth": 375
+    }
+  ]
+}

@@ -10,25 +10,25 @@ const csDiv = cs ? getDivision(cs.div) : undefined;
 const csSub = cs ? csDiv!.subs.find((s) => s.slug === cs.sub)! : undefined;
 const csPrice = csSub && !isQuoteSub(csSub) ? subMin(csSub) : null;
 ---
-<section class="mt-10">
+<section class="section-gap">
   <h2 class="text-xl font-extrabold">Not included</h2>
-  <p class="text-sm text-muted mt-0.5">So you know before you book.</p>
+  <p class="text-[15px] text-muted mt-0.5">So you know before you book.</p>
   <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
     {d.notIncluded.map((x) => (
-      <li class="flex gap-3 text-[14.5px]"><span class="shrink-0 size-6 rounded-full bg-cloud text-muted grid place-items-center"><Icon name="x" class="size-3.5" stroke={2.6} /></span>{x}</li>
+      <li class="flex gap-3 text-[15px]"><span class="shrink-0 size-6 rounded-full bg-cloud text-muted grid place-items-center"><Icon name="x" class="size-3.5" stroke={2.6} /></span>{x}</li>
     ))}
   </ul>
 </section>
 {cs && csSub && (
-  <section class="mt-10">
-    <a href={`/services/${cs.div}/${cs.sub}`} class="press group flex items-center gap-4 p-3 pr-4 rounded-panel bg-lime-soft border border-lime/40 hover:border-lime-deep transition-colors">
+  <section class="section-gap">
+    <a href={`/services/${cs.div}/${cs.sub}`} class="press group flex items-center gap-4 p-3 pr-4 rounded-panel bg-purple-soft transition-colors">
       <div class="shrink-0 size-[72px] rounded-card overflow-hidden bg-cloud">
         <Image src={csSub.image} alt="" class="size-full object-cover" widths={[160]} sizes="72px" />
       </div>
       <div class="min-w-0 flex-1">
         <div class="font-heading font-bold text-[15px] leading-snug">{cs.title}</div>
-        <div class="text-[13px] text-ink/75 leading-snug mt-0.5">{cs.line}</div>
-        <div class="mt-1 text-[13px] font-semibold text-lime-ink">{csSub.name}{csPrice ? ` · from $${csPrice}` : ' · free quote'}</div>
+        <div class="text-[15px] text-ink/75 leading-snug mt-0.5">{cs.line}</div>
+        <div class="mt-1 text-[15px] font-semibold text-ink">{csSub.name}{csPrice ? ` · from $${csPrice}` : ' · free quote'}</div>
       </div>
       <Icon name="chevron" class="size-5 text-ink/60 group-hover:translate-x-0.5 transition shrink-0" />
     </a>
