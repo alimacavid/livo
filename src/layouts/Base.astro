@@ -71,12 +71,12 @@ const tabs = [
   <header id="top" data-mode={header} style="view-transition-name: site-header"
     class:list={['sticky top-0 z-40 transition-colors',
       header === 'overlay' ? 'bg-white/0 md:bg-white/85' : 'bg-white/85',
-      'backdrop-blur-xl data-[scrolled]:bg-white']}>
+      'backdrop-blur-xl border-b border-transparent data-[scrolled]:border-line data-[scrolled]:bg-white/90']}>
     <div class="mx-auto max-w-6xl h-16 px-4 md:px-6 flex items-center justify-between gap-4">
       <a href="/" aria-label="LIVO home" class="shrink-0">
         <Image src={logo} alt="LIVO" class="h-8 w-auto" widths={[140, 280]} sizes="70px" loading="eager" />
       </a>
-      <nav class="hidden md:flex items-center gap-1 lg:gap-3 text-[14px] font-medium">
+      <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
         <div class="relative group" data-dd>
           <a href="/services" aria-current={path.startsWith('/services') ? 'page' : undefined} class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1 aria-[current]:text-purple">Services <Icon name="down" class="size-4 transition group-hover:rotate-180 group-focus-within:rotate-180" /></a>
           <div class="invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0 transition duration-200 absolute left-0 top-full pt-2">
@@ -102,7 +102,7 @@ const tabs = [
       </nav>
       <div class="flex items-center gap-2">
         <a href={`tel:${PHONE_TEL}`} class="hidden md:inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-full hover:bg-cloud"><Icon name="phone" class="size-4" />{PHONE}</a>
-        <a href="/book" class="hidden md:inline-flex btn h-11 px-5 text-sm bg-purple text-white">Book now</a>
+        <a href="/book" class="hidden md:inline-flex btn-lime h-10 px-5 text-sm">Book now</a>
         <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="md:hidden size-10 rounded-full bg-cloud grid place-items-center text-ink active:scale-95 transition"><Icon name="phone" class="size-[18px]" /></a>
       </div>
     </div>
@@ -111,8 +111,8 @@ const tabs = [
   <main id="main" tabindex="-1" class="outline-none"><slot /></main>
 
   <!-- ───── Footer ───── -->
-  {footer && <footer class="on-dark bg-purple-ink text-white/75 mt-10 md:mt-24">
-    <div class="mx-auto max-w-6xl px-5 md:px-6 pt-12 pb-8 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+  {footer && <footer class="on-dark bg-purple-ink text-white/75 mt-20">
+    <div class="mx-auto max-w-6xl px-5 md:px-6 py-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
       <div class="col-span-2 md:col-span-1">
         <Image src={logoFooter} alt="LIVO" class="h-9 w-auto" widths={[160, 320]} sizes="80px" />
         <p class="mt-3 text-sm leading-relaxed">Property services across the Tri-Cities and Greater Vancouver. One crew. One standard.</p>
@@ -121,20 +121,20 @@ const tabs = [
       {[['Residential', RES], ['Commercial', COM]].map(([label, list]) => (
         <div>
           <div class="text-white font-semibold text-sm mb-3">{label as string}</div>
-          <ul class="space-y-2 text-sm">{(list as typeof DIVISIONS).map((d) => <li><a class="hover:underline inline-block py-1" href={`/services/${d.id}`}>{d.name}</a></li>)}</ul>
+          <ul class="space-y-2 text-sm">{(list as typeof DIVISIONS).map((d) => <li><a class="hover:text-lime inline-block py-1" href={`/services/${d.id}`}>{d.name}</a></li>)}</ul>
         </div>
       ))}
       <div>
         <div class="text-white font-semibold text-sm mb-3">LIVO</div>
         <ul class="space-y-2 text-sm">
-          <li><a class="hover:underline inline-block py-1" href="/my-livo">My LIVO</a></li>
-          <li><a class="hover:underline inline-block py-1" href="/careers.html">Careers</a></li>
-          <li><a class="hover:underline inline-block py-1" href="/privacy">Privacy Policy</a></li>
+          <li><a class="hover:text-lime inline-block py-1" href="/my-livo">My LIVO</a></li>
+          <li><a class="hover:text-lime inline-block py-1" href="/careers.html">Careers</a></li>
+          <li><a class="hover:text-lime inline-block py-1" href="/privacy">Privacy Policy</a></li>
         </ul>
       </div>
     </div>
-    <div>
-      <div class="mx-auto max-w-6xl px-5 md:px-6 pb-8 text-xs flex flex-col md:flex-row gap-2 justify-between">
+    <div class="border-t border-white/10">
+      <div class="mx-auto max-w-6xl px-5 md:px-6 py-5 text-xs flex flex-col md:flex-row gap-2 justify-between">
         <span>© {new Date().getFullYear()} LIVO Property Services Ltd. · Port Coquitlam, BC</span>
         <span>Uniformed crews · Pay after the job</span>
       </div>
