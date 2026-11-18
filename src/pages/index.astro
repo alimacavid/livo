@@ -1,11 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
-import BeforeAfter from '../components/BeforeAfter.astro';
 import { Image } from 'astro:assets';
 import heroVan from '../assets/photos/hero-van.png';
-import interiorBefore from '../assets/photos/interior-before.jpg';
-import interiorAfter from '../assets/photos/interior-after.jpg';
 import { AREAS, HOME_CARDS, HERO_VIDEO, PHONE, PHONE_TEL, getDivision, subMin } from '../data/services';
 
 // residential, fixed-price services only (quote-only work never shows here)
@@ -135,18 +132,6 @@ const trust = [
           </ol>
         </div>
       ))}
-    </div>
-  </section>
-
-  <!-- ───── RESULTS ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-9 md:mt-24">
-    <div class="md:grid md:grid-cols-5 md:gap-10 md:items-center">
-      <div class="md:col-span-2">
-        <div class="eyebrow">Results</div>
-        <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">See the difference.</h2>
-        <p class="mt-2 text-muted text-sm md:text-base">Drag the slider to compare.</p>
-      </div>
-      <BeforeAfter before={interiorBefore} after={interiorAfter} alt="House cleaning" class="mt-5 md:mt-0 md:col-span-3" />
     </div>
   </section>
 

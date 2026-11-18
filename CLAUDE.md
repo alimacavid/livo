@@ -10,6 +10,7 @@
 - House Cleaning: Standard + Recurring on ONE page (`regular-cleaning` named "Standard & Recurring Cleaning", `recurringTable: true` shows the recurring table under the one-time prices). `recurring-cleaning` page removed → 301. Deep Cleaning keeps its own page.
 - Restaurant & Kitchen: ONE page `restaurant-kitchen-cleaning/kitchen-cleaning` (regular from $650, deep from $1,050, larger = quote, site visit). Old 3 sub-pages → 301.
 - Property Managers removed (not in Ali's sitemap) → 301 to Office & Strata.
+- Homepage "See the difference" before/after section removed (Ali, 2026-11-17). Service pages keep their before/after.
 - Pages: 27 built (26 + 404). All checks pass: every page 200, axe 0, no overflow, links OK, journeys OK.
 
 ## 2026-11-17 — Homepage hero restored to the live livoland.com hero (Ali)
