@@ -16,43 +16,27 @@ const trust = [
 ---
 <Base title="LIVO Property Services — House, Commercial Cleaning & Junk Removal in Coquitlam">
 
-  <!-- ───── HERO (minimal: words on white, photo clean, two choices) ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 pt-3 md:pt-12 md:grid md:grid-cols-[1fr_1.05fr] md:gap-14 md:items-center">
-    <div>
-      <p class="rise text-[12px] md:text-[13px] font-semibold text-muted" style="--i:0">LIVO Property Services · Tri-Cities</p>
-      <h1 class="rise mt-2 font-extrabold text-ink text-[2.15rem] leading-[1.05] md:text-[3.6rem] tracking-tight" style="--i:1">Fall in love with your property.</h1>
-      <p class="rise mt-2 font-heading font-bold text-purple text-[1.15rem] md:text-2xl" style="--i:2">We make it happen.</p>
-
-      <div class="hidden md:grid mt-9 grid-cols-2 gap-3 max-w-[460px]" data-choices>
-        <a href="/book?seg=residential" class="sheen press relative overflow-hidden group flex items-center justify-between gap-3 h-[76px] px-5 rounded-[20px] bg-lime text-ink">
-          <span><span class="block font-heading font-extrabold text-[16px]">For my home</span><span class="block text-[13px] text-ink/85">Instant price</span></span>
-          <Icon name="arrow" class="size-5 transition group-hover:translate-x-0.5" stroke={2.2} />
-        </a>
-        <a href="/book?seg=commercial" class="press group flex items-center justify-between gap-3 h-[76px] px-5 rounded-[20px] bg-purple-soft text-purple">
-          <span><span class="block font-heading font-extrabold text-[16px]">For my business</span><span class="block text-[13px] text-purple">Free quote</span></span>
-          <Icon name="arrow" class="size-5 transition group-hover:translate-x-0.5" stroke={2.2} />
-        </a>
-      </div>
-      <p class="hidden md:flex mt-4 text-[13px] text-muted items-center gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.4} />Pay after the job</p>
-    </div>
-
-    <div class="rise relative mt-5 md:mt-0 overflow-hidden rounded-[24px] md:rounded-[32px] bg-cloud h-[min(30svh,260px)] md:h-[430px]" style="--i:3">
-      <Image src={heroVan} alt="LIVO crew with the LIVO van" class="kenburns absolute inset-0 size-full object-cover object-[60%_70%] md:object-[55%_85%]"
-        widths={[480, 800, 1200, 1600]} sizes="(min-width:768px) 600px, 100vw" loading="eager" fetchpriority="high" />
-      {HERO_VIDEO && <video data-hero-video class="absolute inset-0 size-full object-cover motion-reduce:hidden" src={HERO_VIDEO} muted loop playsinline preload="none" aria-hidden="true"></video>}
+  <!-- ───── HERO ───── -->
+  <section class="px-3 pt-1 md:px-6 md:pt-6">
+    <div class="on-dark relative isolate mx-auto grid min-h-[min(76svh,640px)] max-w-6xl items-end overflow-hidden rounded-[28px] bg-purple-ink md:min-h-[560px] md:items-center md:rounded-[32px]">
+      <Image src={heroVan} alt="LIVO crew with the LIVO van" class="absolute inset-0 -z-20 size-full object-cover object-[62%_center] md:object-center"
+        widths={[480, 800, 1200, 1800]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" fetchpriority="high" />
+      {HERO_VIDEO && <video data-hero-video class="absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden" src={HERO_VIDEO} muted loop playsinline preload="none" aria-hidden="true"></video>}
+      <div class="absolute inset-0 -z-10 bg-linear-to-t from-purple-ink via-purple-ink/75 to-transparent md:bg-linear-to-r md:from-purple-ink/95 md:via-purple-ink/65" aria-hidden="true"></div>
       {HERO_VIDEO && <button type="button" data-video-toggle aria-label="Pause video" class="press motion-reduce:hidden absolute top-3 right-3 size-11 rounded-full bg-white/85 backdrop-blur text-ink grid place-items-center"><Icon name="pause" class="size-4" stroke={2.4} /></button>}
-    </div>
 
-    <!-- mobile choices (under the photo, thumb reach) -->
-    <div class="md:hidden rise mt-3 grid grid-cols-2 gap-2.5" style="--i:4">
-      <a href="/book?seg=residential" class="sheen press relative overflow-hidden flex flex-col justify-between h-[96px] p-4 rounded-[20px] bg-lime text-ink">
-        <span class="flex items-center justify-between"><Icon name="home" class="size-5" stroke={2} /><Icon name="arrow" class="size-[18px]" stroke={2.2} /></span>
-        <span><span class="block font-heading font-extrabold text-[15px] leading-tight whitespace-nowrap">For my home</span><span class="block text-[12.5px] text-ink/85">Instant price</span></span>
-      </a>
-      <a href="/book?seg=commercial" class="press flex flex-col justify-between h-[96px] p-4 rounded-[20px] bg-purple-soft text-purple">
-        <span class="flex items-center justify-between"><Icon name="building" class="size-5" stroke={2} /><Icon name="arrow" class="size-[18px]" stroke={2.2} /></span>
-        <span><span class="block font-heading font-extrabold text-[15px] leading-tight whitespace-nowrap">For my business</span><span class="block text-[12.5px] text-purple">Free quote</span></span>
-      </a>
+      <div class="p-6 text-white md:max-w-[36rem] md:p-14">
+        <p class="flex items-center gap-2.5 font-heading text-xs font-bold uppercase tracking-[.24em] md:text-[13px]">
+          <span class="h-px w-7 shrink-0 bg-lime" aria-hidden="true"></span>LIVO Property Services
+        </p>
+        <h1 class="mt-4 text-[2.35rem] font-extrabold leading-[1.02] text-white md:text-6xl">Fall in love with your property.</h1>
+        <p class="mt-1 font-heading text-[1.35rem] font-bold md:text-3xl">We make it happen.</p>
+        <div class="mt-6 flex flex-wrap gap-2.5 md:gap-3">
+          <a href="/book?seg=residential" class="btn-lime px-4 md:px-6">For my home <Icon name="arrow" class="size-4" /></a>
+          <a href="/book?seg=commercial" class="btn-ghost border-white/70 px-4 text-white md:px-6">For my business</a>
+        </div>
+        <p class="mt-4 flex items-center gap-2 text-[13px] text-white"><Icon name="check" class="size-4" stroke={2.4} />Pay after the job</p>
+      </div>
     </div>
   </section>
 
