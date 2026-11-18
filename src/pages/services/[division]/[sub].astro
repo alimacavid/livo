@@ -88,6 +88,25 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
             ))}
           </div>
         )}
+        {s.recurringTable && (
+          <div class="mt-6" id="recurring">
+            <h3 class="font-heading font-bold text-lg">Recurring prices</h3>
+            <p class="text-sm text-muted mt-0.5">Per visit, from your 2nd visit. Your first visit is the one-time price above. We see your home before we set the recurring rate.</p>
+            <div class="mt-3 card overflow-hidden">
+              <table class="w-full text-sm">
+                <thead class="bg-cloud text-[12px] text-muted">
+                  <tr><th class="text-left font-semibold p-3">{s.tierLabel}</th>{recurringFreqs.map((f) => <th class="font-semibold p-3 text-right">{f.name}<span class="block text-lime-ink">{f.discount ? `−${Math.round(f.discount * 100)}%` : 'Regular'}</span></th>)}</tr>
+                </thead>
+                <tbody class="divide-y divide-line">
+                  {s.tiers.map((t) => (
+                    <tr><td class="p-3"><b class="font-semibold">{t.name}</b><span class="block text-xs text-muted">{t.sub}</span></td>
+                      {recurringFreqs.map((f) => <td class="p-3 text-right font-heading font-bold">${Math.round((t.price ?? 0) * (1 - f.discount))}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
         {s.priceNote && <p class="mt-3 text-[13px] text-muted">{s.priceNote}</p>}
         {s.quoteNote && <p class="mt-3 text-[13px] text-muted flex gap-2"><Icon name="camera" class="size-4 shrink-0 mt-0.5 text-purple" />{s.quoteNote}</p>}
         {quote && (

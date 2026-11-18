@@ -3,6 +3,15 @@
 ## Last updated
 2026-11-17
 
+## 2026-11-17 (late) — LIVE DESIGN KEPT + services exactly as Ali's sitemap (branch `prices-nov17`)
+- Ali: "keep design of live website". Codex UI pass (PR #8) REVERTED (commit 0b97b03) — pages use the live livoland.com look again: text on photos for cards and headers, grey trust boxes, "Popular right now" swipe row back (new prices).
+- Services now match `LIVO_Visual_Sitemap.pdf` (17 Nov): 4 categories (`CATEGORIES` in services.ts: Residential Cleaning · Commercial Cleaning · Post-Construction · Junk Removal) used by /services, desktop menu and division eyebrow; footer = Residential + "Commercial & more".
+- Homepage: 8 cards in one grid like the live site (`HOME_CARDS`): House Cleaning, Deep Cleaning, Move-In/Out, Airbnb & Vacation Rentals, Office & Strata, Restaurant & Kitchen, Post-Construction, Junk Removal. Residential/Commercial tabs removed from the homepage (booking page still has them).
+- House Cleaning: Standard + Recurring on ONE page (`regular-cleaning` named "Standard & Recurring Cleaning", `recurringTable: true` shows the recurring table under the one-time prices). `recurring-cleaning` page removed → 301. Deep Cleaning keeps its own page.
+- Restaurant & Kitchen: ONE page `restaurant-kitchen-cleaning/kitchen-cleaning` (regular from $650, deep from $1,050, larger = quote, site visit). Old 3 sub-pages → 301.
+- Property Managers removed (not in Ali's sitemap) → 301 to Office & Strata.
+- Pages: 27 built (26 + 404). All checks pass: every page 200, axe 0, no overflow, links OK, journeys OK.
+
 ## 2026-11-17 — Homepage hero restored to the live livoland.com hero (Ali)
 - Ali prefers the 2026-09-26 live hero: full-width van photo, purple gradient, words on the photo ("LIVO Property Services" label, "Fall in love with your property." + lime "We make it happen."), lime "Book a service" (+ desktop "See services"), header `overlay` on home. Replaces the 2026-10-12 minimal hero (words on white + two Home/Business tiles). Only change to the old live hero: "Upfront prices" line now reads "Instant prices · Pay after the job". Business customers start from the Commercial tab below. Hero video slot kept. axe 0 violations, no overflow (390 + 1280).
 

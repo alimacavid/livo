@@ -56,7 +56,8 @@ export type Sub = {
   draft?: boolean;
   quote?: boolean;        // request a quote (photos) instead of booking
   quoteNote?: string;
-  recurring?: boolean;    // page shows weekly / every 2 weeks / monthly price table
+  recurring?: boolean;    // page shows ONLY the weekly / every 2 weeks / monthly price table
+  recurringTable?: boolean; // page shows the one-time prices AND a recurring price table below
   freqs?: Freq[];         // overrides the division's "how often" options for this service
   addons?: Addon[];       // overrides the division's add-ons for this service
   priceNote?: string;     // small line under the price table
@@ -134,7 +135,7 @@ export const DIVISIONS: Division[] = [
     id: 'house-cleaning',
     name: 'House Cleaning',
     short: 'House',
-    tagline: 'Standard and recurring cleaning for houses, condos and townhomes.',
+    tagline: 'Standard, recurring and deep cleaning for houses, condos and townhomes.',
     intro: 'LIVO house cleaning crews serve Coquitlam, Port Coquitlam and Port Moody, with prices shown before you book.',
     seoTitle: 'House Cleaning in Coquitlam & Port Coquitlam',
     keyword: 'house cleaning Coquitlam',
@@ -144,9 +145,10 @@ export const DIVISIONS: Division[] = [
     subs: [
       {
         slug: 'regular-cleaning',
-        name: 'Standard Cleaning',
+        name: 'Standard & Recurring Cleaning',
         short: 'Everyday upkeep: kitchen, bathrooms and floors.',
-        desc: 'Our standard clean keeps your home fresh. Kitchen, bathrooms, floors and dusting, done properly by a uniformed LIVO crew. Homes in normal condition; for heavy buildup, book a Deep Clean.',
+        desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or put it on a schedule and save from the 2nd visit. We see your home before we set the recurring rate. For heavy buildup, book a Deep Clean.',
+        recurringTable: true,
         image: interiorKitchen,
         before: interiorBefore,
         after: interiorAfter,
@@ -189,26 +191,6 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['First-time clients', 'Seasonal reset', 'Before hosting guests'],
       },
-      {
-        slug: 'recurring-cleaning',
-        name: 'Weekly & Every-2-Weeks Cleaning',
-        short: 'Same crew on a schedule. Save up to 15%.',
-        desc: 'Same crew, same standard, on a schedule. Your first visit is a one-time Standard Clean; from the second visit you save 15% weekly or 10% every 2 weeks. Monthly visits are the regular price.',
-        image: interiorKitchen,
-        unit: 'per visit',
-        tierLabel: 'Home size',
-        recurring: true,
-        tiers: HOME_SIZES([165, 195, 235, 285, 349]),
-        freqs: RECURRING,
-        priceNote: 'Prices from the 2nd visit. We confirm your recurring rate after seeing the home.',
-        included: [
-          'Everything in Standard Cleaning',
-          'Same crew whenever possible',
-          'Skip or reschedule with 48 hours notice',
-          'No contracts — cancel anytime',
-        ],
-        goodFor: ['Busy professionals', 'Families', 'Pet owners'],
-      },
     ],
     addons: HOUSE_ADDONS,
     freqs: ONE_TIME,
@@ -220,7 +202,7 @@ export const DIVISIONS: Division[] = [
       { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
     ],
     notIncluded: ['Outside windows', 'Carpet shampooing', 'Moving heavy furniture', 'Mould or biohazard clean-up'],
-    crossSell: { div: 'house-cleaning', sub: 'recurring-cleaning', title: 'Make it regular', line: 'Weekly visits save 15%, every 2 weeks save 10%.' },
+    crossSell: { div: 'house-cleaning', sub: 'regular-cleaning', title: 'Keep it clean', line: 'After a deep clean, weekly visits save 15%, every 2 weeks save 10%.' },
   },
 
   // ───────────────────────── MOVE-IN / MOVE-OUT ─────────────────────────
@@ -538,7 +520,7 @@ export const DIVISIONS: Division[] = [
     id: 'commercial-cleaning',
     name: 'Office & Strata Cleaning',
     short: 'Commercial',
-    tagline: 'Offices, strata common areas and rental buildings.',
+    tagline: 'Offices and strata common areas.',
     intro: 'Office cleaning, strata cleaning and commercial cleaning in Coquitlam, Port Coquitlam and Port Moody, scheduled before opening or after hours.',
     seoTitle: 'Office & Strata Cleaning in Coquitlam',
     keyword: 'office cleaning Coquitlam',
@@ -595,26 +577,6 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['Strata councils', 'Property managers', 'Rental buildings'],
       },
-      {
-        slug: 'property-managers',
-        name: 'Property Managers & Landlords',
-        short: 'Turnover clean, junk and touch-ups in one call.',
-        desc: 'One call for a rental turnover: move-out cleaning, junk removal and post-renovation touch-ups from one company, with photos when the unit is ready. Each service uses our list prices.',
-        image: teamVan,
-        unit: 'custom quote',
-        tierLabel: 'How to quote',
-        quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: 'Tell us how many units and what each one needs. We quote using our list prices.',
-        included: [
-          'Move-out and move-in cleaning',
-          'Junk and furniture removal',
-          'Post-renovation cleaning',
-          'Lockbox or key pickup',
-          'Photos when the unit is ready',
-        ],
-        goodFor: ['Property managers', 'Landlords', 'Strata managers'],
-      },
     ],
     addons: [],
     freqs: [
@@ -651,73 +613,30 @@ export const DIVISIONS: Division[] = [
     image: interiorKitchen,
     subs: [
       {
-        slug: 'kitchen-deep-clean',
-        name: 'Kitchen Deep Clean',
-        short: 'Industrial steam clean. Grease and buildup gone.',
-        desc: 'We deep clean commercial kitchens with industrial steam cleaners that cut through grease and baked-on buildup on equipment exteriors, walls and floors. Walkthrough required.',
+        slug: 'kitchen-cleaning',
+        name: 'Restaurant & Kitchen Cleaning',
+        short: 'Kitchen, dining areas and washrooms.',
+        desc: 'Commercial kitchens deep cleaned with industrial steam cleaners that cut grease and baked-on buildup, plus dining areas and washrooms. We agree the kitchen scope on site; a walkthrough is required. Hoods, ducts and grease traps are not included.',
         image: interiorKitchen,
-        unit: 'per clean',
-        tierLabel: 'Kitchen size',
+        unit: 'per visit',
+        tierLabel: 'Type of clean',
         quote: true,
         tiers: [
-          { id: 'small', name: 'Up to 500 sq ft', sub: 'Plus tax', price: 1050, popular: true },
-          { id: 'larger', name: 'Larger kitchen', sub: 'From $2.10 per sq ft', price: null },
+          { id: 'regular', name: 'Regular kitchen clean', sub: 'Up to 500 sq ft · weekly or monthly, plus tax', price: 650, popular: true },
+          { id: 'deep', name: 'Kitchen deep clean', sub: 'Up to 500 sq ft · one-time, plus tax', price: 1050 },
+          { id: 'larger', name: 'Larger kitchen or dining room only', sub: 'Quoted after a walkthrough', price: null },
           SITE_VISIT,
         ],
-        quoteNote: 'Final price after a walkthrough. Hoods, exhaust ducts and grease traps are not included.',
+        quoteNote: 'Final price after a walkthrough. Larger kitchens from $1.30 per sq ft (regular) or $2.10 per sq ft (deep). Hoods, exhaust ducts and grease traps are not included.',
         included: [
           'Industrial steam cleaning',
           'Cooking line, fryers and grills (exterior)',
           'Walk-ins and coolers',
           'Stainless steel, walls and backsplashes degreased',
           'Floors and floor drains scrubbed',
-          'Sinks and prep areas sanitized',
+          'Dining areas, bar and washrooms',
         ],
-        goodFor: ['Restaurants', 'Cafes and bakeries', 'Catering kitchens'],
-      },
-      {
-        slug: 'scheduled-kitchen-cleaning',
-        name: 'Regular Kitchen Cleaning',
-        short: 'Weekly or monthly, after close.',
-        desc: 'Keep the kitchen inspection-ready all year. Same crew, on a weekly, every-2-weeks or monthly schedule, after you close.',
-        image: interiorKitchen,
-        unit: 'per visit',
-        tierLabel: 'Kitchen size',
-        quote: true,
-        tiers: [
-          { id: 'small', name: 'Up to 500 sq ft', sub: 'Per visit, plus tax', price: 650, popular: true },
-          { id: 'larger', name: 'Larger kitchen', sub: 'From $1.30 per sq ft', price: null },
-          SITE_VISIT,
-        ],
-        quoteNote: 'Final price after a walkthrough. Hoods, exhaust ducts and grease traps are not included.',
-        included: [
-          'Steam clean of cooking line and floors',
-          'Degreasing of walls and equipment exteriors',
-          'Walk-ins wiped down',
-          'Floor drains cleaned',
-          'Same crew each visit',
-        ],
-        goodFor: ['Busy restaurants', 'Food courts', 'Commissary kitchens'],
-      },
-      {
-        slug: 'front-of-house',
-        name: 'Dining Room & Washrooms',
-        short: 'Dining room, bar and washrooms.',
-        desc: 'A clean dining room, bar and washrooms for your guests, done after close so you open to a fresh space. We agree the kitchen scope on site.',
-        image: interiorKitchen,
-        unit: 'custom quote',
-        tierLabel: 'How to quote',
-        quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: QUOTE_NOTE,
-        included: [
-          'Tables, chairs and booths',
-          'Bar top and back bar',
-          'Washrooms cleaned and restocked',
-          'Floors vacuumed and mopped',
-          'Entrance glass',
-        ],
-        goodFor: ['Restaurants', 'Pubs and bars', 'Cafes'],
+        goodFor: ['Restaurants', 'Cafes and bakeries', 'Pubs and catering kitchens'],
       },
     ],
     addons: [],
@@ -739,7 +658,7 @@ export const DIVISIONS: Division[] = [
       { q: 'What equipment do you use?', a: 'Industrial steam cleaners and commercial degreasers. Our crew arrives with everything in a branded LIVO van.' },
     ],
     notIncluded: ['Hood and exhaust duct cleaning', 'Grease trap pumping', 'Equipment repairs'],
-    crossSell: { div: 'restaurant-kitchen-cleaning', sub: 'scheduled-kitchen-cleaning', title: 'Stay inspection-ready', line: 'Put the kitchen on a weekly or monthly schedule.' },
+    crossSell: { div: 'junk-removal', sub: 'office-clearouts', title: 'Replacing equipment?', line: 'Our junk crew hauls old furniture and fixtures away.' },
   },
 ];
 
@@ -761,31 +680,34 @@ export const subMin = (s: Sub) => {
 // one-service divisions open straight to that service (one less tap)
 export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services/${d.id}`);
 
-// Homepage "What do you need?" cards, per customer type (matches the 17 Nov 2026 sitemap:
-// House Cleaning · Deep Cleaning · Move-In/Out · Airbnb · Office & Strata · Restaurant & Kitchen · Post-Construction · Junk Removal).
-export type Card = { div: Division; name: string; line: string; href: string; price: number | null; quote: boolean; image: ImageMetadata; icon: string };
+// The 4 main categories under Services (Ali's 17 Nov 2026 sitemap). Used by /services, the menu and the footer.
+export type Category = { id: string; label: string; line: string; divs: Division[] };
+export const CATEGORIES: Category[] = [
+  { id: 'residential', label: 'Residential Cleaning', line: 'Homes, condos and rentals. Prices show right away.', divs: ['house-cleaning', 'move-cleaning', 'airbnb-cleaning'].map(getDivision) },
+  { id: 'commercial', label: 'Commercial Cleaning', line: 'Offices, strata and restaurants. Starting prices plus tax; free quote, usually the same day.', divs: ['commercial-cleaning', 'restaurant-kitchen-cleaning'].map(getDivision) },
+  { id: 'construction', label: 'Post-Construction Cleaning', line: 'Homes and commercial sites, after the trades.', divs: [getDivision('construction-cleaning')] },
+  { id: 'junk', label: 'Junk Removal', line: 'One item to full clear-outs.', divs: [getDivision('junk-removal')] },
+];
+export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;
+
+// Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
+export type Card = { name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string };
 const card = (id: string, o: Partial<Card> = {}): Card => {
   const d = getDivision(id);
-  const quote = d.subs.every(isQuoteSub);
-  return { div: d, name: d.name, line: d.tagline, href: divHref(d), price: minPrice(d), quote, image: d.image, icon: d.icon, ...o };
+  return { name: d.name, line: d.tagline, href: divHref(d), price: minPrice(d), tax: d.segment === 'commercial', image: d.image, icon: d.icon, ...o };
 };
+const std = getSub('house-cleaning', 'regular-cleaning');
 const deep = getSub('house-cleaning', 'deep-cleaning');
-export const CARDS: Record<Segment, Card[]> = {
-  residential: [
-    card('house-cleaning', { line: 'Standard & recurring', price: subMin(getSub('house-cleaning', 'regular-cleaning')) }),
-    card('house-cleaning', { name: 'Deep Cleaning', line: deep.short, href: '/services/house-cleaning/deep-cleaning', price: subMin(deep), image: deep.image, icon: 'sparkle' }),
-    card('move-cleaning', { name: 'Move-In / Move-Out' }),
-    card('airbnb-cleaning', { name: 'Airbnb & Vacation Rentals' }),
-    card('construction-cleaning', { name: 'Post-Construction', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
-    card('junk-removal'),
-  ],
-  commercial: [
-    card('commercial-cleaning', { name: 'Office & Strata' }),
-    card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen' }),
-    card('construction-cleaning', { name: 'Post-Construction', line: 'Fit-outs and new commercial units.', href: '/services/construction-cleaning/commercial-construction-cleaning', price: null, quote: true, image: teamVan }),
-    card('junk-removal', { name: 'Office Clear-Outs', line: 'Desks, shelving and job-site waste.', href: '/services/junk-removal/office-clearouts', price: null, quote: true }),
-  ],
-};
+export const HOME_CARDS: Card[] = [
+  card('house-cleaning', { line: 'Standard & recurring', href: '/services/house-cleaning/regular-cleaning', price: subMin(std) }),
+  card('house-cleaning', { name: 'Deep Cleaning', line: 'Buildup, trim and tracks', href: '/services/house-cleaning/deep-cleaning', price: subMin(deep), image: deep.image, icon: 'sparkle' }),
+  card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
+  card('airbnb-cleaning', { name: 'Airbnb & Vacation Rentals', line: 'Guest turnover & deep reset' }),
+  card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
+  card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens' }),
+  card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
+  card('junk-removal', { line: 'One item to full clear-outs' }),
+];
 
 export const AREAS = [
   'Port Coquitlam', 'Coquitlam', 'Port Moody', 'Burnaby', 'New Westminster', 'Maple Ridge',

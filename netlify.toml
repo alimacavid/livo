@@ -40,7 +40,7 @@
 
 [[redirects]]
   from = "/services/interior/recurring-cleaning"
-  to = "/services/house-cleaning/recurring-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 
@@ -160,13 +160,13 @@
 
 [[redirects]]
   from = "/services/restaurant"
-  to = "/services/restaurant-kitchen-cleaning"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
   status = 301
   force = true
 
 [[redirects]]
   from = "/services/restaurant/*"
-  to = "/services/restaurant-kitchen-cleaning/:splat"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
   status = 301
   force = true
 
@@ -186,5 +186,36 @@
 [[redirects]]
   from = "/services/power/*"
   to = "/services"
+  status = 301
+  force = true
+
+# 2026-11-17: Recurring merged into Standard; Restaurant is one page; Property Managers removed
+[[redirects]]
+  from = "/services/house-cleaning/recurring-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning/kitchen-deep-clean"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning/scheduled-kitchen-cleaning"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning/front-of-house"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning/property-managers"
+  to = "/services/commercial-cleaning"
   status = 301
   force = true
