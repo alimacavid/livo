@@ -129,6 +129,30 @@
   force = true
 
 [[redirects]]
+  from = "/services/commercial/retail-cleaning"
+  to = "/services/commercial-cleaning/office-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/commercial-cleanup"
+  to = "/services/construction-cleaning/commercial-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning/retail-cleaning"
+  to = "/services/commercial-cleaning/office-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning/commercial-cleanup"
+  to = "/services/construction-cleaning/commercial-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/services/commercial/*"
   to = "/services/commercial-cleaning/:splat"
   status = 301

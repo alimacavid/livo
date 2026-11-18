@@ -1,7 +1,22 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-10-12
+2026-11-17
+
+## 2026-11-17 — New prices, services matched to sitemap, booking bug fixes (branch `prices-nov17`, from `v1.0` — TEST ONLY)
+- Source of every number: "LIVO Revised Pricing NOV 17" workbook (Livo project doc `claude/livo-revised-price-list-2026-11-17.md`). Every price clears 30% margin after overhead at $25/h + 20% burden. Home prices = full price to customer; commercial = "+ tax".
+- **First-booking discount removed** (Ali, 2026-11-17): `FIRST_TIME_DISCOUNT = 0`. All "15% off first booking" UI hides when it is 0.
+- **Services now follow Ali's 17 Nov sitemap.** Home sizes are 5 tiers (Studio, 1, 2, 3, 4+ bed; old "2–3 bed" split). New pages: `junk-removal/single-item-pickup` ($119 curb / $169 inside), `junk-removal/office-clearouts` (quote), `construction-cleaning/commercial-construction-cleaning` (quote), `commercial-cleaning/property-managers` (quote). Removed: `retail-cleaning` (→ office-cleaning) and `commercial-cleanup` (→ commercial construction) with 301s in netlify.toml. Renames (URLs kept): Regular → Standard Cleaning, Turnover → Guest Turnover, Junk by Load → Home & Garage Clear-Outs, Renovation Debris → Renovation Waste, Commercial Cleaning division → Office & Strata Cleaning, Scheduled Kitchen → Regular Kitchen Cleaning, Front-of-House → Dining Room & Washrooms, Post-construction home → Home Renovations & New Builds.
+- Commercial services now show starting prices (office from $165, strata from $200, kitchen deep from $1,050, regular kitchen from $650, all + tax) but stay quote requests. Tier id `visit` = free site visit (no photo needed).
+- Homepage cards (`CARDS`): Residential = House, Deep, Move, Airbnb, Post-Construction, Junk (3 across on desktop). Commercial = Office & Strata, Restaurant & Kitchen, Post-Construction, Office Clear-Outs. `Card` now has its own `image` + `icon`.
+- **Per-service options:** `Sub.freqs` and `Sub.addons` override the division (helpers `subFreqs`, `subAddons`). Deep Cleaning and Move-out are one-time only; Junk is one-time; Airbnb frequency has no discount.
+- **Recurring rule:** weekly −15%, every 2 weeks −10%, monthly regular price — from the 2nd visit, on the service price only (not add-ons). Booking total = first visit at regular price; summary shows "then $X/visit"; booking notes record both.
+- Add-ons: added Inside Freezer, Inside Cabinets, Blinds, Change Bed Sheets (homes), Laundry (Airbnb), Mattress/Box Spring, Fridge/Freezer, Same-Day $89 (junk). Removed Airbnb "Deep Sanitize".
+- **Bugs fixed:** (1) weekly/bi-weekly discounts applied to Deep Cleaning, junk and Airbnb turnovers; (2) recurring discount also cut add-on prices; (3) weekly booking showed the discounted price as the first-visit total; (4) service page price box parsed its own text — broke with "from", "+ tax" or "$1,050" (now data attributes); (5) recurring page sticky bar showed the one-time 2–3 bed price (now "from $140 per visit · weekly"); (6) recurring table hid Monthly; (7) desktop "Popular right now" row ran off the page — row removed (repeated the service cards); (8) lime button shine washed out the text ("For my home", "Book now") — softened; (9) footer showed plain "LIVO." text — now the real white wordmark; (10) commercial booking list said "Free quote" even when a starting price exists.
+- Also: "Booked before?" box → one text line + Sign in link; prices over $999 show a comma.
+- Checked (local build, 31 pages): every page 200; no horizontal scroll at 390 px; axe WCAG 2.2 AA = 0 violations (home re-checked after animations); all internal links 200; journeys: Standard 1 bed + fridge weekly = $234 first visit then $205/visit; Deep skips "how often"; junk single item + mattress = $144; Move 4+ → quote with photos; office quote with photo → "Quote request sent!".
+- Known gaps: photos repeat (Deep/Post-Construction share one photo; Office/Strata/Property Managers/Commercial construction use the team-van photo; Restaurant uses a home kitchen). Commercial "+ tax" wording assumes LIVO charges tax on commercial work — confirm GST registration.
+- Branch: `prices-nov17` (not merged). Next: Ali reviews the branch preview → merge into `v1.0` → later `main` only with Ali's explicit OK.
 
 ## 2026-10-12 — Residential/Commercial split, quotes with photos, saved customers (TEST ONLY — `v1.0`)
 Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali approved every recommendation in it.
@@ -74,6 +89,7 @@ Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali app
 ## Where things live
 - **All services + prices: `src/data/services.ts`** — the ONLY place prices exist. Sub-service pages, homepage "From $X", and the booking page all read it. Change a number there → whole site updates.
 - `draft: true` on a sub-service = price not yet approved by Ali (shows a "Draft prices" tag). Currently: none.
+- `freqs` / `addons` on a sub-service override the division's options for that service only.
 - `price: null` = "Quote"; `quote: true` = request a quote with photos instead of booking.
 - Customer types / homepage cards: `segment` on each division + `CARDS` in `src/data/services.ts`.
 - Bookings, quotes, photo upload, sign-in: `src/lib/api.ts` (test mode everywhere except livoland.com).
@@ -90,7 +106,7 @@ Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali app
 ## Known issues / next
 - Claude GitHub App installed on `alimacavid/livo` (2026-09-26) — cloud sessions can push.
 - Netlify production must build with `netlify.toml` (npm run build → dist). If livoland.com shows a blank/404 after deploy, check Netlify site build settings aren't overriding it.
-- Prices are the v1 prices. Market research (`claude/livo-competitor-pricing-research.md` in the Livo project) says Junk and Airbnb are underpriced — Ali to decide.
+- Prices = 2026-11-17 revised list (see entry above). Competitor check: `claude/livo-competitor-check-2026-11-17.md` in the Livo project.
 - Airbnb has no own photos beyond before/after; Commercial and Restaurant have no real photos yet — shoot per-service photos.
 - careers.html is still the old standalone page (phone fixed only).
 - Real confirmation emails: Resend/Twilio secrets on the Supabase function must be set.
