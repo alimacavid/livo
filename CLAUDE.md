@@ -6,6 +6,7 @@
 ## 2026-11-17 — Minimal UI pass (TEST ONLY — branch `codex/ui-nov17`)
 - Moved service captions and headers off photos, simplified service lists and add-ons, and adjusted spacing across booking, account, and privacy pages.
 - Base branch is `prices-nov17`.
+- Claude review (2026-11-17): no protected files touched (services.ts, api.ts, netlify.toml, supabase); booking logic unchanged (classes only); build 31 pages; all prices/journeys re-tested and match; axe 0 violations; no overflow at 390 px; all links 200. Codex had committed 20 screenshots to `validation/` — removed and ignored. Merged PR #8 into `prices-nov17`.
 
 ## 2026-11-17 — New prices, services matched to sitemap, booking bug fixes (branch `prices-nov17`, from `v1.0` — TEST ONLY)
 - Source of every number: "LIVO Revised Pricing NOV 17" workbook (Livo project doc `claude/livo-revised-price-list-2026-11-17.md`). Every price clears 30% margin after overhead at $25/h + 20% burden. Home prices = full price to customer; commercial = "+ tax".
