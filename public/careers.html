@@ -11,6 +11,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--purple:#8E3AAC;--deep:#5F2491;--lime:#C8D700;--ink:#0c0c0c;--white:#fff;--gray:#f9f9f9;--border:#ede8f5;--soft:#5a5a5a;--muted:#9e9e9e}
 html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 body{font-family:'Inter',sans-serif;background:var(--white);color:var(--ink);-webkit-font-smoothing:antialiased}
 
 /* NAV */

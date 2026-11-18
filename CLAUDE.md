@@ -3,6 +3,10 @@
 ## Last updated
 2026-11-17
 
+## 2026-11-17 — Minimal UI pass (TEST ONLY — branch `codex/ui-nov17`)
+- Moved service captions and headers off photos, simplified service lists and add-ons, and adjusted spacing across booking, account, and privacy pages.
+- Base branch is `prices-nov17`.
+
 ## 2026-11-17 — New prices, services matched to sitemap, booking bug fixes (branch `prices-nov17`, from `v1.0` — TEST ONLY)
 - Source of every number: "LIVO Revised Pricing NOV 17" workbook (Livo project doc `claude/livo-revised-price-list-2026-11-17.md`). Every price clears 30% margin after overhead at $25/h + 20% burden. Home prices = full price to customer; commercial = "+ tax".
 - **First-booking discount removed** (Ali, 2026-11-17): `FIRST_TIME_DISCOUNT = 0`. All "15% off first booking" UI hides when it is 0.
