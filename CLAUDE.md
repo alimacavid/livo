@@ -3,6 +3,9 @@
 ## Last updated
 2026-11-17
 
+## 2026-11-17 — Homepage hero restored to the live livoland.com hero (Ali)
+- Ali prefers the 2026-09-26 live hero: full-width van photo, purple gradient, words on the photo ("LIVO Property Services" label, "Fall in love with your property." + lime "We make it happen."), lime "Book a service" (+ desktop "See services"), header `overlay` on home. Replaces the 2026-10-12 minimal hero (words on white + two Home/Business tiles). Only change to the old live hero: "Upfront prices" line now reads "Instant prices · Pay after the job". Business customers start from the Commercial tab below. Hero video slot kept. axe 0 violations, no overflow (390 + 1280).
+
 ## 2026-11-17 — Minimal UI pass (TEST ONLY — branch `codex/ui-nov17`)
 - Moved service captions and headers off photos, simplified service lists and add-ons, and adjusted spacing across booking, account, and privacy pages.
 - Base branch is `prices-nov17`.
