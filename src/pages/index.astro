@@ -110,29 +110,25 @@ const trust = [
     </div>
   </section>
 
-  <!-- ───── HOW IT WORKS (desktop) ───── -->
-  <section id="how" class="hidden md:block mx-auto max-w-6xl px-4 md:px-6 mt-24 scroll-mt-20">
+  <!-- ───── HOW IT WORKS ───── -->
+  <section id="how" class="mx-auto max-w-6xl px-4 md:px-6 mt-12 md:mt-24 scroll-mt-20">
     <div class="eyebrow">How it works</div>
-    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Two simple ways to start.</h2>
-    <div class="mt-6 grid md:grid-cols-2 gap-5">
+    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Booked in 60 seconds.</h2>
+    <ol class="mt-6 grid md:grid-cols-3 gap-3 md:gap-5">
       {[
-        ['Residential', 'Book online', [['Pick your service', 'The price shows right away.'], ['Choose a time', 'Text and email confirm it.'], ['Pay after', 'A uniformed crew does the job.']]],
-        ['Commercial', 'Get a free quote', [['Send photos', 'Tell us about the space.'], ['Get your quote', 'Usually the same day.'], ['Pick a date', 'We work around your hours.']]],
-      ].map(([lane, title, steps]) => (
-        <div class="card p-6" data-reveal>
-          <div class="text-[12px] font-bold uppercase tracking-wider text-muted">{lane as string}</div>
-          <div class="mt-1 font-heading font-extrabold text-xl">{title as string}</div>
-          <ol class="mt-5 space-y-4">
-            {(steps as string[][]).map(([t, s], i) => (
-              <li class="flex gap-4">
-                <span class="shrink-0 size-9 rounded-full bg-purple text-white font-heading font-extrabold grid place-items-center" aria-hidden="true">{i + 1}</span>
-                <div><div class="font-heading font-bold">{t}</div><p class="text-sm text-muted">{s}</p></div>
-              </li>
-            ))}
-          </ol>
-        </div>
+        ['Pick your service', 'Choose the service and your home size. The price shows right away.'],
+        ['Choose a time', 'Pick a date and time window. You get a text and email to confirm.'],
+        ['Pay after', 'A uniformed crew does the job. You pay when you are happy with it.'],
+      ].map(([t, s], i) => (
+        <li class="card p-5 flex md:block gap-4" data-reveal>
+          <span class="shrink-0 size-10 rounded-full bg-purple text-white font-heading font-extrabold grid place-items-center">{i + 1}</span>
+          <div class="md:mt-4">
+            <div class="font-heading font-bold">{t}</div>
+            <p class="mt-1 text-sm text-muted leading-relaxed">{s}</p>
+          </div>
+        </li>
       ))}
-    </div>
+    </ol>
   </section>
 
   <!-- ───── AREAS ───── -->
