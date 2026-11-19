@@ -702,7 +702,7 @@ export const HOME_CARDS: Card[] = [
   card('house-cleaning', { line: 'Standard & recurring', href: '/services/house-cleaning/regular-cleaning', price: subMin(std) }),
   card('house-cleaning', { name: 'Deep Cleaning', line: 'Buildup, trim and tracks', href: '/services/house-cleaning/deep-cleaning', price: subMin(deep), image: deep.image, icon: 'sparkle' }),
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
-  card('airbnb-cleaning', { name: 'Airbnb & Vacation Rentals', line: 'Guest turnover & deep reset' }),
+  card('airbnb-cleaning', { name: 'Airbnb Turnover', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
   card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
   card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens' }),
   card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),

@@ -12,6 +12,7 @@
 - Property Managers removed (not in Ali's sitemap) → 301 to Office & Strata.
 - Homepage "How it works" = the live-site version again ("Booked in 60 seconds.", 3 numbered cards, shows on phones too) — Ali, 2026-11-18. Replaces the desktop-only "Two simple ways to start".
 - Homepage "Popular right now" swipe row removed (Ali, 2026-11-18).
+- Homepage card "Airbnb & Vacation Rentals" → "Airbnb Turnover" (own card, opens the Guest Turnover page, from $129). Deep Reset stays as the second service on that page (Ali, 2026-11-19).
 - Homepage trust boxes (Instant prices / Pay after / Uniformed crews / Same-day response) removed — repeated the hero line and How it works (Ali, 2026-11-18).
 - Homepage "See the difference" before/after section removed (Ali, 2026-11-17). Service pages keep their before/after.
 - Pages: 27 built (26 + 404). All checks pass: every page 200, axe 0, no overflow, links OK, journeys OK.
