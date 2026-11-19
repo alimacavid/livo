@@ -15,12 +15,6 @@ const popular = [
   const div = getDivision(d);
   return { div, sub: div.subs.find((x) => x.slug === s)! };
 });
-const trust = [
-  { icon: 'wallet', t: 'Instant prices or a free quote', s: 'Homes priced online, businesses quoted same day' },
-  { icon: 'check', t: 'Pay after the job', s: 'Only when you are happy' },
-  { icon: 'user', t: 'Uniformed LIVO crews', s: 'Branded van, LIVO polo and cap' },
-  { icon: 'clock', t: 'Same-day response', s: 'Call or book online' },
-];
 // 6 home cards: 3 across on desktop (wide tiles); 4 business cards: 4 across (tall tiles)
 ---
 <Base title="LIVO Property Services — House, Commercial Cleaning & Junk Removal in Coquitlam" header="overlay">
@@ -93,19 +87,6 @@ const trust = [
             </div>
           </div>
         </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- ───── TRUST ───── -->
-  <section class="mx-auto max-w-6xl px-4 md:px-6 mt-8 md:mt-20">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
-      {trust.map((x) => (
-        <div class="rounded-panel bg-cloud p-4 md:p-6" data-reveal>
-          <span class="size-10 rounded-full bg-white grid place-items-center text-purple shadow-soft"><Icon name={x.icon} class="size-5" stroke={2} /></span>
-          <div class="mt-3 font-heading font-bold text-[14px] md:text-base leading-snug">{x.t}</div>
-          <div class="mt-0.5 text-[12.5px] md:text-sm text-muted leading-snug">{x.s}</div>
-        </div>
       ))}
     </div>
   </section>
