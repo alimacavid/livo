@@ -3,19 +3,8 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import { Image } from 'astro:assets';
 import heroVan from '../assets/photos/hero-van.png';
-import { AREAS, HOME_CARDS, HERO_VIDEO, PHONE, PHONE_TEL, getDivision, subMin } from '../data/services';
+import { AREAS, HOME_CARDS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
 
-// residential, fixed-price services only (quote-only work never shows here)
-const popular = [
-  ['move-cleaning', 'move-in-move-out-cleaning'],
-  ['house-cleaning', 'deep-cleaning'],
-  ['airbnb-cleaning', 'turnover-cleaning'],
-  ['junk-removal', 'junk-removal-by-load'],
-].map(([d, s]) => {
-  const div = getDivision(d);
-  return { div, sub: div.subs.find((x) => x.slug === s)! };
-});
-// 6 home cards: 3 across on desktop (wide tiles); 4 business cards: 4 across (tall tiles)
 ---
 <Base title="LIVO Property Services — House, Commercial Cleaning & Junk Removal in Coquitlam" header="overlay">
 
@@ -65,30 +54,6 @@ const popular = [
       ))}
     </div>
     <p class="mt-4 text-[14px] text-muted">Booked before? <a href="/my-livo" class="font-semibold text-purple underline underline-offset-2 inline-flex items-center min-h-11">Sign in</a> and your details are filled in.</p>
-  </section>
-
-  <!-- ───── POPULAR (swipe row, residential prices) ───── -->
-  <section class="mt-8 md:mt-20">
-    <div class="mx-auto max-w-6xl px-4 md:px-6 flex items-end justify-between">
-      <h2 class="text-[1.4rem] md:text-4xl font-extrabold">Popular right now</h2>
-    </div>
-    <div class="mt-5 flex gap-3 md:gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-px-4 md:scroll-px-6 px-4 md:px-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))] pb-2">
-      {popular.map(({ div, sub }) => (
-        <a href={`/services/${div.id}/${sub.slug}`} class="press group snap-start shrink-0 w-[68%] sm:w-[40%] md:w-[300px] card overflow-hidden hover:shadow-lift transition-shadow">
-          <div class="aspect-[16/10] overflow-hidden bg-cloud">
-            <Image src={sub.image} alt="" class="size-full object-cover transition duration-700 group-hover:scale-105" widths={[320, 600]} sizes="300px" />
-          </div>
-          <div class="p-4">
-            <div class="text-[11px] font-semibold text-muted uppercase tracking-wider">{div.short}</div>
-            <div class="mt-1 font-heading font-bold text-[15px] leading-snug">{sub.name}</div>
-            <div class="mt-2 flex items-center justify-between">
-              <span class="text-sm text-muted">From <b class="text-ink">${subMin(sub)?.toLocaleString('en-CA')}</b></span>
-              <span class="size-8 rounded-full bg-lime grid place-items-center transition duration-300 group-hover:translate-x-1" aria-hidden="true"><Icon name="arrow" class="size-4" stroke={2.2} /></span>
-            </div>
-          </div>
-        </a>
-      ))}
-    </div>
   </section>
 
   <!-- ───── HOW IT WORKS ───── -->
