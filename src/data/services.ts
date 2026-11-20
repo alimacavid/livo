@@ -323,7 +323,7 @@ export const DIVISIONS: Division[] = [
         name: 'Deep Reset',
         short: 'Between seasons or long stays.',
         desc: 'Everything in a turnover plus a full detail: baseboards, inside appliances, under furniture. Keeps a busy listing in top shape.',
-        image: airbnbAfter,
+        image: fridgeCleaning,
         before: fridgeBefore,
         after: fridgeAfter,
         unit: 'per visit',

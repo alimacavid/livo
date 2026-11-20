@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
 import logoFooter from '../assets/logo-footer.png';
 import Icon from '../components/Icon.astro';
-import { DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES } from '../data/services';
+import { divHref, DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES } from '../data/services';
 
 interface Props {
   title: string;
@@ -83,7 +83,7 @@ const tabs = [
                 <div>
                   <div class="px-2.5 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-muted">{label}</div>
                   {list.map((d) => (
-                    <a href={`/services/${d.id}`} class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-cloud">
+                    <a href={divHref(d)} class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-cloud">
                       <span class="size-9 rounded-lg bg-purple-soft text-purple grid place-items-center" aria-hidden="true"><Icon name={d.icon} class="size-[18px]" /></span>
                       <span class="font-semibold">{d.name}</span>
                     </a>
@@ -119,7 +119,7 @@ const tabs = [
       {[CATEGORIES[0], { label: 'Commercial & more', divs: [...CATEGORIES[1].divs, ...CATEGORIES[2].divs, ...CATEGORIES[3].divs] }].map(({ label, divs: list }) => (
         <div>
           <div class="text-white font-semibold text-sm mb-3">{label}</div>
-          <ul class="space-y-2 text-sm">{list.map((d) => <li><a class="hover:text-lime inline-block py-1" href={`/services/${d.id}`}>{d.name}</a></li>)}</ul>
+          <ul class="space-y-2 text-sm">{list.map((d) => <li><a class="hover:text-lime inline-block py-1" href={divHref(d)}>{d.name}</a></li>)}</ul>
         </div>
       ))}
       <div>
