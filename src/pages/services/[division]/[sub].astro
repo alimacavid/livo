@@ -4,7 +4,7 @@ import Icon from '../../../components/Icon.astro';
 import BeforeAfter from '../../../components/BeforeAfter.astro';
 import Extras from '../../../components/Extras.astro';
 import { Image } from 'astro:assets';
-import { DIVISIONS, PHONE, PHONE_TEL, FIRST_TIME_DISCOUNT, subMin, isQuoteSub, subFreqs, subAddons, type Division, type Sub } from '../../../data/services';
+import { DIVISIONS, PHONE, PHONE_TEL, FIRST_TIME_DISCOUNT, subMin, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, type Division, type Sub } from '../../../data/services';
 
 export function getStaticPaths() {
   return DIVISIONS.flatMap((d) => d.subs.map((s) => ({ params: { division: d.id, sub: s.slug }, props: { d, s } })));
@@ -18,7 +18,7 @@ const def = s.tiers.find((t) => t.popular) ?? s.tiers[0];
 const others = d.subs.filter((x) => x.slug !== s.slug);
 const bookUrl = (tier: string) => `/book?d=${d.id}&s=${s.slug}&t=${tier}`;
 const recurringFreqs = subFreqs(d, s).filter((f) => f.id !== 'onetime');
-const addons = subAddons(d, s);
+const addons = [...subAddons(d, s)].sort((a, b) => Number(!!ADDON_IMAGES[b.id]) - Number(!!ADDON_IMAGES[a.id])); // photo cards first
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
 // recurring page: lowest weekly price is the headline
@@ -142,10 +142,11 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
         <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3" data-addons>
           {addons.map((a) => (
             <button type="button" data-addon={a.id} data-aprice={a.price} aria-pressed="false"
-              class="press group relative shrink-0 w-40 md:w-auto text-left rounded-panel border-2 border-transparent bg-cloud p-4 transition-colors aria-pressed:border-purple aria-pressed:bg-purple-soft">
-              <span aria-hidden="true" class="absolute top-3 right-3 size-6 rounded-full grid place-items-center bg-white text-muted transition duration-300 group-aria-pressed:bg-purple group-aria-pressed:text-white group-aria-pressed:rotate-[360deg]">
+              class="press group relative overflow-hidden shrink-0 w-40 md:w-auto text-left rounded-panel border-2 border-transparent bg-cloud p-4 transition-colors aria-pressed:border-purple aria-pressed:bg-purple-soft">
+              <span aria-hidden="true" class="absolute z-10 top-3 right-3 size-6 rounded-full grid place-items-center bg-white shadow-sm text-muted transition duration-300 group-aria-pressed:bg-purple group-aria-pressed:text-white group-aria-pressed:rotate-[360deg]">
                 <Icon name="plus" class="size-3.5 group-aria-pressed:hidden" stroke={2.4} /><Icon name="check" class="size-3.5 hidden group-aria-pressed:block" stroke={3} />
               </span>
+              {ADDON_IMAGES[a.id] && <Image src={ADDON_IMAGES[a.id]} alt="" class="-mx-4 -mt-4 mb-3 w-[calc(100%+2rem)] max-w-none aspect-[16/9] object-cover rounded-t-[inherit]" widths={[240, 400]} sizes="(min-width:768px) 260px, 160px" />}
               <span class="block font-semibold text-[14px] leading-snug pr-7">{a.name}</span>
               <span class="block text-[12px] text-muted">{a.sub}</span>
               <span class="block mt-2 text-sm"><b>+${a.price}</b> <span class="text-muted text-[11px]">{a.unit}</span></span>

@@ -54,7 +54,7 @@ const GROUPS = [
           <div class={`grid ${g.grid} gap-3 md:gap-5`}>
             {g.cards.map((c, i) => (
               <a href={c.href} class={`press group relative overflow-hidden rounded-panel bg-cloud ${g.wide ? (i === 2 ? 'col-span-2 md:col-span-1 aspect-[2/1] md:aspect-square' : 'aspect-[4/5] md:aspect-square') : 'aspect-[4/5] md:aspect-[3/4]'}`} data-reveal>
-                <Image src={c.image} alt="" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-105" widths={[320, 520, 700]} sizes="(min-width:768px) 280px, 50vw" />
+                <Image src={c.image} alt="" class={`absolute inset-0 size-full object-cover ${c.pos ?? ''} transition duration-700 group-hover:scale-105`} widths={[320, 520, 700]} sizes="(min-width:768px) 280px, 50vw" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
                 <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple" aria-hidden="true"><Icon name={c.icon} class="size-[18px]" /></span>
                 <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">

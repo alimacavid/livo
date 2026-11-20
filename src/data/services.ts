@@ -23,6 +23,29 @@ import junkTruck from '../assets/photos/junk-truck.jpg';
 import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
 import teamVan from '../assets/photos/team-van.jpg';
+import houseToilet from '../assets/photos/house-toilet-cleaning.jpg';
+import toiletBefore from '../assets/photos/toilet-before.jpg';
+import toiletAfter from '../assets/photos/toilet-after.jpg';
+import ovenCleaning from '../assets/photos/oven-cleaning.jpg';
+import ovenBefore from '../assets/photos/oven-before.jpg';
+import ovenAfter from '../assets/photos/oven-after.jpg';
+import cabinetCleaning from '../assets/photos/cabinet-cleaning.jpg';
+import cabinetBefore from '../assets/photos/cabinet-before.jpg';
+import cabinetAfter from '../assets/photos/cabinet-after.jpg';
+import fridgeCleaning from '../assets/photos/fridge-cleaning.jpg';
+import fridgeBefore from '../assets/photos/fridge-before.jpg';
+import fridgeAfter from '../assets/photos/fridge-after.jpg';
+import windowCleaning from '../assets/photos/window-cleaning.jpg';
+import restaurantKitchen from '../assets/photos/restaurant-kitchen.jpg';
+import stoveBefore from '../assets/photos/stove-before.jpg';
+import stoveAfter from '../assets/photos/stove-after.jpg';
+import postRenovation from '../assets/photos/post-renovation.jpg';
+import officeCleaning from '../assets/photos/office-cleaning.jpg';
+
+// Photos shown on add-on cards (service pages). Add more here as they arrive.
+export const ADDON_IMAGES: Record<string, ImageMetadata> = {
+  fridge: fridgeCleaning, oven: ovenCleaning, cabinets: cabinetCleaning, windows: windowCleaning, bath: houseToilet,
+};
 
 export const PHONE = '888-802-LIVO';
 export const PHONE_TEL = '+18888025486';
@@ -141,7 +164,7 @@ export const DIVISIONS: Division[] = [
     keyword: 'house cleaning Coquitlam',
     segment: 'residential',
     icon: 'home',
-    image: interiorKitchen,
+    image: houseToilet,
     subs: [
       {
         slug: 'regular-cleaning',
@@ -149,9 +172,9 @@ export const DIVISIONS: Division[] = [
         short: 'Everyday upkeep: kitchen, bathrooms and floors.',
         desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or put it on a schedule and save from the 2nd visit. We see your home before we set the recurring rate. For heavy buildup, book a Deep Clean.',
         recurringTable: true,
-        image: interiorKitchen,
-        before: interiorBefore,
-        after: interiorAfter,
+        image: houseToilet,
+        before: toiletBefore,
+        after: toiletAfter,
         unit: 'per visit',
         tierLabel: 'Home size',
         tiers: HOME_SIZES([165, 195, 235, 285, 349]),
@@ -172,9 +195,9 @@ export const DIVISIONS: Division[] = [
         name: 'Deep Cleaning',
         short: 'Extra detail for buildup, trim and tracks.',
         desc: 'Everything in a standard clean, plus the places that get skipped: baseboards, vents, window tracks, behind and under furniture. The right first visit for any home. Inside the oven, fridge or freezer is an add-on.',
-        image: interiorVacuum,
-        before: interiorBefore,
-        after: interiorAfter,
+        image: ovenCleaning,
+        before: ovenBefore,
+        after: ovenAfter,
         unit: 'per visit',
         tierLabel: 'Home size',
         tiers: HOME_SIZES([199, 265, 315, 365, 465]),
@@ -216,16 +239,16 @@ export const DIVISIONS: Division[] = [
     keyword: 'move out cleaning Coquitlam',
     segment: 'residential',
     icon: 'box',
-    image: interiorKitchen,
+    image: cabinetCleaning,
     subs: [
       {
         slug: 'move-in-move-out-cleaning',
         name: 'Move-In / Move-Out Cleaning',
         short: 'Empty home, ready for handover. Appliances included.',
         desc: 'An empty-home clean built for handover. Inside every cabinet, closet and appliance is included, so the home is ready for inspection or for the next people to move in.',
-        image: interiorKitchen,
-        before: interiorBefore,
-        after: interiorAfter,
+        image: cabinetCleaning,
+        before: cabinetBefore,
+        after: cabinetAfter,
         unit: 'flat rate',
         tierLabel: 'Home size',
         tiers: [
@@ -301,8 +324,8 @@ export const DIVISIONS: Division[] = [
         short: 'Between seasons or long stays.',
         desc: 'Everything in a turnover plus a full detail: baseboards, inside appliances, under furniture. Keeps a busy listing in top shape.',
         image: airbnbAfter,
-        before: airbnbBefore,
-        after: airbnbAfter,
+        before: fridgeBefore,
+        after: fridgeAfter,
         unit: 'per visit',
         tierLabel: 'Unit size',
         tiers: HOME_SIZES([199, 239, 289, 345, 419]),
@@ -353,14 +376,14 @@ export const DIVISIONS: Division[] = [
     keyword: 'post construction cleaning Coquitlam',
     segment: 'residential',
     icon: 'hammer',
-    image: interiorVacuum,
+    image: postRenovation,
     subs: [
       {
         slug: 'post-construction-cleaning',
         name: 'Home Renovations & New Builds',
         short: 'Final clean after the trades finish.',
         desc: 'Renovations leave fine dust on every surface. We remove construction dust, stickers and paint spots from floors, trim and fixtures so the home is ready to live in. Send photos for a straightforward quote.',
-        image: interiorVacuum,
+        image: postRenovation,
         unit: 'starting at',
         tierLabel: 'Space size',
         quote: true,
@@ -387,7 +410,7 @@ export const DIVISIONS: Division[] = [
         name: 'Commercial Construction & Fit-Outs',
         short: 'Rough clean, final clean or handover touch-up.',
         desc: 'Construction cleaning for offices, stores and new commercial units. We walk the site and quote each phase separately: rough clean, final clean and touch-up before handover.',
-        image: teamVan,
+        image: postRenovation,
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
@@ -526,14 +549,14 @@ export const DIVISIONS: Division[] = [
     keyword: 'office cleaning Coquitlam',
     segment: 'commercial',
     icon: 'building',
-    image: teamVan,
+    image: officeCleaning,
     subs: [
       {
         slug: 'office-cleaning',
         name: 'Office Cleaning',
         short: 'Desks, floors, washrooms and break rooms.',
         desc: 'Desks, meeting rooms, kitchens, washrooms and floors cleaned on a schedule that suits your business, including evenings and weekends. We agree tasks, hours and the visit schedule with you.',
-        image: teamVan,
+        image: officeCleaning,
         unit: 'per visit',
         tierLabel: 'Office size',
         quote: true,
@@ -610,14 +633,16 @@ export const DIVISIONS: Division[] = [
     keyword: 'commercial kitchen cleaning Coquitlam',
     segment: 'commercial',
     icon: 'chef',
-    image: interiorKitchen,
+    image: restaurantKitchen,
     subs: [
       {
         slug: 'kitchen-cleaning',
         name: 'Restaurant & Kitchen Cleaning',
         short: 'Kitchen, dining areas and washrooms.',
         desc: 'Commercial kitchens deep cleaned with industrial steam cleaners that cut grease and baked-on buildup, plus dining areas and washrooms. We agree the kitchen scope on site; a walkthrough is required. Hoods, ducts and grease traps are not included.',
-        image: interiorKitchen,
+        image: restaurantKitchen,
+        before: stoveBefore,
+        after: stoveAfter,
         unit: 'per visit',
         tierLabel: 'Type of clean',
         quote: true,
@@ -691,7 +716,7 @@ export const CATEGORIES: Category[] = [
 export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;
 
 // Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
-export type Card = { name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string };
+export type Card = { name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string; pos?: string };
 const card = (id: string, o: Partial<Card> = {}): Card => {
   const d = getDivision(id);
   return { name: d.name, line: d.tagline, href: divHref(d), price: minPrice(d), tax: d.segment === 'commercial', image: d.image, icon: d.icon, ...o };
@@ -703,7 +728,7 @@ export const HOME_CARDS: Card[] = [
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
   card('airbnb-cleaning', { name: 'Airbnb Turnover Cleaning', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
   card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
-  card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens' }),
+  card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens', pos: 'object-[22%_50%]' }),
   card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
   card('junk-removal', { line: 'One item to full clear-outs' }),
 ];
