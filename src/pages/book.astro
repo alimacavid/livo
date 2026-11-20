@@ -14,7 +14,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 <Base title="Book a Service or Get a Quote" description="Book house cleaning, move out cleaning, Airbnb cleaning or junk removal online, or send photos for a free commercial cleaning quote. LIVO Property Services, Coquitlam." tabBar={false} footer={false}>
   <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, commercialDivs: COMMERCIAL_DIVS, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
 
-  <div class="mx-auto max-w-xl px-4 pt-2 md:pt-8 pb-40">
+  <div class="mx-auto max-w-xl px-4 pt-2 md:pt-8 pb-40 md:pb-4">
     <!-- progress -->
     <div class="flex items-center gap-3" id="bk-top">
       <button id="bk-back" class="press size-11 shrink-0 rounded-full bg-cloud grid place-items-center disabled:opacity-0 disabled:pointer-events-none transition-opacity" aria-label="Previous step">
@@ -32,8 +32,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   </div>
 
   <!-- bottom bar -->
-  <div slot="after" style="view-transition-name: tab-bar" class="fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe" id="bk-bottom">
-    <div class="mx-auto max-w-xl flex items-center gap-3 px-4 h-[80px]">
+  <div slot="after" style="view-transition-name: tab-bar" class="fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe md:sticky md:bg-white md:backdrop-blur-none md:border-0 md:pb-0" id="bk-bottom">
+    <div class="mx-auto max-w-xl flex items-center gap-3 px-4 h-[80px] md:h-auto md:py-5 md:border-t md:border-line">
       <div id="bk-sum" class="flex-1 min-w-0 text-left" aria-live="polite">
         <div class="text-[11.5px] text-muted font-medium" id="bk-totlabel">Total</div>
         <div class="flex items-baseline gap-2">

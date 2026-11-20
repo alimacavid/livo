@@ -699,8 +699,7 @@ const card = (id: string, o: Partial<Card> = {}): Card => {
 const std = getSub('house-cleaning', 'regular-cleaning');
 const deep = getSub('house-cleaning', 'deep-cleaning');
 export const HOME_CARDS: Card[] = [
-  card('house-cleaning', { line: 'Standard & recurring', href: '/services/house-cleaning/regular-cleaning', price: subMin(std) }),
-  card('house-cleaning', { name: 'Deep Cleaning', line: 'Buildup, trim and tracks', href: '/services/house-cleaning/deep-cleaning', price: subMin(deep), image: deep.image, icon: 'sparkle' }),
+  card('house-cleaning', { line: 'Standard, recurring & deep', href: '/services/house-cleaning', price: subMin(std) }),
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
   card('airbnb-cleaning', { name: 'Airbnb Turnover Cleaning', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
   card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
