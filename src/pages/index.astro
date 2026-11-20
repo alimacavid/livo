@@ -6,7 +6,16 @@ import heroVan from '../assets/photos/hero-van.png';
 import { AREAS, HOME_CARDS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
 // Homepage cards grouped under Ali's 4 sitemap categories
 const GROUPS = [
-  { label: 'Residential', cards: HOME_CARDS.slice(0, 4), wrap: 'col-span-2 md:col-span-4', grid: 'grid-cols-2 md:grid-cols-4' },
+  {
+    label: 'Residential',
+    cards: HOME_CARDS.slice(0, 4)
+      .filter((card) => card.href !== '/services/house-cleaning/deep-cleaning')
+      .map((card) => card.href === '/services/house-cleaning/regular-cleaning'
+        ? { ...card, href: '/services/house-cleaning' }
+        : card),
+    wrap: 'col-span-2 md:col-span-4',
+    grid: 'grid-cols-2 md:grid-cols-3',
+  },
   { label: 'Commercial', cards: HOME_CARDS.slice(4, 6), wrap: 'col-span-2', grid: 'grid-cols-2' },
   { label: 'Post-Construction', cards: HOME_CARDS.slice(6, 7), wrap: 'col-span-1', grid: 'grid-cols-1' },
   { label: 'Junk Removal', cards: HOME_CARDS.slice(7, 8), wrap: 'col-span-1', grid: 'grid-cols-1' },
@@ -41,7 +50,7 @@ const GROUPS = [
     </div>
   </section>
 
-  <!-- ───── SERVICES: the 8 cards from the 17 Nov sitemap (live-site card style) ───── -->
+  <!-- ───── SERVICES: grouped homepage cards ───── -->
   <section id="services" class="mx-auto max-w-6xl px-4 md:px-6 mt-10 md:mt-20 scroll-mt-20">
     <div class="flex items-end justify-between">
       <h2 class="text-[1.4rem] md:text-4xl font-extrabold">What do you need?</h2>
