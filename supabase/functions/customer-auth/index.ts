@@ -1,6 +1,5 @@
 // LIVO — customer-auth (2026-10-12) — sign in with a text code, read saved details
-// NOT DEPLOYED YET — deploy with migration 0002 when Ali approves go-live:
-//   supabase functions deploy customer-auth --project-ref dlzmkkmnmrbvxoazzbpi --no-verify-jwt
+// Deployed 2026-11-20 (go-live). v2 2026-11-20: texts new numbers how to get started.
 //
 // actions: send {phone} · verify {phone, code} → {token} · me {token} → profile
 //          remove-place {token, placeId} · signout {token}
@@ -34,9 +33,11 @@ Deno.serve(async (req) => {
       if ((count ?? 0) >= 5) return json({ error: "too-many" }, 429);
       const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1_000_000).padStart(6, "0");
       await db.from("login_codes").insert({ phone, code_hash: await sha256(phone + code + PEPPER()), expires_at: new Date(Date.now() + 600_000).toISOString() });
-      // only text people who have saved details (but answer the same either way)
+      // saved details → text the code; new number → text how to get started (Ali, 2026-11-20).
+      // The website answers the same either way; only the phone's owner sees which text arrives.
       const { data: c } = await db.from("customers").select("id").eq("phone", phone).maybeSingle();
       if (c) await sendSms(phone, `Your LIVO sign-in code is ${code}. It expires in 10 minutes. Didn't ask for it? Ignore this text.`);
+      else await sendSms(phone, `LIVO: there is no account for this number yet. Book at livoland.com/book and tick "Save my details" - then you can sign in. Didn't ask? Ignore this text.`);
       return json({ ok: true });
     }
 

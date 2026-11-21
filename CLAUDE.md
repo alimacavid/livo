@@ -3,6 +3,11 @@
 ## Last updated
 2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
 
+## 2026-11-20 (23:50) — Sign-in text for new numbers (Ali: "add it")
+- Ali tried My LIVO sign-in: no code arrived. Correct behaviour: codes are only texted to numbers with saved details, and there were 0 customers.
+- `customer-auth` now texts new numbers: "LIVO: there is no account for this number yet. Book at livoland.com/book and tick "Save my details" - then you can sign in." Website answer unchanged (same for both). Rate limit still 5 per number per hour.
+- Deployed as customer-auth version 3 (Claude deployed v1 and v3; v2 was not deployed by Claude this session — check if Codex/Ali deployed something).
+
 ## 2026-11-20 (23:30) — GO-LIVE (Ali said "go live", chose "backend first") — DONE 23:40
 - DONE: backup of live site = branch `backup/pre-v1.0-2026-11-20` (= main 2ce365f; tag push was refused, so a branch).
 - DONE: migration 0002 applied to Supabase `livo` (dlzmkkmnmrbvxoazzbpi) as `quotes_customers` (+ indexes on bookings.place_id, customer_sessions.customer_id). Security advisor: only "RLS on, no policy" INFO — intended (only edge functions read/write).
