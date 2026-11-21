@@ -64,8 +64,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tight #bk-view [data-date] { height: 2.4rem; }
   html.bk-tight #bk-view input:not([type=file]) { height: 2.75rem; }
   html.bk-tight #bk-view textarea { height: 4.5rem; }
-  html.bk-tight #bk-view .bk-addimg { aspect-ratio: 5 / 2; }
-  html.bk-tight #bk-view .bk-addsub { display: none; }
+  html.bk-tight #bk-view .bk-addimg { aspect-ratio: 16 / 9; }
   html.bk-tight #bk-wrap { padding-top: .5rem; }
   html.bk-tight #bk-stage { padding-top: .5rem; padding-bottom: .5rem; }
   html.bk-tight #bk-testbar { margin-top: .25rem; padding-top: 2px; padding-bottom: 2px; }
@@ -78,7 +77,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tighter #bk-view textarea { height: 3rem; }
   html.bk-tighter #bk-view input:not([type=file]) { height: 2.5rem; }
   html.bk-tighter #bk-view h1 { font-size: 1.2rem; }
-  html.bk-tighter #bk-view .bk-addimg { display: none; }
+  html.bk-tighter #bk-view .bk-addimg { aspect-ratio: 5 / 2; }
   html.bk-tighter #bk-view [data-tier], html.bk-tighter #bk-view [data-sub], html.bk-tighter #bk-view [data-time] { padding-top: .35rem; padding-bottom: .35rem; }
   html.bk-tighter #bk-view [data-date] { height: 2.1rem; }
 </style>
@@ -206,20 +205,19 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2">
         ${addons().map((a) => {
           const n = st.addons[a.id] ?? 0; const on = n > 0;
-          if (a.img) return `<div class="press relative overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
+          if (a.img) return `<div class="press relative h-full flex flex-col overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
             <button data-add="${a.id}" class="absolute inset-0 z-10 rounded-[18px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <img src="${a.img}" alt="" class="bk-addimg w-full aspect-[16/9] object-cover bg-line" />
-            <span aria-hidden="true" class="absolute top-2 right-2 size-7 rounded-full grid place-items-center shadow-sm transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-white text-ink'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-4')}</span>
-            <div class="px-3 pt-2 pb-2.5">
-              <div class="font-semibold text-[13.5px] leading-tight">${a.name}</div>
-              <div class="bk-addsub text-[11.5px] text-muted leading-snug">${a.sub}</div>
-              <div class="mt-1 flex items-center justify-between gap-1 min-h-8">
-                <span class="text-[13px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
-                ${a.qty && on ? `<span class="relative z-20 flex items-center gap-1">
-                  <button data-dec="${a.id}" class="press size-8 rounded-full bg-white border border-line grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
-                  <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
-                  <button data-inc="${a.id}" class="press size-8 rounded-full bg-white border border-line grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
-              </div>
+            <div class="relative">
+              <img src="${a.img}" alt="" class="bk-addimg w-full aspect-[4/3] object-cover bg-line" />
+              <span aria-hidden="true" class="absolute top-2 right-2 size-8 rounded-full grid place-items-center shadow-md transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-white text-ink'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-4')}</span>
+              ${a.qty && on ? `<span class="absolute z-20 bottom-2 right-2 flex items-center gap-1 rounded-full bg-white/95 shadow-md p-1">
+                <button data-dec="${a.id}" class="press size-8 rounded-full bg-cloud grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
+                <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
+                <button data-inc="${a.id}" class="press size-8 rounded-full bg-cloud grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
+            </div>
+            <div class="px-3 py-2">
+              <div class="font-semibold text-[13.5px] leading-tight truncate">${a.name}</div>
+              <div class="text-[12.5px] truncate"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></div>
             </div>
           </div>`;
           return `<div class="press relative px-3.5 py-3 rounded-[16px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
@@ -307,13 +305,27 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   const niceDate = () => st.date ? new Date(st.date + 'T12:00').toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' }) : '';
+  const TIME_IC: Record<string, string> = {
+    rise: '<path d="M12 3v3M5.6 7.6l1.4 1.4M18.4 7.6 17 9M3 15h18M7 15a5 5 0 0 1 10 0M8 19h8"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    set: '<path d="M12 9V6M5.6 10.6 7 12M18.4 10.6 17 12M3 16h18M7 16a5 5 0 0 1 10 0M8 20h8"/>',
+    moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>',
+    day: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  };
+  const timeIcon = (id: string, i: number) => /after hours|after closing/i.test(id) ? 'moon' : /closed day/i.test(id) ? 'day' : /before|early|morning/i.test(id) ? 'rise' : /late|afternoon/i.test(id) ? 'set' : i === 0 ? 'rise' : 'sun';
   function vTime() {
-    return `${h1(isQuote() ? 'Preferred time' : 'What time?', niceDate())}
-      <div class="mt-5 grid gap-2.5" role="group" aria-label="Time window">
-        ${div().times.map((t) => `<button data-time="${t.id}" class="${optCls(st.time === t.id)}">${radio(st.time === t.id)}<span class="flex-1 font-semibold text-[15px]">${t.id}</span><span class="text-[13px] text-muted">${t.sub}</span></button>`).join('')}
+    return `${h1(isQuote() ? 'Preferred time' : 'What time works?', '')}
+      <button data-back-date class="press -mt-1 inline-flex items-center gap-2 rounded-full bg-purple-soft text-purple px-3.5 py-1.5 text-[13px] font-semibold">${ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', 'size-4')}${niceDate()}<span class="text-purple/70 font-medium">· change</span></button>
+      <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Time window">
+        ${div().times.map((t, i) => { const on = st.time === t.id; return `<button data-time="${t.id}" aria-pressed="${on}" class="press relative text-left flex sm:flex-col sm:items-start items-center gap-3 sm:gap-2 p-4 rounded-[20px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-line bg-white hover:border-gray'}">
+          <span class="size-11 shrink-0 rounded-full grid place-items-center ${on ? 'bg-purple text-white' : 'bg-lime-soft text-lime-ink'}">${ic(TIME_IC[timeIcon(t.id, i)], 'size-[22px]')}</span>
+          <span class="flex-1"><span class="block font-heading font-bold text-[16px]">${t.id}</span><span class="block text-[13px] text-muted">${t.sub}</span></span>
+          <span aria-hidden="true" class="sm:absolute sm:top-3 sm:right-3 size-5 rounded-full grid place-items-center ${on ? 'bg-purple text-white' : 'border-2 border-gray'}">${on ? ic(CHECK, 'size-3') : ''}</span>
+        </button>`; }).join('')}
       </div>
       <p class="mt-4 text-[13px] text-muted">${isQuote() ? 'We confirm the exact time with your quote.' : 'Your crew arrives inside this window. We text you when they are on the way.'}</p>`;
   }
+
 
   function fld(id: string, label: string, type = 'text', ac = '', im = '', req = true, hint = '') {
     return `<div class="mt-3 first:mt-0"><label for="c-${id}" class="text-[13px] font-semibold text-ink/80">${label}${req ? '' : ' <span class="font-normal text-muted">(optional)</span>'}</label>
@@ -326,8 +338,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function vContact() {
     return `${h1('Your details', 'So we can confirm your ' + (isQuote() ? 'quote.' : 'booking.'))}
       ${st.profile ? `<div class="mt-5 rounded-[16px] bg-purple-soft/70 p-3.5 text-[13px] font-semibold text-purple">Signed in · ${esc(st.profile.customer.phone)}</div>`
-        : `<a href="/my-livo?next=${encodeURIComponent(location.pathname + location.search)}" class="press mt-5 flex items-center gap-3 rounded-[16px] border border-line p-3.5 text-[13.5px] hover:border-gray"><span class="size-9 shrink-0 rounded-full bg-purple-soft text-purple grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-[18px]')}</span><span class="flex-1"><b>Booked before?</b> Sign in to fill this in.</span>${ic('<path d="m9 6 6 6-6 6"/>', 'size-4 text-muted')}</a>`}
-      <div class="mt-5">
+        : `<a href="/my-livo?next=${encodeURIComponent(location.pathname + location.search)}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
+            <span class="size-11 shrink-0 rounded-full bg-lime text-ink grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-5')}</span>
+            <span class="flex-1 min-w-0"><span class="block font-heading font-bold text-[15px]">Booked with LIVO before?</span><span class="block text-[12.5px] text-white/75">Sign in with your phone and we fill this in.</span></span>
+            <span class="shrink-0 rounded-full bg-white text-ink px-3.5 py-2 text-[13px] font-bold">Sign in</span>
+          </a>
+          <div class="mt-4 flex items-center gap-3 text-[12px] text-muted" aria-hidden="true"><span class="h-px flex-1 bg-line"></span>or enter your details<span class="h-px flex-1 bg-line"></span></div>`}
+      <div class="mt-2">
         ${fld('name', biz() ? 'Contact name' : 'Full name', 'text', 'name')}
         ${fld('phone', 'Mobile number', 'tel', 'tel', 'tel')}
         ${fld('email', 'Email', 'email', 'email', 'email')}
@@ -467,6 +484,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     else if (ds.freq) { st.freq = ds.freq; }
     else if (ds.mon) { let { y, m } = st.month; m += +ds.mon; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } st.month = { y, m }; }
     else if (ds.date) { st.date = ds.date; }
+    else if (ds.backDate !== undefined) { go('date'); return; }
     else if (ds.time) { st.time = ds.time; }
     else if (ds.for !== undefined) { st.forBusiness = ds.for === 'commercial'; }
     else if (ds.rmphoto !== undefined) { const [p] = st.photos.splice(+ds.rmphoto, 1); URL.revokeObjectURL(p.url); }
