@@ -10,7 +10,7 @@
 - Every Codex prompt: one part at a time, a branch name, exact files, what NOT to touch, how to test, and a short report format.
 - Same safety rules for everyone: work on a branch → PR into `v1.0` (test) → Ali OKs → `main` (livoland.com) only when Ali says "go live".
 
-## 2026-11-21 — Codex: My LIVO code screen wording + careers contrast (PR #__)
+## 2026-11-21 — Codex: My LIVO code screen wording + careers contrast (PR #15)
 
 ## 2026-11-20 (23:50) — Sign-in text for new numbers (Ali: "add it")
 - Ali tried My LIVO sign-in: no code arrived. Correct behaviour: codes are only texted to numbers with saved details, and there were 0 customers.
