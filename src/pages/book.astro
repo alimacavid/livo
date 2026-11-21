@@ -19,12 +19,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 <Base title="Book a Service or Get a Quote" description="Book house cleaning, move out cleaning, Airbnb cleaning or junk removal online, or send photos for a free commercial cleaning quote. LIVO Property Services, Coquitlam." tabBar={false} footer={false}>
   <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, commercialDivs: COMMERCIAL_DIVS, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
 
-  <div class="mx-auto max-w-xl px-4 pt-2 md:pt-6 flex flex-col min-h-[calc(100dvh-66px)]">
+  <div id="bk-wrap" class="mx-auto max-w-xl px-4 pt-2 md:pt-6 flex flex-col min-h-[calc(100dvh-66px)]">
     <!-- progress -->
     <div class="flex items-center gap-3" id="bk-top">
-      <button id="bk-back" class="press size-11 shrink-0 rounded-full bg-cloud grid place-items-center disabled:opacity-0 disabled:pointer-events-none transition-opacity" aria-label="Previous step">
-        <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-      </button>
       <div class="flex-1">
         <div class="flex justify-between text-[12px] font-semibold text-muted"><span id="bk-stepname">Service</span><span id="bk-count">1 / 6</span></div>
         <div id="bk-prog" role="progressbar" aria-label="Progress" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" class="mt-1.5 h-1.5 rounded-full bg-cloud overflow-hidden"><div id="bk-bar" class="h-full bg-gradient-to-r from-purple to-[#8B5CC8] rounded-full transition-[width] duration-700 ease-[var(--ease-out-expo)]" style="width:16%"></div></div>
@@ -34,7 +31,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
     <div id="bk-live" class="sr-only" aria-live="polite"></div>
     <!-- each step is centred in the screen; long steps are split so nothing needs scrolling -->
-    <div class="flex-1 flex flex-col justify-center py-4 md:py-5">
+    <div id="bk-stage" class="flex-1 flex flex-col justify-center py-4 md:py-5">
       <div id="bk-view"></div>
     </div>
     <div class="h-[96px] md:hidden" aria-hidden="true"></div>
@@ -42,6 +39,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   <!-- bottom bar: fixed on phones, right under the step on computers -->
   <div style="view-transition-name: tab-bar" class="fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe md:static md:bg-transparent md:backdrop-blur-none md:border-0 md:pb-6" id="bk-bottom">
     <div class="mx-auto max-w-xl flex items-center gap-3 px-4 h-[80px] md:px-0 md:h-auto md:py-4 md:border-t md:border-line">
+      <button id="bk-back" class="press size-12 shrink-0 rounded-full bg-cloud border border-line grid place-items-center disabled:hidden" aria-label="Back to previous step">
+        <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      </button>
       <div id="bk-sum" class="flex-1 min-w-0 text-left" aria-live="polite">
         <div class="text-[11.5px] text-muted font-medium" id="bk-totlabel">Total</div>
         <div class="flex items-baseline gap-2">
@@ -56,19 +56,31 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 </Base>
 
 <style is:global>
-  /* short phones (e.g. iPhone SE): tighten so each step still fits without scrolling */
-  @media (max-height: 720px) {
-    #bk-view h1 { font-size: 1.3rem; }
-    #bk-view h1 + p { font-size: 13px; }
-    #bk-view .mt-5 { margin-top: .75rem; }
-    #bk-view [data-tier], #bk-view [data-sub], #bk-view [data-time] { padding-top: .5rem; padding-bottom: .5rem; }
-    #bk-view [data-date] { height: 2.4rem; }
-    #bk-view input:not([type=file]) { height: 2.75rem; }
-    #bk-view [data-add] + div { font-size: 13px; }
-    #bk-view .grid > .press.relative { padding-top: .5rem; padding-bottom: .5rem; }
-    #bk-view textarea { height: 4.5rem; }
-    #bk-view .bk-addimg { display: none; }
+  /* every step fits the screen: if it would scroll, the page script adds .bk-tight, then .bk-tighter */
+  html.bk-tight #bk-view h1 { font-size: 1.35rem; }
+  html.bk-tight #bk-view h1 + p { font-size: 13px; }
+  html.bk-tight #bk-view .mt-5 { margin-top: .75rem; }
+  html.bk-tight #bk-view [data-tier], html.bk-tight #bk-view [data-sub], html.bk-tight #bk-view [data-time] { padding-top: .5rem; padding-bottom: .5rem; }
+  html.bk-tight #bk-view [data-date] { height: 2.4rem; }
+  html.bk-tight #bk-view input:not([type=file]) { height: 2.75rem; }
+  html.bk-tight #bk-view textarea { height: 4.5rem; }
+  html.bk-tight #bk-view .bk-addimg { aspect-ratio: 5 / 2; }
+  html.bk-tight #bk-view .bk-addsub { display: none; }
+  html.bk-tight #bk-wrap { padding-top: .5rem; }
+  html.bk-tight #bk-stage { padding-top: .5rem; padding-bottom: .5rem; }
+  html.bk-tight #bk-testbar { margin-top: .25rem; padding-top: 2px; padding-bottom: 2px; }
+  @media (min-width: 768px) {
+    html.bk-tight #bk-bottom { padding-bottom: .5rem; }
+    html.bk-tight #bk-bottom > div { padding-top: .6rem; padding-bottom: .25rem; }
   }
+  html.bk-tighter #bk-view h1 + p { display: none; }
+  html.bk-tighter #bk-view .mt-3 { margin-top: .4rem; }
+  html.bk-tighter #bk-view textarea { height: 3rem; }
+  html.bk-tighter #bk-view input:not([type=file]) { height: 2.5rem; }
+  html.bk-tighter #bk-view h1 { font-size: 1.2rem; }
+  html.bk-tighter #bk-view .bk-addimg { display: none; }
+  html.bk-tighter #bk-view [data-tier], html.bk-tighter #bk-view [data-sub], html.bk-tighter #bk-view [data-time] { padding-top: .35rem; padding-bottom: .35rem; }
+  html.bk-tighter #bk-view [data-date] { height: 2.1rem; }
 </style>
 
 <script>
@@ -194,14 +206,15 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2">
         ${addons().map((a) => {
           const n = st.addons[a.id] ?? 0; const on = n > 0;
-          if (a.img) return `<div class="press relative overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
+          if (a.img) return `<div class="press relative overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
             <button data-add="${a.id}" class="absolute inset-0 z-10 rounded-[18px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <img src="${a.img}" alt="" loading="lazy" class="bk-addimg w-full aspect-[2/1] object-cover bg-cloud" />
+            <img src="${a.img}" alt="" class="bk-addimg w-full aspect-[16/9] object-cover bg-line" />
             <span aria-hidden="true" class="absolute top-2 right-2 size-7 rounded-full grid place-items-center shadow-sm transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-white text-ink'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-4')}</span>
-            <div class="px-3 py-2.5">
+            <div class="px-3 pt-2 pb-2.5">
               <div class="font-semibold text-[13.5px] leading-tight">${a.name}</div>
-              <div class="mt-1 flex items-center justify-between gap-1">
-                <span class="text-[12.5px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
+              <div class="bk-addsub text-[11.5px] text-muted leading-snug">${a.sub}</div>
+              <div class="mt-1 flex items-center justify-between gap-1 min-h-8">
+                <span class="text-[13px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
                 ${a.qty && on ? `<span class="relative z-20 flex items-center gap-1">
                   <button data-dec="${a.id}" class="press size-8 rounded-full bg-white border border-line grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
                   <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
@@ -477,6 +490,15 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     render(); $('#bk-view').querySelector<HTMLElement>('#ph-input')?.focus();
     $('#bk-live').textContent = `${st.photos.length} photo${st.photos.length === 1 ? '' : 's'} added`;
   });
+  function fit() {
+    const root = document.documentElement;
+    const over = () => root.scrollHeight > innerHeight + 1;
+    root.classList.remove('bk-tight', 'bk-tighter');
+    if (over()) root.classList.add('bk-tight');
+    if (over()) root.classList.add('bk-tighter');
+  }
+  new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
+  addEventListener('resize', () => requestAnimationFrame(fit));
   $('#bk-back').addEventListener('click', () => { const i = steps().indexOf(st.step as Step); if (i > 0) go(steps()[i - 1]); });
   $('#bk-next').addEventListener('click', () => {
     if (!canNext()) return;
