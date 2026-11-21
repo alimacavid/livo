@@ -86,7 +86,7 @@
 
 /* Light sweep across the main lime button, every few seconds */
 @keyframes sheen { 0%, 70% { transform: translateX(-120%) skewX(-20deg); } 100% { transform: translateX(220%) skewX(-20deg); } }
-.sheen::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgb(255 255 255 / .55), transparent); animation: sheen 4.5s ease-in-out 1.6s infinite; pointer-events: none; }
+.sheen::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgb(255 255 255 / .28), transparent); mix-blend-mode: soft-light; animation: sheen 6s ease-in-out 2s infinite; pointer-events: none; }
 
 /* Scroll reveal (only hides content when JS is running — see html.js) */
 html.js [data-reveal] { opacity: 0; transform: translateY(18px) scale(.98); transition: opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo); transition-delay: calc(var(--i, 0) * 70ms); }

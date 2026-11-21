@@ -1,7 +1,67 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-10-12
+2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
+
+## 2026-11-17 (late) — LIVE DESIGN KEPT + services exactly as Ali's sitemap (branch `prices-nov17`)
+- Ali: "keep design of live website". Codex UI pass (PR #8) REVERTED (commit 0b97b03) — pages use the live livoland.com look again: text on photos for cards and headers, grey trust boxes, "Popular right now" swipe row back (new prices).
+- Services now match `LIVO_Visual_Sitemap.pdf` (17 Nov): 4 categories (`CATEGORIES` in services.ts: Residential Cleaning · Commercial Cleaning · Post-Construction · Junk Removal) used by /services, desktop menu and division eyebrow; footer = Residential + "Commercial & more".
+- Homepage: 8 cards in one grid like the live site (`HOME_CARDS`): House Cleaning, Deep Cleaning, Move-In/Out, Airbnb & Vacation Rentals, Office & Strata, Restaurant & Kitchen, Post-Construction, Junk Removal. Residential/Commercial tabs removed from the homepage (booking page still has them).
+- House Cleaning: Standard + Recurring on ONE page (`regular-cleaning` named "Standard & Recurring Cleaning", `recurringTable: true` shows the recurring table under the one-time prices). `recurring-cleaning` page removed → 301. Deep Cleaning keeps its own page.
+- Restaurant & Kitchen: ONE page `restaurant-kitchen-cleaning/kitchen-cleaning` (regular from $650, deep from $1,050, larger = quote, site visit). Old 3 sub-pages → 301.
+- Property Managers removed (not in Ali's sitemap) → 301 to Office & Strata.
+- Homepage "How it works" = the live-site version again ("Booked in 60 seconds.", 3 numbered cards, shows on phones too) — Ali, 2026-11-18. Replaces the desktop-only "Two simple ways to start".
+- Homepage "Popular right now" swipe row removed (Ali, 2026-11-18).
+- Homepage card "Airbnb & Vacation Rentals" → "Airbnb Turnover" (own card, opens the Guest Turnover page, from $129). Deep Reset stays as the second service on that page (Ali, 2026-11-19).
+- Homepage cards now grouped under the 4 sitemap categories with small headings: Residential (House, Deep, Move, Airbnb Turnover) · Commercial (Office & Strata, Restaurant & Kitchen) · Post-Construction · Junk Removal (`GROUPS` in index.astro; Ali, 2026-11-19).
+- Ali's updated sitemap (19 Nov PDF): Airbnb division + service renamed "Airbnb Turnover Cleaning" (was "Airbnb & Vacation Rental Cleaning" / "Guest Turnover"; URLs unchanged), Deep Reset stays optional on the same page. Junk order now One Item Pickup → Home & Garage Clearouts → Office & Building Clearouts → Renovation Waste ("Clearouts" spelling).
+- Deep Cleaning homepage card removed (Ali, 2026-11-19): House Cleaning card ("Standard, recurring & deep") opens /services/house-cleaning, which lists Standard & Recurring + Deep. Homepage now 7 cards: Residential 3 (House, Move, Airbnb Turnover Cleaning; 3 across on desktop, Airbnb full width on phones) · Commercial 2 · Post-Construction · Junk. Deep Cleaning page itself unchanged.
+- Booking page: on desktop the Total + Continue bar now sits right under the step (sticky, not pinned to the bottom of the screen). Phones unchanged (fixed bottom bar). Ali likes the FAQ "Questions" accordion — keep it.
+- New photos from Ali (2026-11-19, AI images in LIVO uniform, `src/assets/photos/`): House Cleaning + Standard = `house-toilet-cleaning` (before/after `toilet-*`); Deep = `oven-cleaning` (`oven-*`); Move = `cabinet-cleaning` (`cabinet-*`); Airbnb Deep Reset before/after = `fridge-*`; Restaurant = `restaurant-kitchen` (`stove-*`; homepage card uses `pos` to keep the people in frame); Post-Construction (both subs) = `post-renovation`; Office & Strata + Office = `office-cleaning`. Add-on cards on service pages now show photos (`ADDON_IMAGES` in services.ts: fridge, oven, cabinets, windows, bath); photo cards listed first. Still missing: Airbnb turnover photo, strata, junk (old photos), commercial construction own photo, freezer/kitchen/blinds/sheets/deodorize add-on photos; old Airbnb + junk before/after.
+- Full UI/UX pass (Ali, 2026-11-20):
+  - **Booking = one screen per step, centred, no scrolling** (checked at 390×844 and 1280×800; iPhone SE 375×667 fits except Add-ons with 10 items and the commercial Review — a few px of scroll). Steps now: service → size → add-ons → photos (quotes) → how often → **date** → **time** → **your details** (name/phone/email) → **address** (address, access, notes, save my details) → **review** (summary + confirm). Old "Date & time" and "Your details" screens were split. Fields are checked on their own screen; submit sends the customer back to the screen with a problem.
+  - **Size first:** coming from a service page the booking always opens on the size step (was skipping to add-ons).
+  - Add-ons in booking: compact 2-col (3-col desktop) cards, quantity stepper inline; descriptions in the screen-reader label.
+  - Booking layout: steps centred vertically; desktop Total + Continue directly under the step; test-version notice is a small pill; short-screen CSS (max-height 720px) in book.astro.
+  - Removed: "Great for" chips on service pages, repeated Add-ons grid on division pages.
+  - Single-service sections (Move-In/Out, Restaurant & Kitchen) link straight to the service page from menu, footer and /services; the service page back button goes to /services.
+  - Fixes: junk price line read "Pick your where is it?. Supplies included." → "Pick one. Loading and disposal included."; junk "Fridge or Freezer" disposal add-on no longer shows the fridge-cleaning photo; Deep Reset main photo = fridge cleaning (was the same bedroom as Turnover); /services category chips wrap on desktop.
+  - Before/after sliders tested (drag + keyboard) on every page that has one.
+- Service pages = information, booking = choices (Ali, 2026-11-20, "page by page like the live site"):
+  - **Deep Cleaning page removed** (detail work is now add-ons) → 301 to Standard Cleaning. House Cleaning = one service, renamed **"Standard House Cleaning"** (Ali, 2026-11-20) (no more "Standard & Recurring"); recurring price table removed — a lime "Save with a regular schedule" note shows the discounts, frequency is picked in booking.
+  - Home add-ons now: **Fridge & Freezer $65** (merged; was fridge $39 + freezer $29 — Ali OK'd $65 "for now", 2026-11-20), **Oven $49**, Inside Cabinets $39, Extra Bathroom $39, Interior Windows $40. Removed: Blinds, Kitchen Detail. Deodorize & Sanitize ($85) and Change Bed Sheets ($25/bed) moved to Airbnb (replaced "Extra Linen / Towel Set"). Move add-ons = Extra Bathroom + Interior Windows.
+  - Service page: size list and add-ons are display-only (no selecting); Book → /book?d=&s= (booking opens on size). Page order: hero → intro → prices (+ schedule savings) → add-ons → **What's included (dark purple card) / Not included (grey card)** → before & after → cross-sell → questions → more services. Old page script removed.
+  - Airbnb "Change Bed Sheets" add-on: Ali said keep it (2026-11-20), even though turnover includes remaking beds.
+- Service page = Ali's exact order (2026-11-20, later): hero → description → before/after slider → What's included / Not included → Questions. Prices list, schedule note, add-ons row, cross-sell card and "More services" row REMOVED from service pages (no more sideways-scrolling rows). Price stays in the hero pill, desktop side card and phone bottom bar; "Book now" opens booking on the size step. `Extras` no longer used on service pages.
+- Booking (Ali, 2026-11-20 night): Back button moved from the top into the bottom bar (left; Total in the middle; Continue right). Steps auto-fit the screen: if a step would scroll, the script adds `bk-tight` then `bk-tighter` on <html> (smaller headings/padding, add-on photos shorter then hidden). Checked at 390×844, 375×667, 1280×800, 1280×600, 1366×650, 1717×800 — no scrolling (only iPhone SE commercial Review in test mode, 6 px). Add-on photo cards restyled like the old service-page cards (16:9 photo, name, short description, price, + badge).
+- Booking polish (Ali, 2026-11-20 late): add-on picture cards all the same size (4:3 photo, one line name, one line price; quantity − n + sits on the photo); "Booked before?" is now a dark purple sign-in card with a white "Sign in" button and an "or enter your details" divider; Time step = picture tiles (sunrise / sun / sunset / moon icons; 3 across on computers, stacked on phones) with a "date · change" chip that goes back to the Date step.
+- Booking add-ons: photo cards (2 per row on phones, 3 on computers) when the add-on has a photo (`ADDON_IMAGES`, small WebP via getImage in book.astro); compact text cards otherwise (Airbnb, junk). Photos hidden on short screens (max-height 720px) so the step still fits.
+- Homepage trust boxes (Instant prices / Pay after / Uniformed crews / Same-day response) removed — repeated the hero line and How it works (Ali, 2026-11-18).
+- Homepage "See the difference" before/after section removed (Ali, 2026-11-17). Service pages keep their before/after.
+- Pages: 27 built (26 + 404). All checks pass: every page 200, axe 0, no overflow, links OK, journeys OK.
+
+## 2026-11-17 — Homepage hero restored to the live livoland.com hero (Ali)
+- Ali prefers the 2026-09-26 live hero: full-width van photo, purple gradient, words on the photo ("LIVO Property Services" label, "Fall in love with your property." + lime "We make it happen."), lime "Book a service" (+ desktop "See services"), header `overlay` on home. Replaces the 2026-10-12 minimal hero (words on white + two Home/Business tiles). Only change to the old live hero: "Upfront prices" line now reads "Instant prices · Pay after the job". Business customers start from the Commercial tab below. Hero video slot kept. axe 0 violations, no overflow (390 + 1280).
+
+## 2026-11-17 — Minimal UI pass (TEST ONLY — branch `codex/ui-nov17`)
+- Moved service captions and headers off photos, simplified service lists and add-ons, and adjusted spacing across booking, account, and privacy pages.
+- Base branch is `prices-nov17`.
+- Claude review (2026-11-17): no protected files touched (services.ts, api.ts, netlify.toml, supabase); booking logic unchanged (classes only); build 31 pages; all prices/journeys re-tested and match; axe 0 violations; no overflow at 390 px; all links 200. Codex had committed 20 screenshots to `validation/` — removed and ignored. Merged PR #8 into `prices-nov17`.
+
+## 2026-11-17 — New prices, services matched to sitemap, booking bug fixes (branch `prices-nov17`, from `v1.0` — TEST ONLY)
+- Source of every number: "LIVO Revised Pricing NOV 17" workbook (Livo project doc `claude/livo-revised-price-list-2026-11-17.md`). Every price clears 30% margin after overhead at $25/h + 20% burden. Home prices = full price to customer; commercial = "+ tax".
+- **First-booking discount removed** (Ali, 2026-11-17): `FIRST_TIME_DISCOUNT = 0`. All "15% off first booking" UI hides when it is 0.
+- **Services now follow Ali's 17 Nov sitemap.** Home sizes are 5 tiers (Studio, 1, 2, 3, 4+ bed; old "2–3 bed" split). New pages: `junk-removal/single-item-pickup` ($119 curb / $169 inside), `junk-removal/office-clearouts` (quote), `construction-cleaning/commercial-construction-cleaning` (quote), `commercial-cleaning/property-managers` (quote). Removed: `retail-cleaning` (→ office-cleaning) and `commercial-cleanup` (→ commercial construction) with 301s in netlify.toml. Renames (URLs kept): Regular → Standard Cleaning, Turnover → Guest Turnover, Junk by Load → Home & Garage Clear-Outs, Renovation Debris → Renovation Waste, Commercial Cleaning division → Office & Strata Cleaning, Scheduled Kitchen → Regular Kitchen Cleaning, Front-of-House → Dining Room & Washrooms, Post-construction home → Home Renovations & New Builds.
+- Commercial services now show starting prices (office from $165, strata from $200, kitchen deep from $1,050, regular kitchen from $650, all + tax) but stay quote requests. Tier id `visit` = free site visit (no photo needed).
+- Homepage cards (`CARDS`): Residential = House, Deep, Move, Airbnb, Post-Construction, Junk (3 across on desktop). Commercial = Office & Strata, Restaurant & Kitchen, Post-Construction, Office Clear-Outs. `Card` now has its own `image` + `icon`.
+- **Per-service options:** `Sub.freqs` and `Sub.addons` override the division (helpers `subFreqs`, `subAddons`). Deep Cleaning and Move-out are one-time only; Junk is one-time; Airbnb frequency has no discount.
+- **Recurring rule:** weekly −15%, every 2 weeks −10%, monthly regular price — from the 2nd visit, on the service price only (not add-ons). Booking total = first visit at regular price; summary shows "then $X/visit"; booking notes record both.
+- Add-ons: added Inside Freezer, Inside Cabinets, Blinds, Change Bed Sheets (homes), Laundry (Airbnb), Mattress/Box Spring, Fridge/Freezer, Same-Day $89 (junk). Removed Airbnb "Deep Sanitize".
+- **Bugs fixed:** (1) weekly/bi-weekly discounts applied to Deep Cleaning, junk and Airbnb turnovers; (2) recurring discount also cut add-on prices; (3) weekly booking showed the discounted price as the first-visit total; (4) service page price box parsed its own text — broke with "from", "+ tax" or "$1,050" (now data attributes); (5) recurring page sticky bar showed the one-time 2–3 bed price (now "from $140 per visit · weekly"); (6) recurring table hid Monthly; (7) desktop "Popular right now" row ran off the page — row removed (repeated the service cards); (8) lime button shine washed out the text ("For my home", "Book now") — softened; (9) footer showed plain "LIVO." text — now the real white wordmark; (10) commercial booking list said "Free quote" even when a starting price exists.
+- Also: "Booked before?" box → one text line + Sign in link; prices over $999 show a comma.
+- Checked (local build, 31 pages): every page 200; no horizontal scroll at 390 px; axe WCAG 2.2 AA = 0 violations (home re-checked after animations); all internal links 200; journeys: Standard 1 bed + fridge weekly = $234 first visit then $205/visit; Deep skips "how often"; junk single item + mattress = $144; Move 4+ → quote with photos; office quote with photo → "Quote request sent!".
+- Known gaps: photos repeat (Deep/Post-Construction share one photo; Office/Strata/Property Managers/Commercial construction use the team-van photo; Restaurant uses a home kitchen). Commercial "+ tax" wording assumes LIVO charges tax on commercial work — confirm GST registration.
+- Branch: `prices-nov17` (not merged). Next: Ali reviews the branch preview → merge into `v1.0` → later `main` only with Ali's explicit OK.
 
 ## 2026-10-12 — Residential/Commercial split, quotes with photos, saved customers (TEST ONLY — `v1.0`)
 Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali approved every recommendation in it.
@@ -74,6 +134,7 @@ Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali app
 ## Where things live
 - **All services + prices: `src/data/services.ts`** — the ONLY place prices exist. Sub-service pages, homepage "From $X", and the booking page all read it. Change a number there → whole site updates.
 - `draft: true` on a sub-service = price not yet approved by Ali (shows a "Draft prices" tag). Currently: none.
+- `freqs` / `addons` on a sub-service override the division's options for that service only.
 - `price: null` = "Quote"; `quote: true` = request a quote with photos instead of booking.
 - Customer types / homepage cards: `segment` on each division + `CARDS` in `src/data/services.ts`.
 - Bookings, quotes, photo upload, sign-in: `src/lib/api.ts` (test mode everywhere except livoland.com).
@@ -90,7 +151,7 @@ Plan doc: "LIVO Website v1.0 — Action Plan" (Claude Docs, 2026-10-12). Ali app
 ## Known issues / next
 - Claude GitHub App installed on `alimacavid/livo` (2026-09-26) — cloud sessions can push.
 - Netlify production must build with `netlify.toml` (npm run build → dist). If livoland.com shows a blank/404 after deploy, check Netlify site build settings aren't overriding it.
-- Prices are the v1 prices. Market research (`claude/livo-competitor-pricing-research.md` in the Livo project) says Junk and Airbnb are underpriced — Ali to decide.
+- Prices = 2026-11-17 revised list (see entry above). Competitor check: `claude/livo-competitor-check-2026-11-17.md` in the Livo project.
 - Airbnb has no own photos beyond before/after; Commercial and Restaurant have no real photos yet — shoot per-service photos.
 - careers.html is still the old standalone page (phone fixed only).
 - Real confirmation emails: Resend/Twilio secrets on the Supabase function must be set.
