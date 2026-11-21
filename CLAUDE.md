@@ -3,6 +3,10 @@
 ## Last updated
 2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
+## 2026-11-20 — My LIVO sign-in simplified (branch `ui-nov20`, from `v1.0`)
+- Ali: "too much text". Sign-in screen now: icon, "Sign in", "No password. We text you a code.", phone field (placeholder), "Text me a code", one line "New here? Book a service. We save your details for next time." Code screen centred; test notice is a small pill. Privacy Policy stays in the footer and on the booking review step.
+- `prices-nov17` was merged into `v1.0` (PR #7) on 2026-11-20 with Ali's OK.
+
 ## 2026-11-17 (late) — LIVE DESIGN KEPT + services exactly as Ali's sitemap (branch `prices-nov17`)
 - Ali: "keep design of live website". Codex UI pass (PR #8) REVERTED (commit 0b97b03) — pages use the live livoland.com look again: text on photos for cards and headers, grey trust boxes, "Popular right now" swipe row back (new prices).
 - Services now match `LIVO_Visual_Sitemap.pdf` (17 Nov): 4 categories (`CATEGORIES` in services.ts: Residential Cleaning · Commercial Cleaning · Post-Construction · Junk Removal) used by /services, desktop menu and division eyebrow; footer = Residential + "Commercial & more".
