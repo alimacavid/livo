@@ -17,3 +17,251 @@
   to = "/"
   status = 301
   force = true
+
+# 2026-10-12 services renamed for clarity + SEO (Interior → House Cleaning etc.)
+# specific rules first, then wildcards
+[[redirects]]
+  from = "/services/interior"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/standard-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/deep-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/recurring-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/move-in-move-out"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/post-construction-cleaning"
+  to = "/services/construction-cleaning/post-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/interior/*"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/airbnb"
+  to = "/services/airbnb-cleaning/turnover-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/airbnb/*"
+  to = "/services/airbnb-cleaning/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk"
+  to = "/services#junk-removal"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk/junk-removal"
+  to = "/services/junk-removal/junk-removal-by-load"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk/*"
+  to = "/services/junk-removal/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/move"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/move/*"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/construction"
+  to = "/services/construction-cleaning/post-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/construction/*"
+  to = "/services/construction-cleaning/post-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial"
+  to = "/services#commercial-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/common-areas"
+  to = "/services/commercial-cleaning/strata-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/retail-cleaning"
+  to = "/services/commercial-cleaning/office-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/commercial-cleanup"
+  to = "/services/construction-cleaning/commercial-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning/retail-cleaning"
+  to = "/services/commercial-cleaning/office-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning/commercial-cleanup"
+  to = "/services/construction-cleaning/commercial-construction-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial/*"
+  to = "/services/commercial-cleaning/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant/*"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/house-cleaning/standard-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+# Power Washing & Windows removed for now
+[[redirects]]
+  from = "/services/power"
+  to = "/services"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/power/*"
+  to = "/services"
+  status = 301
+  force = true
+
+# 2026-11-17: Recurring merged into Standard; Restaurant is one page; Property Managers removed
+[[redirects]]
+  from = "/services/house-cleaning/recurring-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning/kitchen-deep-clean"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning/scheduled-kitchen-cleaning"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning/front-of-house"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning/property-managers"
+  to = "/services#commercial-cleaning"
+  status = 301
+  force = true
+
+# Deep Cleaning page removed (Ali, 2026-11-20): detail work is now add-ons on Standard Cleaning
+[[redirects]]
+  from = "/services/house-cleaning/deep-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+
+# One-service sections have no section page (Ali, 2026-11-20): go straight to the service
+[[redirects]]
+  from = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+[[redirects]]
+  from = "/services/move-cleaning"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+
+# 2026-11-20: one page per service — the 4 multi-service division pages are gone
+[[redirects]]
+  from = "/services/airbnb-cleaning"
+  to = "/services/airbnb-cleaning/turnover-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk-removal"
+  to = "/services#junk-removal"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning"
+  to = "/services#commercial-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/construction-cleaning"
+  to = "/services#construction-cleaning"
+  status = 301
+  force = true
+

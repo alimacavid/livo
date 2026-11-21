@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import { PHONE, PHONE_TEL } from '../data/services';
+const updated = 'October 12, 2026';
+const sections: [string, string[]][] = [
+  ['Who we are', [
+    'LIVO Property Services Ltd. ("LIVO") is a property services company in Port Coquitlam, British Columbia. This policy explains what personal information we collect through livoland.com and how we use it, as required by the BC Personal Information Protection Act (PIPA).',
+  ]],
+  ['What we collect', [
+    'When you book or ask for a quote: your name, mobile number, email, the service address, the service you chose, your preferred date and time, and any notes you add.',
+    'If you are a business: the business name and the contact details of the person asking.',
+    'If you send photos: the photos of the space you want cleaned or cleared.',
+    'If you add entry notes (parking, buzzer, lockbox or pets): those notes.',
+    'If you tick "Save my details" or sign in: your saved places and a list of your past bookings and quotes.',
+  ]],
+  ['Why we use it', [
+    'To give you a price or a quote, schedule and do the job, and contact you about it by text, email or phone.',
+    'To fill in your next booking for you, only if you chose to save your details.',
+    'To keep business and tax records.',
+    'We do not sell your information, and we do not use it for advertising by other companies.',
+  ]],
+  ['Who can see it', [
+    'LIVO staff who handle your booking. Entry notes are shown only to the crew assigned to your job.',
+    'Service providers that run parts of our website for us: Supabase (database and photo storage), Twilio (text messages) and Resend (email). They may store information on servers outside Canada, including in the United States, where it can be subject to the laws of that country.',
+  ]],
+  ['How long we keep it', [
+    'Booking and quote records: as long as needed to serve you and to meet tax record rules (generally 6 years in Canada).',
+    'Saved places: until you remove them in My LIVO or ask us to delete them.',
+    'Photos: only as long as needed for your quote and the job.',
+  ]],
+  ['Your choices', [
+    'You can book without saving your details.',
+    'You can remove saved places at any time in My LIVO.',
+    'You can ask to see, correct or delete your information. Call us and we will help.',
+  ]],
+  ['Security', [
+    'Sign-in uses a one-time code sent to your phone, with no password to steal. Information is sent over an encrypted connection and access is limited to people who need it. We do not store credit card numbers on this website.',
+  ]],
+];
+---
+<Base title="Privacy Policy" description="How LIVO Property Services Ltd. collects, uses and protects your personal information.">
+  <article class="mx-auto max-w-2xl px-4 md:px-6 pt-6 md:pt-14">
+    <h1 class="text-[1.9rem] md:text-5xl font-extrabold">Privacy Policy</h1>
+    <p class="mt-2 text-sm text-muted">Last updated {updated}</p>
+    {sections.map(([h, ps]) => (
+      <section class="mt-8">
+        <h2 class="text-xl font-extrabold">{h}</h2>
+        {ps.length > 1
+          ? <ul class="mt-3 space-y-2 list-disc pl-5 text-[15px] leading-relaxed text-ink/85">{ps.map((p) => <li>{p}</li>)}</ul>
+          : <p class="mt-3 text-[15px] leading-relaxed text-ink/85">{ps[0]}</p>}
+      </section>
+    ))}
+    <section class="mt-8">
+      <h2 class="text-xl font-extrabold">Contact</h2>
+      <p class="mt-3 text-[15px] leading-relaxed text-ink/85">Privacy questions or requests: Privacy Officer, LIVO Property Services Ltd., Port Coquitlam, BC. Phone <a href={`tel:${PHONE_TEL}`} class="font-semibold underline">{PHONE}</a>.</p>
+    </section>
+  </article>
+</Base>

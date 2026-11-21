@@ -2,8 +2,14 @@
 //  LIVO — SINGLE SOURCE OF TRUTH FOR SERVICES AND PRICES
 //  Every price on the website AND in the booking page comes from
 //  this file. To change a price: edit the number here, save, push.
-//  price: null  → shown as "Custom quote"
-//  draft: true  → price not yet approved by Ali (shows a small tag)
+//  price: null    → shown as "Quote"
+//  quote: true    → customer sends a quote request (with photos),
+//                   even if a "from" price is shown
+//  draft: true    → price not yet approved by Ali (shows a small tag)
+//
+//  2026-11-17: prices = "LIVO Revised Pricing NOV 17" (every price clears
+//  a 30% margin after overhead at $25/h + 20% burden). Home prices are
+//  the full price to the customer. Commercial prices are before tax.
 // ─────────────────────────────────────────────────────────────
 import type { ImageMetadata } from 'astro';
 
@@ -13,18 +19,45 @@ import interiorBefore from '../assets/photos/interior-before.jpg';
 import interiorAfter from '../assets/photos/interior-after.jpg';
 import airbnbBefore from '../assets/photos/airbnb-before.jpg';
 import airbnbAfter from '../assets/photos/airbnb-after.jpg';
-import powerDriveway from '../assets/photos/power-driveway.jpg';
-import powerBefore from '../assets/photos/power-before.jpg';
-import powerAfter from '../assets/photos/power-after.jpg';
 import junkTruck from '../assets/photos/junk-truck.jpg';
 import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
 import teamVan from '../assets/photos/team-van.jpg';
+import houseToilet from '../assets/photos/house-toilet-cleaning.jpg';
+import toiletBefore from '../assets/photos/toilet-before.jpg';
+import toiletAfter from '../assets/photos/toilet-after.jpg';
+import ovenCleaning from '../assets/photos/oven-cleaning.jpg';
+import ovenBefore from '../assets/photos/oven-before.jpg';
+import ovenAfter from '../assets/photos/oven-after.jpg';
+import cabinetCleaning from '../assets/photos/cabinet-cleaning.jpg';
+import cabinetBefore from '../assets/photos/cabinet-before.jpg';
+import cabinetAfter from '../assets/photos/cabinet-after.jpg';
+import fridgeCleaning from '../assets/photos/fridge-cleaning.jpg';
+import fridgeBefore from '../assets/photos/fridge-before.jpg';
+import fridgeAfter from '../assets/photos/fridge-after.jpg';
+import windowCleaning from '../assets/photos/window-cleaning.jpg';
+import restaurantKitchen from '../assets/photos/restaurant-kitchen.jpg';
+import stoveBefore from '../assets/photos/stove-before.jpg';
+import stoveAfter from '../assets/photos/stove-after.jpg';
+import postRenovation from '../assets/photos/post-renovation.jpg';
+import officeCleaning from '../assets/photos/office-cleaning.jpg';
+
+// Photos shown on add-on cards (service pages). Add more here as they arrive.
+export const ADDON_IMAGES: Record<string, ImageMetadata> = {
+  fridge: fridgeCleaning, oven: ovenCleaning, cabinets: cabinetCleaning, windows: windowCleaning, bath: houseToilet,
+};
 
 export const PHONE = '888-802-LIVO';
 export const PHONE_TEL = '+18888025486';
-export const FIRST_TIME_DISCOUNT = 0.3; // 30% off first booking
+// 2026-11-17 (Ali): first-booking discount removed — at the new prices it would
+// drop most home jobs under the 30% margin floor. 0 = off everywhere.
+export const FIRST_TIME_DISCOUNT = 0;
 
+// Short muted video loops. Put the file in /public/videos/ and set the path here.
+// null = no video yet → the photo is shown.
+export const HERO_VIDEO: string | null = null;        // e.g. '/videos/hero.mp4'
+
+export type Segment = 'residential' | 'commercial';
 export type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
 export type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
 export type Freq = { id: string; name: string; sub: string; discount: number };
@@ -37,35 +70,55 @@ export type Sub = {
   image: ImageMetadata;
   before?: ImageMetadata;
   after?: ImageMetadata;
+  realPhotos?: boolean;   // true only when before/after are real LIVO jobs
   unit: string;           // "per visit", "flat rate" …
   tierLabel: string;      // "Home size", "Area", "Load size" …
   tiers: Tier[];
   included: string[];
   goodFor: string[];
   draft?: boolean;
+  quote?: boolean;        // request a quote (photos) instead of booking
   quoteNote?: string;
-  recurring?: boolean;    // page shows weekly / bi-weekly / monthly price table
+  freqs?: Freq[];         // overrides the division's "how often" options for this service
+  addons?: Addon[];       // overrides the division's add-ons for this service
+  priceNote?: string;     // small line under the price table
 };
 export type Division = {
-  id: string;
+  id: string;             // also the URL: /services/<id>
   name: string;
   short: string;
   tagline: string;
+  intro: string;          // first sentence on the page — carries the SEO phrase
+  seoTitle: string;
+  keyword: string;
+  segment: Segment;
   icon: string;           // key in components/Icon.astro
   image: ImageMetadata;
+  video?: string;         // optional banner loop in /public/videos/
   subs: Sub[];
   addons: Addon[];
   freqs: Freq[];
   times: { id: string; sub: string }[];
   faqs: Faq[];
+  notIncluded: string[];
+  crossSell?: { div: string; sub: string; title: string; line: string };
 };
 
-const HOME_SIZES = (p: [number, number, number, number], popular = 2): Tier[] => [
+// Home sizes. Extra bathrooms are an add-on. Prices: [studio, 1 bed, 2 bed, 3 bed, 4+ bed]
+const HOME_SIZES = (p: [number, number, number, number, number | null], popular = 1): Tier[] => [
   { id: 'studio', name: 'Studio', sub: 'Bachelor · 1 bath', price: p[0] },
   { id: '1bed', name: '1 Bedroom', sub: '1 bed · 1 bath', price: p[1] },
-  { id: '2-3bed', name: '2–3 Bedroom', sub: 'Up to 1,800 sq ft', price: p[2] },
-  { id: '4bed', name: '4+ Bedroom', sub: '1,800+ sq ft', price: p[3] },
+  { id: '2bed', name: '2 Bedroom', sub: 'Up to 2 baths', price: p[2] },
+  { id: '3bed', name: '3 Bedroom', sub: 'Up to 2 baths', price: p[3] },
+  { id: '4bed', name: '4+ Bedroom', sub: 'Up to 2,500 sq ft', price: p[4] },
 ].map((t, i) => ({ ...t, popular: i === popular }));
+
+const QUOTE_TIERS: Tier[] = [
+  { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+  { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
+];
+const SITE_VISIT: Tier = { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null };
+const QUOTE_NOTE = 'Every site is different. Final pricing is confirmed after reviewing your photos or a free site visit.';
 
 const DAY_TIMES = [
   { id: 'Morning', sub: '8:00 – 10:30 am' },
@@ -73,27 +126,51 @@ const DAY_TIMES = [
   { id: 'Afternoon', sub: '2:00 – 4:30 pm' },
 ];
 
+const ONE_TIME: Freq[] = [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }];
+// Recurring: % off the one-time price from the 2nd visit. Monthly = regular price (a discount would break the margin floor).
+const RECURRING: Freq[] = [
+  { id: 'weekly', name: 'Weekly', sub: 'Every week', discount: 0.15 },
+  { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Most popular', discount: 0.1 },
+  { id: 'monthly', name: 'Monthly', sub: 'Regular price', discount: 0 },
+];
+
+const HOUSE_ADDONS: Addon[] = [
+  { id: 'fridge', name: 'Fridge & Freezer', sub: 'Whole fridge and freezer, emptied by you', price: 65, unit: 'each', qty: true },
+  { id: 'oven', name: 'Oven', sub: 'Whole oven: racks, walls, door glass', price: 49, unit: 'each', qty: true },
+  { id: 'cabinets', name: 'Inside Cabinets', sub: 'Kitchen cabinets, emptied by you', price: 39, unit: 'each' },
+  { id: 'bath', name: 'Extra Bathroom', sub: 'Beyond your home size', price: 39, unit: 'per bathroom', qty: true },
+  { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
+];
+// Move-out already includes fridge, freezer, oven and cabinets — don't sell them twice
+const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['bath', 'windows'].includes(a.id));
+
 export const DIVISIONS: Division[] = [
-  // ───────────────────────── INTERIOR ─────────────────────────
+  // ───────────────────────── HOUSE CLEANING ─────────────────────────
   {
-    id: 'interior',
-    name: 'Interior Cleaning',
-    short: 'Interior',
-    tagline: 'Homes and condos, top to bottom.',
+    id: 'house-cleaning',
+    name: 'House Cleaning',
+    short: 'House',
+    tagline: 'Standard cleaning for houses, condos and townhomes. Book once or on a schedule.',
+    intro: 'LIVO house cleaning crews serve Coquitlam, Port Coquitlam and Port Moody, with prices shown before you book.',
+    seoTitle: 'House Cleaning in Coquitlam & Port Coquitlam',
+    keyword: 'house cleaning Coquitlam',
+    segment: 'residential',
     icon: 'home',
-    image: interiorKitchen,
+    image: houseToilet,
     subs: [
       {
-        slug: 'standard-cleaning',
-        name: 'Standard Cleaning',
-        short: 'Regular upkeep for a fresh, tidy home.',
-        desc: 'Our routine clean keeps your home consistently fresh. Kitchens, bathrooms, floors and dusting — done properly, every visit, by a uniformed LIVO crew.',
-        image: interiorKitchen,
-        before: interiorBefore,
-        after: interiorAfter,
+        slug: 'regular-cleaning',
+        name: 'Standard House Cleaning',
+        short: 'Everyday upkeep: kitchen, bathrooms and floors.',
+        desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or weekly, every 2 weeks or monthly. Need more detail? Add the oven, fridge and freezer, cabinets or windows when you book.',
+        image: houseToilet,
+        before: toiletBefore,
+        after: toiletAfter,
         unit: 'per visit',
         tierLabel: 'Home size',
-        tiers: HOME_SIZES([120, 150, 230, 310]),
+        tiers: HOME_SIZES([165, 195, 235, 285, 349]),
+        priceNote: 'Over 2,500 sq ft or more than 2 bathrooms? Add extra bathrooms, or call for a quote.',
+        freqs: [{ id: 'onetime', name: 'One-Time', sub: 'Just this once', discount: 0 }, ...RECURRING],
         included: [
           'Kitchen counters, sink and stovetop wiped and sanitized',
           'Outside of appliances and cabinets wiped',
@@ -102,47 +179,56 @@ export const DIVISIONS: Division[] = [
           'Dusting of reachable surfaces',
           'Beds made, garbage out',
         ],
-        goodFor: ['Busy families', 'Condo owners', 'Weekly or bi-weekly upkeep'],
+        goodFor: ['Busy families', 'Condo owners', 'Regular upkeep'],
       },
+    ],
+    addons: HOUSE_ADDONS,
+    freqs: ONE_TIME,
+    times: DAY_TIMES,
+    faqs: [
+      { q: 'Do I need to supply anything?', a: 'No. We bring all supplies and equipment.' },
+      { q: 'Do I need to be home?', a: 'No. Many clients leave a key or door code. We send a text when we arrive and when we finish.' },
+      { q: 'Do you clean homes with pets?', a: 'Yes, and there is no pet fee. Tell us about your pets in the booking notes.' },
+      { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
+    ],
+    notIncluded: ['Outside windows', 'Carpet shampooing', 'Moving heavy furniture', 'Mould or biohazard clean-up'],
+    crossSell: { div: 'move-cleaning', sub: 'move-in-move-out-cleaning', title: 'Moving soon?', line: 'Empty-home clean with fridge, oven and cabinets included.' },
+  },
+
+  // ───────────────────────── MOVE-IN / MOVE-OUT ─────────────────────────
+  {
+    id: 'move-cleaning',
+    name: 'Move-In / Move-Out Cleaning',
+    short: 'Moving',
+    tagline: 'Empty-home cleans ready for handover.',
+    intro: 'Move out cleaning and move in cleaning across Coquitlam, Port Coquitlam and Port Moody, built around a landlord-style checklist.',
+    seoTitle: 'Move Out Cleaning in Coquitlam & Port Coquitlam',
+    keyword: 'move out cleaning Coquitlam',
+    segment: 'residential',
+    icon: 'box',
+    image: cabinetCleaning,
+    subs: [
       {
-        slug: 'deep-cleaning',
-        name: 'Deep Cleaning',
-        short: 'A full top-to-bottom reset.',
-        desc: 'Everything in a standard clean, plus the places that get skipped: baseboards, vents, window tracks, behind and under furniture. The right first visit for any home.',
-        image: interiorVacuum,
-        before: interiorBefore,
-        after: interiorAfter,
-        unit: 'per visit',
-        tierLabel: 'Home size',
-        tiers: HOME_SIZES([175, 220, 360, 495]),
-        included: [
-          'Everything in Standard Cleaning',
-          'Baseboards, door frames and light switches',
-          'Vents, window sills and tracks',
-          'Behind and under movable furniture',
-          'Cabinet fronts and handles degreased',
-          'Bathroom tile and grout scrubbed',
-        ],
-        goodFor: ['First-time clients', 'Seasonal reset', 'Before hosting guests'],
-      },
-      {
-        slug: 'move-in-move-out',
-        name: 'Move-In / Move-Out',
-        short: 'Landlord-ready. Get your deposit back.',
-        desc: 'An empty-home clean built for inspections. Inside every cabinet, closet and appliance so the next person walks into a spotless space — and you get your deposit back.',
-        image: interiorKitchen,
-        before: interiorBefore,
-        after: interiorAfter,
+        slug: 'move-in-move-out-cleaning',
+        name: 'Move-In / Move-Out Cleaning',
+        short: 'Empty home, ready for handover. Appliances included.',
+        desc: 'An empty-home clean built for handover. Inside every cabinet, closet and appliance is included, so the home is ready for inspection or for the next people to move in.',
+        image: cabinetCleaning,
+        before: cabinetBefore,
+        after: cabinetAfter,
         unit: 'flat rate',
         tierLabel: 'Home size',
         tiers: [
-          { id: '1bed', name: 'Studio / 1 Bed', sub: '1 bath', price: 320 },
-          { id: '2bed', name: '2 Bedroom', sub: '1–2 bath', price: 420, popular: true },
-          { id: '3bed', name: '3+ Bedroom', sub: 'Full house', price: 550 },
+          { id: 'studio', name: 'Studio', sub: 'Bachelor · 1 bath', price: 265 },
+          { id: '1bed', name: '1 Bedroom', sub: '1 bath', price: 315, popular: true },
+          { id: '2bed', name: '2 Bedroom', sub: 'Up to 2 baths', price: 375 },
+          { id: '3bed', name: '3 Bedroom', sub: 'Up to 2 baths', price: 479 },
+          { id: '4bed', name: '4+ Bedroom', sub: 'Send photos for a quote', price: null },
         ],
+        priceNote: 'Home must be empty. Extra bathrooms are an add-on.',
         included: [
           'Inside all cabinets, drawers and closets',
-          'Inside fridge and oven',
+          'Inside fridge, freezer and oven',
           'Walls spot-cleaned, switches and outlets wiped',
           'Baseboards, doors and frames',
           'Bathrooms fully scrubbed and sanitized',
@@ -150,95 +236,47 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['Tenants moving out', 'Landlords between tenants', 'Buyers before moving in'],
       },
-      {
-        slug: 'post-construction-cleaning',
-        name: 'After-Construction Clean-Up',
-        short: 'Dust, debris and paint spots — gone.',
-        desc: 'Renovations leave fine dust on every surface. We remove construction dust, debris, stickers and paint spots, then detail the space so it is ready to live in.',
-        image: interiorVacuum,
-        unit: 'starting at',
-        tierLabel: 'Home size',
-        draft: true,
-        tiers: [
-          { id: '1bed', name: 'Studio / 1 Bed', sub: 'Up to 700 sq ft', price: 349 },
-          { id: '2bed', name: '2 Bedroom', sub: 'Up to 1,200 sq ft', price: 499, popular: true },
-          { id: '3bed', name: '3 Bedroom', sub: 'Up to 1,800 sq ft', price: 649 },
-          { id: '4bed', name: '4+ Bedroom', sub: '1,800+ sq ft', price: null },
-        ],
-        quoteNote: 'Final price confirmed after photos or a free site visit — every site is different.',
-        included: [
-          'Fine drywall dust removed from all surfaces',
-          'Walls, ceilings and vents dusted',
-          'Stickers, tape and paint spots removed from glass and fixtures',
-          'Inside cabinets, drawers and appliances',
-          'Windows, sills and tracks',
-          'Floors vacuumed (HEPA) and washed',
-        ],
-        goodFor: ['Renovated homes', 'New builds', 'Contractors handing over'],
-      },
-      {
-        slug: 'recurring-cleaning',
-        name: 'Recurring Cleaning',
-        short: 'Weekly, bi-weekly or monthly — save up to 15%.',
-        desc: 'Same crew, same day, same standard. Put your home on a schedule and save on every visit.',
-        image: interiorKitchen,
-        unit: 'per visit',
-        tierLabel: 'Home size',
-        recurring: true,
-        tiers: HOME_SIZES([120, 150, 230, 310]),
-        included: [
-          'Everything in Standard Cleaning',
-          'Same crew whenever possible',
-          'Skip or reschedule with 48 hours notice',
-          'No contracts — cancel anytime',
-        ],
-        goodFor: ['Busy professionals', 'Families', 'Pet owners'],
-      },
     ],
-    addons: [
-      { id: 'fridge', name: 'Inside Fridge', sub: 'Shelves + drawers', price: 40, unit: 'each' },
-      { id: 'oven', name: 'Inside Oven', sub: 'Racks + door glass', price: 45, unit: 'each' },
-      { id: 'kitchen', name: 'Kitchen Deep Clean', sub: 'Cabinets + degrease', price: 95, unit: 'each' },
-      { id: 'bath', name: 'Extra Bathroom Detail', sub: 'Tile, grout, glass', price: 75, unit: 'per bathroom', qty: true },
-      { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
-      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole home', price: 79, unit: 'each' },
-    ],
-    freqs: [
-      { id: 'onetime', name: 'One-Time', sub: 'Just this once', discount: 0 },
-      { id: 'weekly', name: 'Weekly', sub: 'Every week', discount: 0.15 },
-      { id: 'biweekly', name: 'Bi-Weekly', sub: 'Every 2 weeks', discount: 0.1 },
-      { id: 'monthly', name: 'Monthly', sub: 'Once a month', discount: 0.05 },
-    ],
+    addons: MOVE_ADDONS,
+    freqs: ONE_TIME,
     times: DAY_TIMES,
     faqs: [
-      { q: 'Do I need to supply anything?', a: 'No. We bring all supplies and equipment. Eco-friendly products are available on request.' },
-      { q: 'Do I need to be home?', a: 'No. Many clients leave a key or door code. We send a text when we arrive and when we finish.' },
+      { q: 'Does the home need to be empty?', a: 'Yes. An empty home lets us clean inside every cabinet, closet and appliance properly.' },
+      { q: 'Are the fridge and oven included?', a: 'Yes. Inside the fridge, freezer, oven and every cabinet is included in the price.' },
+      { q: 'Do you follow a checklist?', a: 'Yes. We follow a landlord-style checklist so the common inspection points are covered. We can not promise the outcome of an inspection or a deposit.' },
       { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
     ],
+    notIncluded: ['Wall washing or paint touch-ups', 'Carpet shampooing', 'Items left behind (add Junk Removal)'],
+    crossSell: { div: 'junk-removal', sub: 'junk-removal-by-load', title: 'Leaving stuff behind?', line: 'Our junk crew hauls it away the same week.' },
   },
 
   // ───────────────────────── AIRBNB ─────────────────────────
   {
-    id: 'airbnb',
-    name: 'Airbnb Turnover',
+    id: 'airbnb-cleaning',
+    name: 'Airbnb Turnover Cleaning',
     short: 'Airbnb',
-    tagline: 'Guest-ready between every stay.',
+    tagline: 'Between-guest cleaning. Deep Reset optional.',
+    intro: 'Airbnb cleaning and short-term rental turnovers in Coquitlam, Port Coquitlam and Port Moody, timed to your check-in and checkout.',
+    seoTitle: 'Airbnb Cleaning in Coquitlam & Port Moody',
+    keyword: 'Airbnb cleaning Coquitlam',
+    segment: 'residential',
     icon: 'key',
     image: airbnbAfter,
     subs: [
       {
         slug: 'turnover-cleaning',
-        name: 'Standard Turnover',
-        short: 'Reset between guests, on time, every time.',
-        desc: 'Checkout to check-in, handled. Beds made, bathrooms sanitized, kitchen reset, garbage out and photos sent so you know it is guest-ready.',
+        name: 'Airbnb Turnover Cleaning',
+        short: 'Reset between guests, on time.',
+        desc: 'Checkout to check-in, handled. Beds remade with your linens, bathrooms sanitized, kitchen reset, garbage out and photos sent so you know it is guest-ready.',
         image: airbnbAfter,
         before: airbnbBefore,
         after: airbnbAfter,
         unit: 'per turnover',
         tierLabel: 'Unit size',
-        tiers: HOME_SIZES([79, 99, 149, 199]),
+        tiers: HOME_SIZES([129, 149, 189, 235, 315]),
+        priceNote: 'Bed sheets, laundry, deodorizing and restocking are add-ons. Over 3 bathrooms: quote.',
         included: [
-          'Beds stripped and made with fresh linens',
+          'Beds stripped and remade with your clean linens',
           'Bathrooms cleaned and sanitized',
           'Kitchen and dishes reset',
           'Floors vacuumed and mopped',
@@ -250,35 +288,36 @@ export const DIVISIONS: Division[] = [
       {
         slug: 'deep-reset',
         name: 'Deep Reset',
-        short: 'Monthly detail clean for busy listings.',
-        desc: 'Everything in a standard turnover plus a full detail: baseboards, inside appliances, under furniture. Keeps your reviews at five stars.',
-        image: airbnbAfter,
-        before: airbnbBefore,
-        after: airbnbAfter,
+        short: 'Between seasons or long stays.',
+        desc: 'Everything in a turnover plus a full detail: baseboards, inside appliances, under furniture. Keeps a busy listing in top shape.',
+        image: fridgeCleaning,
+        before: fridgeBefore,
+        after: fridgeAfter,
         unit: 'per visit',
         tierLabel: 'Unit size',
-        tiers: HOME_SIZES([129, 159, 219, 299]),
+        tiers: HOME_SIZES([199, 239, 289, 345, 419]),
         included: [
-          'Everything in Standard Turnover',
+          'Everything in Airbnb Turnover Cleaning',
           'Baseboards, vents and window tracks',
           'Inside fridge, oven and microwave',
           'Under and behind furniture',
           'Mattress and upholstery vacuumed',
+          'Disinfect and deodorize',
         ],
         goodFor: ['High-turnover listings', 'Between long stays', 'Seasonal refresh'],
       },
     ],
     addons: [
-      { id: 'linen', name: 'Linen & Towel Change', sub: 'Fresh set, staged', price: 25, unit: 'per turnover' },
-      { id: 'restock', name: 'Guest Essentials Restock', sub: 'Toiletries, paper, coffee', price: 15, unit: 'per turnover' },
-      { id: 'rush', name: 'Same-Day Turnaround', sub: 'Priority slot', price: 30, unit: 'each' },
-      { id: 'sanitize', name: 'Deep Sanitize', sub: 'Disinfect + deodorize', price: 35, unit: 'each' },
+      { id: 'sheets', name: 'Change Bed Sheets', sub: 'Your clean sheets, beds made', price: 25, unit: 'per bed', qty: true },
+      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole unit', price: 85, unit: 'each' },
+      { id: 'laundry', name: 'Laundry', sub: 'Your washer + dryer', price: 25, unit: 'per load', qty: true },
+      { id: 'restock', name: 'Guest Essentials Restock', sub: 'You supply the items', price: 15, unit: 'per visit' },
+      { id: 'rush', name: 'Same-Day Turnaround', sub: 'Priority slot', price: 35, unit: 'each' },
     ],
     freqs: [
       { id: 'onetime', name: 'Single Turnover', sub: 'Just this checkout', discount: 0 },
-      { id: 'every', name: 'Every Checkout', sub: 'After each guest', discount: 0.15 },
-      { id: 'peak', name: 'Peak Season', sub: 'Busy months', discount: 0.1 },
-      { id: 'occasional', name: 'Now & Then', sub: 'A few a month', discount: 0.05 },
+      { id: 'every', name: 'Every Checkout', sub: 'Synced to your calendar', discount: 0 },
+      { id: 'occasional', name: 'A Few a Month', sub: 'When you need us', discount: 0 },
     ],
     times: [
       { id: 'Early Turnover', sub: '10:00 am – 1:00 pm' },
@@ -288,220 +327,430 @@ export const DIVISIONS: Division[] = [
     faqs: [
       { q: 'Can you work with my check-in times?', a: 'Yes. We schedule inside your checkout and check-in window, and offer a same-day priority slot for back-to-back bookings.' },
       { q: 'Do you report damage or missing items?', a: 'Yes. You get completion photos and we flag anything broken or missing right away.' },
-      { q: 'Do you supply linens?', a: 'We change and stage your linens. Ask us about a linen supply program.' },
+      { q: 'Do you do the laundry?', a: 'Yes, as an add-on, using the washer and dryer in your unit. Agree linens, restocking and check-in time with us when you book.' },
     ],
+    notIncluded: ['Off-site laundry', 'Repairs', 'Buying supplies (you supply, we restock)'],
+    crossSell: { div: 'airbnb-cleaning', sub: 'deep-reset', title: 'Busy listing?', line: 'Add a Deep Reset between seasons or long stays.' },
   },
 
-  // ─────────────────── POWER WASHING & WINDOWS ───────────────────
+  // ───────────────────────── POST-CONSTRUCTION ─────────────────────────
   {
-    id: 'power',
-    name: 'Power Washing & Windows',
-    short: 'Exterior',
-    tagline: 'Driveways, siding, windows, gutters.',
-    icon: 'spray',
-    image: powerDriveway,
+    id: 'construction-cleaning',
+    name: 'Post-Construction Cleaning',
+    short: 'Post-Construction',
+    tagline: 'Homes and commercial sites, after the trades.',
+    intro: 'Post construction cleaning for renovated homes, new builds and commercial fit-outs in Coquitlam, Port Coquitlam and Port Moody.',
+    seoTitle: 'Post Construction Cleaning in Coquitlam & Port Coquitlam',
+    keyword: 'post construction cleaning Coquitlam',
+    segment: 'residential',
+    icon: 'hammer',
+    image: postRenovation,
     subs: [
       {
-        slug: 'driveway-cleaning',
-        name: 'Driveway & Walkway',
-        short: 'Oil, moss and grime lifted off concrete.',
-        desc: 'High-pressure surface cleaning that lifts oil stains, moss and years of grime from concrete, pavers and walkways.',
-        image: powerDriveway,
-        before: powerBefore,
-        after: powerAfter,
-        unit: 'flat rate',
-        tierLabel: 'Area',
+        slug: 'post-construction-cleaning',
+        name: 'Home Renovations & New Builds',
+        short: 'Final clean after the trades finish.',
+        desc: 'Renovations leave fine dust on every surface. We remove construction dust, stickers and paint spots from floors, trim and fixtures so the home is ready to live in. Send photos for a straightforward quote.',
+        image: postRenovation,
+        unit: 'starting at',
+        tierLabel: 'Space size',
+        quote: true,
         tiers: [
-          { id: 'small', name: 'Small', sub: 'Up to 500 sq ft', price: 99 },
-          { id: 'medium', name: 'Medium', sub: '500–1,000 sq ft', price: 149, popular: true },
-          { id: 'large', name: 'Large', sub: '1,000+ sq ft', price: 219 },
+          { id: 's700', name: 'Up to 700 sq ft', sub: 'Studio or 1 bedroom', price: 415 },
+          { id: 's1200', name: '701 – 1,200 sq ft', sub: 'Most condos and townhomes', price: 559, popular: true },
+          { id: 's1800', name: '1,201 – 1,800 sq ft', sub: 'Larger homes', price: 759 },
+          { id: 'large', name: 'Over 1,800 sq ft', sub: 'Quoted after photos or a visit', price: null },
+          SITE_VISIT,
         ],
-        included: ['Surface cleaner for streak-free results', 'Moss and weed lines cleared', 'Oil and rust spots pre-treated', 'Final rinse of surrounding areas'],
-        goodFor: ['Before selling', 'Spring clean-up', 'Moss and slip hazards'],
-      },
-      {
-        slug: 'house-washing',
-        name: 'House Washing',
-        short: 'Soft-wash siding — mildew and algae gone.',
-        desc: 'A safe soft wash that removes dirt, mildew and green algae from siding without damaging paint or seals.',
-        image: powerDriveway,
-        before: powerBefore,
-        after: powerAfter,
-        unit: 'flat rate',
-        tierLabel: 'Home height',
-        tiers: [
-          { id: '1-2', name: '1–2 Storey', sub: 'Standard home', price: 249, popular: true },
-          { id: '3', name: '3+ Storey', sub: 'Large home', price: 349 },
+        quoteNote: QUOTE_NOTE,
+        included: [
+          'Fine drywall dust removed from all surfaces',
+          'Walls, ceilings and vents dusted',
+          'Stickers, tape and paint spots removed from glass and fixtures',
+          'Inside cabinets, drawers and appliances',
+          'Windows, sills and tracks (interior)',
+          'Floors vacuumed (HEPA) and washed',
         ],
-        included: ['Low-pressure soft wash on all siding', 'Soffits and fascia rinsed', 'Doors and trim wiped', 'Plants pre-wet and protected'],
-        goodFor: ['Vinyl and Hardie siding', 'Before painting', 'Before listing'],
+        goodFor: ['Renovated homes', 'New builds', 'Contractors handing over'],
       },
       {
-        slug: 'window-cleaning',
-        name: 'Window Cleaning',
-        short: 'Streak-free glass, sills and screens.',
-        desc: 'Exterior glass, frames, sills and screens cleaned by hand for a streak-free finish. Add interior windows in the booking.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Number of windows',
-        tiers: [
-          { id: '10', name: 'Up to 10', sub: 'Condo / townhouse', price: 59 },
-          { id: '20', name: 'Up to 20', sub: 'Standard home', price: 118, popular: true },
-          { id: '30', name: 'Up to 30', sub: 'Large home', price: 177 },
+        slug: 'commercial-construction-cleaning',
+        name: 'Commercial Construction & Fit-Outs',
+        short: 'Rough clean, final clean or handover touch-up.',
+        desc: 'Construction cleaning for offices, stores and new commercial units. We walk the site and quote each phase separately: rough clean, final clean and touch-up before handover.',
+        image: postRenovation,
+        unit: 'custom quote',
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: 'Final cleans are typically from $0.35 per sq ft, plus tax. We walk the site and quote each phase separately.',
+        included: [
+          'Rough clean during the build',
+          'Final clean before handover',
+          'Touch-up visit after deficiencies',
+          'Dust, stickers and residue removed',
+          'Floors, glass and fixtures detailed',
         ],
-        included: ['Exterior glass hand-cleaned', 'Frames and sills wiped', 'Screens brushed and rinsed', 'Ladder work up to 3 storeys'],
-        goodFor: ['Spring and fall', 'Before selling', 'After construction'],
-      },
-      {
-        slug: 'gutter-cleaning',
-        name: 'Gutter Cleaning',
-        short: 'Cleared and flow-tested.',
-        desc: 'Gutters cleared by hand, downspouts flushed and flow-tested to prevent overflow and water damage.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Home size',
-        tiers: [{ id: 'standard', name: 'Standard Home', sub: 'Up to 2 storeys', price: 89, popular: true }],
-        included: ['Debris removed by hand', 'Downspouts flushed', 'Flow test', 'Debris bagged and removed'],
-        goodFor: ['Every fall', 'Homes near trees', 'Overflowing gutters'],
-      },
-      {
-        slug: 'deck-fence-washing',
-        name: 'Deck & Fence Washing',
-        short: 'Grey, weathered wood brought back.',
-        desc: 'Removes grime, mildew and grey weathering from wood and composite decks and fences.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Size',
-        tiers: [{ id: 'standard', name: 'Standard Size', sub: 'Deck or fence', price: 149, popular: true }],
-        included: ['Pressure adjusted for wood or composite', 'Mildew treated', 'Railings and steps', 'Surrounding area rinsed'],
-        goodFor: ['Before staining', 'Spring prep', 'Slippery decks'],
-      },
-      {
-        slug: 'roof-soft-wash',
-        name: 'Roof Soft Wash',
-        short: 'Moss and black streaks removed safely.',
-        desc: 'A low-pressure treatment that kills moss and removes black streaks without damaging shingles.',
-        image: powerDriveway,
-        unit: 'flat rate',
-        tierLabel: 'Roof size',
-        tiers: [{ id: 'standard', name: 'Standard Roof', sub: 'Up to 2 storeys', price: 249, popular: true }],
-        included: ['Moss treatment', 'Low-pressure soft wash', 'Gutters rinsed after', 'Shingle-safe method'],
-        goodFor: ['Mossy roofs', 'Before selling', 'Extending roof life'],
-      },
-      {
-        slug: 'full-exterior-package',
-        name: 'Full Exterior Package',
-        short: 'Driveway + siding + windows in one visit.',
-        desc: 'Our most popular bundle: driveway, house wash and exterior windows done in one visit, for less than booking them separately.',
-        image: powerDriveway,
-        before: powerBefore,
-        after: powerAfter,
-        unit: 'flat rate',
-        tierLabel: 'Home size',
-        tiers: [
-          { id: 'standard', name: 'Standard Home', sub: 'Up to 2 storeys', price: 379, popular: true },
-          { id: 'large', name: 'Large Home', sub: '3+ storeys', price: 499 },
-        ],
-        included: ['Driveway and walkways', 'Full house soft wash', 'Exterior windows', 'One crew, one visit'],
-        goodFor: ['Selling your home', 'Annual refresh', 'Best value'],
+        goodFor: ['General contractors', 'Tenant improvements', 'New commercial units'],
       },
     ],
-    addons: [
-      { id: 'gutters', name: 'Gutter Cleaning', sub: 'Cleared + flushed', price: 89, unit: 'each' },
-      { id: 'windows', name: 'Exterior Windows', sub: 'Glass, sills, screens', price: 59, unit: 'per 10 windows', qty: true },
-      { id: 'deck', name: 'Deck or Fence Wash', sub: 'Wood or composite', price: 149, unit: 'each' },
-      { id: 'roof', name: 'Roof Soft Wash', sub: 'Moss treatment', price: 249, unit: 'each' },
-    ],
-    freqs: [
-      { id: 'onetime', name: 'One-Time', sub: 'Just this once', discount: 0 },
-      { id: 'seasonal', name: 'Spring & Fall', sub: 'Twice a year', discount: 0.1 },
-      { id: 'yearly', name: 'Yearly', sub: 'Every spring', discount: 0.05 },
-    ],
+    addons: [],
+    freqs: ONE_TIME,
     times: DAY_TIMES,
     faqs: [
-      { q: 'Do I need to be home?', a: 'No. We only need access to an outdoor water tap.' },
-      { q: 'Is it safe for my siding and plants?', a: 'Yes. We soft-wash siding at low pressure and pre-wet and protect plants.' },
-      { q: 'What if it rains?', a: 'Light rain is fine. In heavy rain we reschedule at no charge.' },
+      { q: 'How do you price it?', a: 'Homes have starting prices by size. Send photos and we confirm the final price, or book a free site visit if photos are not enough. Commercial sites are quoted per phase.' },
+      { q: 'Do you remove construction debris too?', a: 'Not in the cleaning price. Add Renovation Waste removal from our junk crew.' },
+      { q: 'Do you clean hazardous dust?', a: 'No. Our cleaning scope does not include hazardous dust or materials.' },
+      { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
     ],
+    notIncluded: ['Hazardous dust or materials', 'Bulk debris hauling (see Renovation Waste)', 'Paint or drywall repairs', 'Outside windows above the ground floor'],
+    crossSell: { div: 'junk-removal', sub: 'renovation-debris', title: 'Debris to haul?', line: 'Clean-up and haul-away from one company.' },
   },
 
   // ───────────────────────── JUNK ─────────────────────────
   {
-    id: 'junk',
+    id: 'junk-removal',
     name: 'Junk Removal',
     short: 'Junk',
-    tagline: 'We lift, load and haul it away.',
+    tagline: 'One item to full clear-outs. We lift, load and haul.',
+    intro: 'Junk removal in Port Coquitlam, Coquitlam and Port Moody: we do all the lifting and loading, and recycle or donate what we can.',
+    seoTitle: 'Junk Removal in Port Coquitlam & Coquitlam',
+    keyword: 'junk removal Port Coquitlam',
+    segment: 'residential',
     icon: 'truck',
     image: junkTruck,
     subs: [
       {
-        slug: 'junk-removal',
-        name: 'Junk Removal by Load',
-        short: 'Pay by how much truck space you use.',
-        desc: 'Point, and it is gone. We do all the lifting and loading, sweep up after, and donate or recycle what we can.',
+        slug: 'single-item-pickup',
+        name: 'One Item Pickup',
+        short: 'A sofa, mattress, dresser or TV.',
+        desc: 'Just one thing to go? Send a photo and tell us if it is at the curb or inside. We pick it up and dispose of it properly.',
+        image: junkTruck,
+        unit: 'per item',
+        tierLabel: 'Where is it?',
+        tiers: [
+          { id: 'curb', name: 'Curbside or Ground Floor', sub: 'Easy access, no stairs', price: 119, popular: true },
+          { id: 'inside', name: 'Inside the Home', sub: 'We carry it out, stairs OK', price: 169 },
+        ],
+        priceNote: 'Mattresses, box springs and fridges have a small disposal add-on.',
+        included: ['Pickup and loading', 'Carry-out from inside (inside option)', 'Proper disposal or recycling'],
+        goodFor: ['Old mattress', 'Sofa or recliner', 'TV or appliance'],
+      },
+      {
+        slug: 'junk-removal-by-load',
+        name: 'Home & Garage Clearouts',
+        short: 'Furniture, boxes and clutter, priced by load.',
+        desc: 'Point, and it is gone. You pay by how much of the truck you use. We do all the lifting and loading, sweep up after, and donate or recycle what we can.',
         image: junkTruck,
         before: junkBefore,
         after: junkAfter,
-        unit: 'flat rate',
+        unit: 'per load',
         tierLabel: 'Load size',
         tiers: [
-          { id: 'small', name: 'Small Load', sub: 'Up to ¼ truck', price: 99 },
-          { id: 'half', name: 'Half Truck', sub: '½ truck load', price: 199, popular: true },
-          { id: 'full', name: 'Full Truck', sub: 'Full truck load', price: 349 },
+          { id: 'quarter', name: 'Quarter Truck', sub: 'About 2.5 cu yd · a few big items', price: 185 },
+          { id: 'half', name: 'Half Truck', sub: 'About 5 cu yd · a small room', price: 299, popular: true },
+          { id: 'three-quarter', name: 'Three-Quarter Truck', sub: 'About 7.5 cu yd · a garage', price: 439 },
+          { id: 'full', name: 'Full Truck', sub: 'About 10 cu yd · a full clear-out', price: 579 },
         ],
+        priceNote: 'We confirm the load size on site before we start. Dense loads like drywall, concrete or soil are quoted.',
         included: ['All lifting and loading', 'Area swept after', 'Donation and recycling where possible', 'Disposal fees included'],
-        goodFor: ['Garage and basement clean-outs', 'Old furniture', 'Moving day'],
+        goodFor: ['Garage and basement clear-outs', 'Old furniture', 'Moving day'],
+      },
+      {
+        slug: 'office-clearouts',
+        name: 'Office & Building Clearouts',
+        short: 'Desks, chairs, shelves and filing cabinets.',
+        desc: 'Moving office or closing a space? We remove desks, chairs, shelving and filing cabinets, and recycle or donate what we can. Ask for a walkthrough for offices and shared areas.',
+        image: teamVan,
+        unit: 'custom quote',
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: QUOTE_NOTE,
+        included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
+        goodFor: ['Office moves', 'End of lease', 'Property managers'],
       },
       {
         slug: 'renovation-debris',
-        name: 'Renovation Debris',
-        short: 'Drywall, flooring, cabinets and more.',
-        desc: 'Post-renovation debris removal: drywall, flooring, cabinets, fixtures and packaging. Send photos for a same-day quote.',
+        name: 'Renovation Waste',
+        short: 'Loose wood, cabinets, flooring and carpet.',
+        desc: 'Renovation waste removal: loose wood, old cabinets, flooring, carpet and fixtures. Send photos and a short list of materials for a quote. We do not do demolition.',
         image: junkTruck,
         before: junkBefore,
         after: junkAfter,
         unit: 'custom quote',
-        tierLabel: 'Job',
-        tiers: [
-          { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
-          { id: 'visit', name: 'Site Visit', sub: 'Free on-site assessment', price: null },
-        ],
-        quoteNote: 'Every job is different — we quote from photos or a free visit.',
-        included: ['Loading and hauling', 'Sorting for recycling', 'Site swept after', 'Disposal fees included'],
-        goodFor: ['Homeowners after a reno', 'Contractors', 'Landlords'],
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: 'Priced like our loads, plus any extra disposal fees for heavy materials. Send photos and a material list.',
+        included: ['Loading and hauling', 'Sorting for recycling', 'Site swept after', 'Disposal fees included in the quote'],
+        goodFor: ['Homeowners after a reno', 'Contractors', 'Kitchen and flooring jobs'],
       },
     ],
     addons: [
-      { id: 'heavy', name: 'Heavy / Bulky Item', sub: 'Appliance, piano, hot tub', price: 40, unit: 'per item', qty: true },
-      { id: 'rush', name: 'Same-Day Pickup', sub: 'Booked and gone today', price: 49, unit: 'each' },
-      { id: 'donate', name: 'Donation Sort', sub: 'Usable items donated', price: 25, unit: 'each' },
+      { id: 'heavy', name: 'Heavy / Bulky Item', sub: 'Over 150 lb', price: 45, unit: 'per item', qty: true },
+      { id: 'mattress', name: 'Mattress or Box Spring', sub: 'Recycling fee', price: 25, unit: 'per piece', qty: true },
+      { id: 'fridge', name: 'Fridge or Freezer', sub: 'Refrigerant disposal', price: 49, unit: 'each', qty: true },
+      { id: 'rush', name: 'Same-Day Pickup', sub: 'Booked and gone today', price: 89, unit: 'each' },
+      { id: 'donate', name: 'Donation Drop-Off', sub: 'Usable items donated', price: 35, unit: 'each' },
     ],
-    freqs: [
-      { id: 'onetime', name: 'One-Time', sub: 'Single pickup', discount: 0 },
-      { id: 'monthly', name: 'Monthly', sub: 'Regular haul-away', discount: 0.05 },
-      { id: 'biweekly', name: 'Bi-Weekly', sub: 'Ongoing site', discount: 0.1 },
-    ],
+    freqs: ONE_TIME,
     times: DAY_TIMES,
     faqs: [
-      { q: 'What do you not take?', a: 'Hazardous materials such as paint, chemicals, propane tanks and asbestos-containing materials.' },
-      { q: 'Do I need to carry things outside?', a: 'No. We remove items from anywhere on the property.' },
+      { q: 'Do I need to carry things outside?', a: 'No. For loads and the "inside" item price, we remove items from anywhere on the property.' },
       { q: 'What if I have more than I thought?', a: 'We confirm the load size on site before we start. No surprises.' },
+      { q: 'What do you take?', a: 'Furniture, mattresses, appliances, electronics, wood and flooring. Ask first about fridges, drywall, concrete, soil, yard waste, pianos and hot tubs.' },
+      { q: 'Do you take business junk?', a: 'Yes. For offices, stores and job sites, send photos for a quote.' },
     ],
+    notIncluded: ['Asbestos, paint and chemicals', 'Propane tanks or unknown hazardous waste', 'Demolition'],
+    crossSell: { div: 'construction-cleaning', sub: 'post-construction-cleaning', title: 'After a renovation?', line: 'Add a post-construction clean from the same company.' },
+  },
+
+  // ───────────────────────── OFFICE & STRATA (COMMERCIAL) ─────────────────────────
+  {
+    id: 'commercial-cleaning',
+    name: 'Office & Strata Cleaning',
+    short: 'Commercial',
+    tagline: 'Offices and strata common areas.',
+    intro: 'Office cleaning, strata cleaning and commercial cleaning in Coquitlam, Port Coquitlam and Port Moody, scheduled before opening or after hours.',
+    seoTitle: 'Office & Strata Cleaning in Coquitlam',
+    keyword: 'office cleaning Coquitlam',
+    segment: 'commercial',
+    icon: 'building',
+    image: officeCleaning,
+    subs: [
+      {
+        slug: 'office-cleaning',
+        name: 'Office Cleaning',
+        short: 'Desks, floors, washrooms and break rooms.',
+        desc: 'Desks, meeting rooms, kitchens, washrooms and floors cleaned on a schedule that suits your business, including evenings and weekends. We agree tasks, hours and the visit schedule with you.',
+        image: officeCleaning,
+        unit: 'per visit',
+        tierLabel: 'Office size',
+        quote: true,
+        tiers: [
+          { id: 'small', name: 'Up to 1,500 sq ft', sub: 'Per visit, plus tax', price: 165, popular: true },
+          { id: 'larger', name: 'Larger office', sub: 'From $0.11 per sq ft per visit', price: null },
+          SITE_VISIT,
+        ],
+        quoteNote: 'After-hours and weekend visits add $30. Final price confirmed after photos or a free site visit.',
+        included: [
+          'Desks and surfaces wiped and sanitized',
+          'Staff kitchen and break room',
+          'Washrooms cleaned and restocked',
+          'Floors vacuumed and mopped',
+          'Garbage and recycling out',
+          'High-touch points disinfected',
+        ],
+        goodFor: ['Small and mid-size offices', 'Clinics and studios', 'Stores and showrooms'],
+      },
+      {
+        slug: 'strata-cleaning',
+        name: 'Strata Common-Area Cleaning',
+        short: 'Lobbies, halls, stairs, elevators and amenities.',
+        desc: 'Strata cleaning for the shared spaces in strata and rental buildings: lobbies, hallways, elevators, stairwells and amenity rooms. Shared areas only; we agree the visit schedule with your council or manager.',
+        image: teamVan,
+        unit: 'per visit',
+        tierLabel: 'Building size',
+        quote: true,
+        tiers: [
+          { id: 'small', name: 'Small building', sub: 'Per visit, plus tax', price: 200, popular: true },
+          { id: 'larger', name: 'Larger building', sub: 'Quoted by visits per week', price: null },
+          SITE_VISIT,
+        ],
+        quoteNote: QUOTE_NOTE,
+        included: [
+          'Lobby and entrance glass',
+          'Hallways and stairwells',
+          'Elevator interiors',
+          'Amenity and garbage rooms',
+          'Floors vacuumed and mopped',
+        ],
+        goodFor: ['Strata councils', 'Property managers', 'Rental buildings'],
+      },
+    ],
+    addons: [],
+    freqs: [
+      { id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 },
+      { id: 'weekly', name: 'Weekly', sub: 'Quoted per visit', discount: 0 },
+      { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Quoted per visit', discount: 0 },
+      { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
+    ],
+    times: [
+      { id: 'Before Opening', sub: '6:00 – 9:00 am' },
+      { id: 'Daytime', sub: '9:00 am – 5:00 pm' },
+      { id: 'After Hours', sub: '6:00 – 10:00 pm' },
+    ],
+    faqs: [
+      { q: 'Can you clean after hours?', a: 'Yes. Most commercial cleaning happens before opening or after closing so your business is not disturbed.' },
+      { q: 'How do you price commercial work?', a: 'Offices up to 1,500 sq ft start at $165 per visit and small strata buildings at $200 per visit, plus tax. Send photos and we confirm the price, usually the same day. If photos are not enough, we book a free site visit.' },
+      { q: 'Is the date I pick confirmed?', a: 'It is your preferred date. We confirm the date and the scope with you when we send the quote.' },
+    ],
+    notIncluded: ['Carpet extraction', 'Outside window washing', 'Construction debris (see Renovation Waste)'],
+    crossSell: { div: 'junk-removal', sub: 'office-clearouts', title: 'Clearing out a space?', line: 'Our junk crew removes old desks, chairs and shelving.' },
+  },
+
+  // ───────────────────────── RESTAURANT & KITCHEN ─────────────────────────
+  {
+    id: 'restaurant-kitchen-cleaning',
+    name: 'Restaurant & Kitchen Cleaning',
+    short: 'Restaurant',
+    tagline: 'Industrial steam-cleaned commercial kitchens.',
+    intro: 'Commercial kitchen cleaning and restaurant cleaning in Coquitlam and across Greater Vancouver, done before opening, after close or on your closed day.',
+    seoTitle: 'Commercial Kitchen & Restaurant Cleaning in Coquitlam',
+    keyword: 'commercial kitchen cleaning Coquitlam',
+    segment: 'commercial',
+    icon: 'chef',
+    image: restaurantKitchen,
+    subs: [
+      {
+        slug: 'kitchen-cleaning',
+        name: 'Restaurant & Kitchen Cleaning',
+        short: 'Kitchen, dining areas and washrooms.',
+        desc: 'Commercial kitchens deep cleaned with industrial steam cleaners that cut grease and baked-on buildup, plus dining areas and washrooms. We agree the kitchen scope on site; a walkthrough is required. Hoods, ducts and grease traps are not included.',
+        image: restaurantKitchen,
+        before: stoveBefore,
+        after: stoveAfter,
+        unit: 'per visit',
+        tierLabel: 'Type of clean',
+        quote: true,
+        tiers: [
+          { id: 'regular', name: 'Regular kitchen clean', sub: 'Up to 500 sq ft · weekly or monthly, plus tax', price: 650, popular: true },
+          { id: 'deep', name: 'Kitchen deep clean', sub: 'Up to 500 sq ft · one-time, plus tax', price: 1050 },
+          { id: 'larger', name: 'Larger kitchen or dining room only', sub: 'Quoted after a walkthrough', price: null },
+          SITE_VISIT,
+        ],
+        quoteNote: 'Final price after a walkthrough. Larger kitchens from $1.30 per sq ft (regular) or $2.10 per sq ft (deep). Hoods, exhaust ducts and grease traps are not included.',
+        included: [
+          'Industrial steam cleaning',
+          'Cooking line, fryers and grills (exterior)',
+          'Walk-ins and coolers',
+          'Stainless steel, walls and backsplashes degreased',
+          'Floors and floor drains scrubbed',
+          'Dining areas, bar and washrooms',
+        ],
+        goodFor: ['Restaurants', 'Cafes and bakeries', 'Pubs and catering kitchens'],
+      },
+    ],
+    addons: [],
+    freqs: [
+      { id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 },
+      { id: 'weekly', name: 'Weekly', sub: 'Quoted per visit', discount: 0 },
+      { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Quoted per visit', discount: 0 },
+      { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
+    ],
+    times: [
+      { id: 'Before Opening', sub: '5:00 – 9:00 am' },
+      { id: 'After Closing', sub: '10:00 pm – 2:00 am' },
+      { id: 'Closed Day', sub: 'Full day' },
+    ],
+    faqs: [
+      { q: 'Do you clean hoods and exhaust ducts?', a: 'No. Hood, duct and grease trap cleaning is a specialist fire-safety service. We clean the kitchen, equipment exteriors, walls and floors.' },
+      { q: 'How much does it cost?', a: 'A deep clean of a kitchen up to 500 sq ft starts at $1,050, and regular cleaning at $650 per visit, plus tax. We confirm the price after a walkthrough.' },
+      { q: 'Will you work around our hours?', a: 'Yes. We clean before opening, after closing or on your closed day.' },
+      { q: 'What equipment do you use?', a: 'Industrial steam cleaners and commercial degreasers. Our crew arrives with everything in a branded LIVO van.' },
+    ],
+    notIncluded: ['Hood and exhaust duct cleaning', 'Grease trap pumping', 'Equipment repairs'],
+    crossSell: { div: 'junk-removal', sub: 'office-clearouts', title: 'Replacing equipment?', line: 'Our junk crew hauls old furniture and fixtures away.' },
   },
 ];
 
 export const heroImage = teamVan;
 
 export const getDivision = (id: string) => DIVISIONS.find((d) => d.id === id)!;
-export const minPrice = (d: Division) =>
-  Math.min(...d.subs.flatMap((s) => s.tiers.map((t) => t.price ?? Infinity)));
+export const getSub = (div: string, sub: string) => getDivision(div).subs.find((s) => s.slug === sub)!;
+export const isQuoteSub = (s: Sub) => !!s.quote || s.tiers.every((t) => t.price == null);
+export const subFreqs = (d: Division, s: Sub) => s.freqs ?? d.freqs;
+export const subAddons = (d: Division, s: Sub) => s.addons ?? d.addons;
+export const minPrice = (d: Division): number | null => {
+  const p = d.subs.flatMap((s) => s.tiers.map((t) => t.price)).filter((x): x is number => x != null);
+  return p.length ? Math.min(...p) : null;
+};
 export const subMin = (s: Sub) => {
   const p = s.tiers.map((t) => t.price).filter((x): x is number => x != null);
   return p.length ? Math.min(...p) : null;
 };
+// one-service divisions open straight to that service (one less tap)
+// One page per service (Ali, 2026-11-20). A division with several services has no page of its own: it points at its cards on /services.
+export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services#${d.id}`);
+
+// The 4 main categories under Services (Ali's 17 Nov 2026 sitemap). Used by /services, the menu and the footer.
+export type Category = { id: string; label: string; line: string; divs: Division[] };
+export const CATEGORIES: Category[] = [
+  { id: 'residential', label: 'Residential Cleaning', line: 'Homes, condos and rentals. Prices show right away.', divs: ['house-cleaning', 'move-cleaning', 'airbnb-cleaning'].map(getDivision) },
+  { id: 'commercial', label: 'Commercial Cleaning', line: 'Offices, strata and restaurants. Starting prices plus tax; free quote, usually the same day.', divs: ['commercial-cleaning', 'restaurant-kitchen-cleaning'].map(getDivision) },
+  { id: 'construction', label: 'Post-Construction Cleaning', line: 'Homes and commercial sites, after the trades.', divs: [getDivision('construction-cleaning')] },
+  { id: 'junk', label: 'Junk Removal', line: 'One item to full clear-outs.', divs: [getDivision('junk-removal')] },
+];
+export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;
+
+// Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
+export type Card = { name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string; pos?: string };
+const card = (id: string, o: Partial<Card> = {}): Card => {
+  const d = getDivision(id);
+  return { name: d.name, line: d.tagline, href: divHref(d), price: minPrice(d), tax: d.segment === 'commercial', image: d.image, icon: d.icon, ...o };
+};
+const std = getSub('house-cleaning', 'regular-cleaning');
+export const HOME_CARDS: Card[] = [
+  card('house-cleaning', { line: 'Standard & recurring', price: subMin(std) }),
+  card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
+  card('airbnb-cleaning', { name: 'Airbnb Turnover Cleaning', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
+  card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
+  card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens', pos: 'object-[22%_50%]' }),
+  card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
+  card('junk-removal', { line: 'One item to full clear-outs' }),
+];
 
 export const AREAS = [
   'Port Coquitlam', 'Coquitlam', 'Port Moody', 'Burnaby', 'New Westminster', 'Maple Ridge',
   'Pitt Meadows', 'Surrey', 'Vancouver', 'North Vancouver', 'West Vancouver', 'Richmond',
   'Langley', 'Delta', 'Abbotsford',
 ];
+
+// "Get ready for your crew" — shown after booking and sent in the confirmation text + email.
+// Keep each line short; the text message uses the first 3.
+export const PREP: Record<string, string[]> = {
+  'house-cleaning': [
+    'Clear counters, floors and beds so we can reach every surface.',
+    'Put away cash, jewellery and anything fragile.',
+    'Tell us how to get in: door code, key or buzzer.',
+    'Shy or nervous pets: keep them in one room.',
+    'Booked fridge & freezer? Empty them before we arrive.',
+  ],
+  'move-cleaning': [
+    'The home must be empty: furniture, boxes and garbage out.',
+    'Power and water on, lights working.',
+    'Leave keys or a fob, or tell us who lets us in.',
+    'Save a parking spot for our van.',
+  ],
+  'airbnb-cleaning': [
+    'Send us the checkout time and door code before the visit.',
+    'Leave clean sheets and towels where we can find them.',
+    'Tell us about any damage you already know about.',
+    'Booked a restock? Leave the supplies out.',
+  ],
+  'construction-cleaning': [
+    'Trades finished and big debris removed (we do not haul bulk waste).',
+    'Power and water on, lights working.',
+    'Tell us about wet paint or fresh finishes to avoid.',
+    'Site access and parking for our van.',
+  ],
+  'junk-removal': [
+    'Put items in one spot if you can: garage, driveway or curb.',
+    'Clear a path from the items to the door.',
+    'Tell us about stairs, elevators or long carries.',
+    'No paint, chemicals or asbestos. We cannot take them.',
+  ],
+  'commercial-cleaning': [
+    'Share keys, fob or alarm code and your opening hours.',
+    'Clear desks of papers you do not want touched.',
+    'Tell us about locked or private rooms to skip.',
+    'Show us the supply closet and garbage area.',
+  ],
+  'restaurant-kitchen-cleaning': [
+    'Kitchen closed and equipment cooled down before we start.',
+    'Clear food from prep tables and the line.',
+    'Share keys or alarm code and where we can dump water.',
+    'Tell us about equipment we must not move.',
+  ],
+};

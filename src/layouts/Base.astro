@@ -2,8 +2,9 @@
 import '../styles/global.css';
 import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
+import logoFooter from '../assets/logo-footer.png';
 import Icon from '../components/Icon.astro';
-import { DIVISIONS, PHONE, PHONE_TEL } from '../data/services';
+import { divHref, DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES } from '../data/services';
 
 interface Props {
   title: string;
@@ -14,7 +15,7 @@ interface Props {
 }
 const {
   title,
-  description = 'Interior cleaning, Airbnb turnovers, power washing and junk removal across Port Coquitlam, Coquitlam, Port Moody and Greater Vancouver. Upfront prices. Pay after the job.',
+  description = 'House cleaning, move out cleaning, post construction cleaning, Airbnb cleaning, office and commercial kitchen cleaning, and junk removal in Coquitlam, Port Coquitlam and Port Moody. Instant prices or a free quote. Pay after the job.',
   tabBar = true,
   header = 'solid',
   footer = true,
@@ -25,6 +26,7 @@ const tabs = [
   { href: '/', label: 'Home', icon: 'home', on: path === '/' },
   { href: '/services', label: 'Services', icon: 'grid', on: path.startsWith('/services') },
   { href: '/book', label: 'Book', icon: 'calendar', on: path.startsWith('/book'), main: true },
+  { href: '/my-livo', label: 'My LIVO', icon: 'user', on: path.startsWith('/my-livo') },
   { href: `tel:${PHONE_TEL}`, label: 'Call', icon: 'phone', on: false },
 ];
 ---
@@ -32,6 +34,7 @@ const tabs = [
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <script is:inline>document.documentElement.classList.add('js')</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
@@ -40,6 +43,7 @@ const tabs = [
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#ffffff" />
+  <meta name="color-scheme" content="light" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="LIVO" />
@@ -52,31 +56,39 @@ const tabs = [
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:ital,wght@0,700;0,800;1,800&display=swap" rel="stylesheet" />
   <script type="application/ld+json" set:html={JSON.stringify({
     '@context': 'https://schema.org', '@type': 'HomeAndConstructionBusiness',
-    name: 'LIVO Property Services', url: 'https://livoland.com', telephone: '+1-888-802-5486',
-    areaServed: 'Greater Vancouver, BC',
+    name: 'LIVO Property Services', legalName: 'LIVO Property Services Ltd.', url: 'https://livoland.com', telephone: '+1-888-802-5486',
+    logo: 'https://livoland.com/livo-logo.png',
+    areaServed: AREAS.map((a) => ({ '@type': 'City', name: `${a}, BC` })),
+    makesOffer: DIVISIONS.map((d) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: d.name, url: `https://livoland.com/services/${d.id}` } })),
     address: { '@type': 'PostalAddress', addressLocality: 'Port Coquitlam', addressRegion: 'BC', addressCountry: 'CA' },
   })} />
 </head>
 <body class={tabBar ? 'pb-[88px] md:pb-0' : ''}>
+  <a href="#main" class="sr-only-focusable fixed top-2 left-2 z-[100] btn-dark h-11 px-5 text-sm">Skip to content</a>
   <!-- ───── Header ───── -->
-  <header id="top" data-mode={header}
+  <header id="top" data-mode={header} style="view-transition-name: site-header"
     class:list={['sticky top-0 z-40 transition-colors',
       header === 'overlay' ? 'bg-white/0 md:bg-white/85' : 'bg-white/85',
       'backdrop-blur-xl border-b border-transparent data-[scrolled]:border-line data-[scrolled]:bg-white/90']}>
-    <div class="mx-auto max-w-6xl h-16 px-4 md:px-6 flex items-center justify-between gap-4">
+    <div class="relative mx-auto max-w-6xl h-16 px-4 md:px-6 flex items-center justify-between gap-4">
       <a href="/" aria-label="LIVO home" class="shrink-0">
         <Image src={logo} alt="LIVO" class="h-8 w-auto" widths={[140, 280]} sizes="70px" loading="eager" />
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
-        <div class="relative group">
-          <a href="/services" class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1">Services <Icon name="down" class="size-4" /></a>
-          <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition absolute left-0 top-full pt-2">
-            <div class="card p-2 w-72">
-              {DIVISIONS.map((d) => (
-                <a href={`/services/${d.id}`} class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-cloud">
-                  <span class="size-9 rounded-lg bg-purple-soft text-purple grid place-items-center"><Icon name={d.icon} class="size-[18px]" /></span>
-                  <span><span class="block font-semibold">{d.name}</span><span class="block text-xs text-muted">{d.subs.length} services</span></span>
-                </a>
+        <div class="group" data-dd>
+          <a href="/services" aria-current={path.startsWith('/services') ? 'page' : undefined} class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1 aria-[current]:text-purple">Services <Icon name="down" class="size-4 transition group-hover:rotate-180 group-focus-within:rotate-180" /></a>
+          <div class="invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0 transition duration-200 absolute inset-x-4 md:inset-x-6 top-full pt-2">
+            <div class="card p-3 grid grid-cols-4 gap-2">
+              {CATEGORIES.map(({ label, divs: list }) => (
+                <div>
+                  <div class="px-2.5 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-muted">{label}</div>
+                  {list.flatMap((d) => d.subs.map((s) => (
+                    <a href={`/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-cloud aria-[current]:text-purple">
+                      <span class="shrink-0 size-8 rounded-lg bg-purple-soft text-purple grid place-items-center" aria-hidden="true"><Icon name={d.icon} class="size-4" /></span>
+                      <span class="font-semibold text-[13.5px] leading-snug">{s.name}</span>
+                    </a>
+                  )))}
+                </div>
               ))}
             </div>
           </div>
@@ -84,6 +96,7 @@ const tabs = [
         <a href="/#how" class="px-3 py-2 rounded-full hover:bg-cloud">How it works</a>
         <a href="/#areas" class="px-3 py-2 rounded-full hover:bg-cloud">Areas</a>
         <a href="/careers.html" class="px-3 py-2 rounded-full hover:bg-cloud">Careers</a>
+        <a href="/my-livo" aria-current={path.startsWith('/my-livo') ? 'page' : undefined} class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1.5 aria-[current]:text-purple"><Icon name="user" class="size-4" />My LIVO</a>
       </nav>
       <div class="flex items-center gap-2">
         <a href={`tel:${PHONE_TEL}`} class="hidden md:inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-full hover:bg-cloud"><Icon name="phone" class="size-4" />{PHONE}</a>
@@ -93,50 +106,56 @@ const tabs = [
     </div>
   </header>
 
-  <main><slot /></main>
+  <main id="main" tabindex="-1" class="outline-none"><slot /></main>
 
   <!-- ───── Footer ───── -->
-  {footer && <footer class="bg-purple-ink text-white/70 mt-20">
-    <div class="mx-auto max-w-6xl px-5 md:px-6 py-12 grid gap-10 md:grid-cols-4">
-      <div class="md:col-span-1">
-        <div class="font-heading font-extrabold text-2xl text-white">LIVO<span class="text-lime">.</span></div>
-        <p class="mt-3 text-sm leading-relaxed">Property services across the Tri-Cities and Greater Vancouver. Four divisions. One standard.</p>
+  {footer && <footer class="on-dark bg-purple-ink text-white/75 mt-20">
+    <div class="mx-auto max-w-6xl px-5 md:px-6 py-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
+      <div class="col-span-2 md:col-span-1">
+        <Image src={logoFooter} alt="LIVO" class="h-9 w-auto" widths={[160, 320]} sizes="80px" />
+        <p class="mt-3 text-sm leading-relaxed">Property services across the Tri-Cities and Greater Vancouver. One crew. One standard.</p>
         <a href={`tel:${PHONE_TEL}`} class="mt-4 inline-flex items-center gap-2 text-white font-semibold"><Icon name="phone" class="size-4" />{PHONE}</a>
       </div>
-      {DIVISIONS.slice(0, 3).map((d) => (
-        <div class="hidden md:block">
-          <div class="text-white font-semibold text-sm mb-3">{d.name}</div>
-          <ul class="space-y-2 text-sm">{d.subs.slice(0, 5).map((s) => <li><a class="hover:text-lime" href={`/services/${d.id}/${s.slug}`}>{s.name}</a></li>)}</ul>
+      {[CATEGORIES[0], { label: 'Commercial & more', divs: [...CATEGORIES[1].divs, ...CATEGORIES[2].divs, ...CATEGORIES[3].divs] }].map(({ label, divs: list }) => (
+        <div>
+          <div class="text-white font-semibold text-sm mb-3">{label}</div>
+          <ul class="space-y-2 text-sm">{list.flatMap((d) => d.subs.map((s) => <li><a class="hover:text-lime inline-block py-1" href={`/services/${d.id}/${s.slug}`}>{s.name}</a></li>))}</ul>
         </div>
       ))}
-      <div class="grid grid-cols-2 gap-3 text-sm md:hidden">
-        {DIVISIONS.map((d) => <a class="hover:text-lime" href={`/services/${d.id}`}>{d.name}</a>)}
-        <a class="hover:text-lime" href="/careers.html">Careers</a>
+      <div>
+        <div class="text-white font-semibold text-sm mb-3">LIVO</div>
+        <ul class="space-y-2 text-sm">
+          <li><a class="hover:text-lime inline-block py-1" href="/my-livo">My LIVO</a></li>
+          <li><a class="hover:text-lime inline-block py-1" href="/careers.html">Careers</a></li>
+          <li><a class="hover:text-lime inline-block py-1" href="/privacy">Privacy Policy</a></li>
+        </ul>
       </div>
     </div>
     <div class="border-t border-white/10">
       <div class="mx-auto max-w-6xl px-5 md:px-6 py-5 text-xs flex flex-col md:flex-row gap-2 justify-between">
-        <span>© {new Date().getFullYear()} LIVO Property Services · Port Coquitlam, BC</span>
-        <span>Licensed & insured · Pay after the job</span>
+        <span>© {new Date().getFullYear()} LIVO Property Services Ltd. · Port Coquitlam, BC</span>
+        <span>Uniformed crews · Pay after the job</span>
       </div>
     </div>
   </footer>}
 
   <!-- ───── Mobile tab bar (app style) ───── -->
   {tabBar && (
-    <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 pb-safe bg-white/90 backdrop-blur-xl border-t border-line" aria-label="Main">
-      <ul class="grid grid-cols-4 h-[68px] px-2">
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 pb-safe bg-white/95 backdrop-blur-xl border-t border-line" aria-label="Main" style="view-transition-name: tab-bar">
+      <ul class="relative grid grid-cols-5 h-[68px] px-1" data-tabs>
         {tabs.map((t) => (
           <li class="flex">
             {t.main ? (
-              <a href={t.href} class="flex-1 flex flex-col items-center justify-center gap-1">
-                <span class="h-9 px-4 rounded-full bg-lime text-ink grid place-items-center shadow-[0_6px_16px_-6px_rgb(196_214_0/.9)]"><Icon name={t.icon} class="size-[18px]" stroke={2} /></span>
-                <span class="text-[10.5px] font-semibold text-ink">{t.label}</span>
+              <a href={t.href} aria-current={t.on ? 'page' : undefined} class="press flex-1 flex flex-col items-center justify-center gap-1">
+                <span class="sheen relative overflow-hidden h-9 px-4 rounded-full bg-lime text-ink grid place-items-center shadow-[0_6px_16px_-6px_rgb(196_214_0/.9)]"><Icon name={t.icon} class="size-[18px]" stroke={2} /></span>
+                <span class="text-[11px] font-semibold text-ink">{t.label}</span>
               </a>
             ) : (
-              <a href={t.href} class:list={['flex-1 flex flex-col items-center justify-center gap-1 transition', t.on ? 'text-purple' : 'text-muted']}>
+              <a href={t.href} aria-current={t.on ? 'page' : undefined} aria-label={t.icon === 'phone' ? `Call ${PHONE}` : undefined}
+                class:list={['press relative flex-1 flex flex-col items-center justify-center gap-1 transition-colors', t.on ? 'text-purple' : 'text-[#55555A]']}>
+                {t.on && <span class="tab-dot absolute top-1.5 h-1 w-6 rounded-full bg-purple" aria-hidden="true"></span>}
                 <span class="h-9 grid place-items-center"><Icon name={t.icon} class="size-[22px]" stroke={t.on ? 2.1 : 1.7} /></span>
-                <span class="text-[10.5px] font-semibold">{t.label}</span>
+                <span class="text-[11px] font-semibold">{t.label}</span>
               </a>
             )}
           </li>
@@ -151,14 +170,24 @@ const tabs = [
     const h = document.getElementById('top');
     const onS = () => h && (window.scrollY > 8 ? h.setAttribute('data-scrolled', '') : h.removeAttribute('data-scrolled'));
     addEventListener('scroll', onS, { passive: true }); onS();
-    // reveal on scroll
+    // reveal on scroll — siblings get a small stagger
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+      if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', String([...(el.parentElement?.children ?? [])].indexOf(el) % 6));
+      io.observe(el);
+    });
+    // Esc closes the desktop services menu
+    document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => dd.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { dd.setAttribute('data-closed', ''); dd.querySelector<HTMLElement>('a')?.focus(); }
+    }));
+    document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => {
+      const open = () => dd.removeAttribute('data-closed');
+      dd.addEventListener('mouseleave', open); dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget as Node)) open(); });
+    });
   </script>
   <style is:global>
-    [data-reveal] { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1); }
-    [data-reveal].in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
+    .tab-dot { animation: pop-in 420ms var(--ease-spring) both; }
+    [data-dd][data-closed] > div:last-child { visibility: hidden !important; opacity: 0 !important; }
   </style>
 </body>
 </html>
