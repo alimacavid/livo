@@ -5,7 +5,7 @@
 
 ## 2026-11-20 (night) — Booking start, sign-in return, "get ready" messages, site map (branch `flow-nov20`, from `v1.0`)
 - Booking step 1 (/book with no service): Home | Business tabs + photo cards per service area (2 per row phone, 3 desktop) — no sideways chip row. Area with several services (Airbnb, Office & Strata, Post-Construction, Junk) shows its services next with an "All services" chip; one-service areas go straight to Size. Bottom bar (Total/Continue) hidden on step 1.
-- My LIVO: signing in from booking (`?next=`) now goes straight back to the booking (no "Continue your booking" button).
+- My LIVO: signing in from booking now returns to the SAME step ("Your details") with every choice kept: before leaving, booking saves its state in sessionStorage (`livo-book-resume`), sign-in sends the customer to `/book?resume=1`, booking restores it (quote photos cannot survive a page change, so quotes that need photos reopen on the Photos step). No "Continue your booking" button.
 - **"Get ready for your crew"**: `PREP` in services.ts (per service area). Shown on the thank-you screen, sent in the booking payload (`prep`) and used by `send-booking-confirmation` (text = first 3 tips, email = full list; quotes get "What happens next" 1-2-3). Confirmation dates now read "Tue, Nov 24 · Morning". Function NOT deployed yet (go-live step 3). Syntax-checked with esbuild; deno could not run here (no network).
 - Removed the one-service section pages (/services/house-cleaning, /move-cleaning, /restaurant-kitchen-cleaning) — they duplicated the service page; 301s in netlify.toml. Site = 22 pages.
 - Thank-you screen keeps its full text (auto-fit skipped on "done").

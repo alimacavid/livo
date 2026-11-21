@@ -154,6 +154,24 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (sub()) st.freq = freq().id;
   if (st.sub) st.step = 'size'; // service known: always start with the size
+  // back from sign-in: restore everything the customer already picked and continue at "Your details"
+  const RESUME = 'livo-book-resume'; let resumed = false;
+  if (q.get('resume')) {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(RESUME) ?? 'null');
+      if (saved) {
+        for (const k of ['seg', 'forBusiness', 'div', 'sub', 'tier', 'addons', 'freq', 'date', 'time', 'month', 'firstTime', 'save', 'placeId']) if (k in saved) (st as any)[k] = saved[k];
+        Object.assign(st.c, saved.c ?? {});
+        st.step = 'contact'; resumed = true;
+      }
+    } catch { /* storage blocked: start normally */ }
+    sessionStorage.removeItem(RESUME);
+    history.replaceState(null, '', st.sub ? `/book?d=${st.div}&s=${st.sub}` : '/book');
+  }
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-signin]')) return;
+    try { const { photos, profile, sending, progress, step, ...keep } = st; sessionStorage.setItem(RESUME, JSON.stringify(keep)); } catch { /* ignore */ }
+  });
 
   const $ = (s: string) => document.querySelector(s) as HTMLElement;
   const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -357,7 +375,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function vContact() {
     return `${h1('Your details', 'So we can confirm your ' + (isQuote() ? 'quote.' : 'booking.'))}
       ${st.profile ? `<div class="mt-5 rounded-[16px] bg-purple-soft/70 p-3.5 text-[13px] font-semibold text-purple">Signed in · ${esc(st.profile.customer.phone)}</div>`
-        : `<a href="/my-livo?next=${encodeURIComponent(location.pathname + location.search)}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
+        : `<a data-signin href="/my-livo?next=${encodeURIComponent('/book?resume=1')}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
             <span class="size-11 shrink-0 rounded-full bg-lime text-ink grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-5')}</span>
             <span class="flex-1 min-w-0"><span class="block font-heading font-bold text-[15px]">Booked with LIVO before?</span><span class="bk-x block text-[12.5px] text-white/75">Sign in with your phone and we fill this in.</span></span>
             <span class="shrink-0 rounded-full bg-white text-ink px-3.5 py-2 text-[13px] font-bold">Sign in</span>
@@ -623,6 +641,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   if (TEST) $('#bk-testbar').hidden = false;
+  if (resumed && needPhotos() && !st.photos.length) st.step = 'photos'; // photos can't survive a page change: ask again
   render();
 
   // signed-in customers: fill in their details and saved places
