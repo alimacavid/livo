@@ -3,6 +3,21 @@
 ## Last updated
 2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
+## 2026-11-20 (late night) — One page per service (branch `flow-nov20`)
+- Ali: "every service has only one independent page". Top menu Services dropdown now lists all 13 services (4 columns by category), each opens its own page. Footer lists the 13 services too.
+- /services = simple photo cards (one per service, from price) under the 4 category headings. Chip row and long lists removed.
+- Division pages with several services removed (airbnb-cleaning, commercial-cleaning, construction-cleaning, junk-removal) → 301 (Airbnb → Turnover page, others → /services#<division>). `divHref` for those = `/services#<division>`; service page back button = "Services".
+- Checked: 18 pages 200, axe 0, no overflow (390 + 1280); menu fits at 1024 and 1280.
+
+## 2026-11-20 (night) — Booking start, sign-in return, "get ready" messages, site map (branch `flow-nov20`, from `v1.0`)
+- Booking step 1 (/book with no service): Home | Business tabs + photo cards per service area (2 per row phone, 3 desktop) — no sideways chip row. Area with several services (Airbnb, Office & Strata, Post-Construction, Junk) shows its services next with an "All services" chip; one-service areas go straight to Size. Bottom bar (Total/Continue) hidden on step 1.
+- My LIVO: signing in from booking now returns to the SAME step ("Your details") with every choice kept: before leaving, booking saves its state in sessionStorage (`livo-book-resume`), sign-in sends the customer to `/book?resume=1`, booking restores it (quote photos cannot survive a page change, so quotes that need photos reopen on the Photos step). No "Continue your booking" button.
+- **"Get ready for your crew"**: `PREP` in services.ts (per service area). Shown on the thank-you screen, sent in the booking payload (`prep`) and used by `send-booking-confirmation` (text = first 3 tips, email = full list; quotes get "What happens next" 1-2-3). Confirmation dates now read "Tue, Nov 24 · Morning". Function NOT deployed yet (go-live step 3). Syntax-checked with esbuild; deno could not run here (no network).
+- Removed the one-service section pages (/services/house-cleaning, /move-cleaning, /restaurant-kitchen-cleaning) — they duplicated the service page; 301s in netlify.toml. Site = 22 pages.
+- Thank-you screen keeps its full text (auto-fit skipped on "done").
+- Site map + pipeline PDF: `docs/LIVO_Sitemap_and_Pipeline_NOV_20.pdf` (3 pages: site map, booking & quote pipeline, messages & sign-in).
+- Note: "We text you when your crew is on the way" is a promise in the text/email — it is a manual text by LIVO, not automated.
+
 ## 2026-11-20 — My LIVO sign-in simplified (branch `ui-nov20`, from `v1.0`)
 - Ali: "too much text". Sign-in screen now: icon, "Sign in", "No password. We text you a code.", phone field (placeholder), "Text me a code", one line "New here? Book a service. We save your details for next time." Code screen centred; test notice is a small pill. Privacy Policy stays in the footer and on the booking review step.
 - `prices-nov17` was merged into `v1.0` (PR #7) on 2026-11-20 with Ali's OK.

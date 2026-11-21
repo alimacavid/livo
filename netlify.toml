@@ -22,7 +22,7 @@
 # specific rules first, then wildcards
 [[redirects]]
   from = "/services/interior"
-  to = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 
@@ -58,13 +58,13 @@
 
 [[redirects]]
   from = "/services/interior/*"
-  to = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 
 [[redirects]]
   from = "/services/airbnb"
-  to = "/services/airbnb-cleaning"
+  to = "/services/airbnb-cleaning/turnover-cleaning"
   status = 301
   force = true
 
@@ -76,7 +76,7 @@
 
 [[redirects]]
   from = "/services/junk"
-  to = "/services/junk-removal"
+  to = "/services#junk-removal"
   status = 301
   force = true
 
@@ -118,7 +118,7 @@
 
 [[redirects]]
   from = "/services/commercial"
-  to = "/services/commercial-cleaning"
+  to = "/services#commercial-cleaning"
   status = 301
   force = true
 
@@ -216,7 +216,7 @@
 
 [[redirects]]
   from = "/services/commercial-cleaning/property-managers"
-  to = "/services/commercial-cleaning"
+  to = "/services#commercial-cleaning"
   status = 301
   force = true
 
@@ -225,3 +225,43 @@
   from = "/services/house-cleaning/deep-cleaning"
   to = "/services/house-cleaning/regular-cleaning"
   status = 301
+
+# One-service sections have no section page (Ali, 2026-11-20): go straight to the service
+[[redirects]]
+  from = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+[[redirects]]
+  from = "/services/move-cleaning"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
+  status = 301
+
+# 2026-11-20: one page per service — the 4 multi-service division pages are gone
+[[redirects]]
+  from = "/services/airbnb-cleaning"
+  to = "/services/airbnb-cleaning/turnover-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/junk-removal"
+  to = "/services#junk-removal"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/commercial-cleaning"
+  to = "/services#commercial-cleaning"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/services/construction-cleaning"
+  to = "/services#construction-cleaning"
+  status = 301
+  force = true
+

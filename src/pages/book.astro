@@ -1,15 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getImage } from 'astro:assets';
-import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES } from '../data/services';
+import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, PREP } from '../data/services';
 
 // small photos for the add-on cards (junk 'fridge' = disposal, so no cleaning photo there)
 const ADDON_SRC: Record<string, string> = {};
 for (const [id, img] of Object.entries(ADDON_IMAGES)) ADDON_SRC[id] = (await getImage({ src: img, width: 480, format: 'webp' })).src;
+const DIV_SRC: Record<string, string> = {};
+for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width: 480, format: 'webp' })).src;
 
 // send only plain data to the browser (no images)
 const data = DIVISIONS.map((d) => ({
-  id: d.id, name: d.name, short: d.short, icon: d.icon, segment: d.segment,
+  id: d.id, name: d.name, short: d.short, icon: d.icon, segment: d.segment, img: DIV_SRC[d.id], prep: PREP[d.id] ?? [],
   subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
   times: d.times,
 }));
@@ -152,6 +154,24 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (sub()) st.freq = freq().id;
   if (st.sub) st.step = 'size'; // service known: always start with the size
+  // back from sign-in: restore everything the customer already picked and continue at "Your details"
+  const RESUME = 'livo-book-resume'; let resumed = false;
+  if (q.get('resume')) {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(RESUME) ?? 'null');
+      if (saved) {
+        for (const k of ['seg', 'forBusiness', 'div', 'sub', 'tier', 'addons', 'freq', 'date', 'time', 'month', 'firstTime', 'save', 'placeId']) if (k in saved) (st as any)[k] = saved[k];
+        Object.assign(st.c, saved.c ?? {});
+        st.step = 'contact'; resumed = true;
+      }
+    } catch { /* storage blocked: start normally */ }
+    sessionStorage.removeItem(RESUME);
+    history.replaceState(null, '', st.sub ? `/book?d=${st.div}&s=${st.sub}` : '/book');
+  }
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-signin]')) return;
+    try { const { photos, profile, sending, progress, step, ...keep } = st; sessionStorage.setItem(RESUME, JSON.stringify(keep)); } catch { /* ignore */ }
+  });
 
   const $ = (s: string) => document.querySelector(s) as HTMLElement;
   const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -176,19 +196,32 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       ${(['residential', 'commercial'] as Seg[]).map((s, i) => `<button ${attr}="${s}" aria-pressed="${cur === s}" class="press h-11 rounded-full text-[14px] font-heading font-bold transition-colors ${cur === s ? 'bg-white shadow-soft text-purple' : 'text-muted'}">${labels[i]}</button>`).join('')}
     </div>`;
 
+  // step 1: pick a service area (photo cards, no sideways scrolling); areas with several services show them next
+  let pickedDiv = !!(q.get('d') && !q.get('s'));
   function vService() {
     const d = div();
-    return `${h1(st.seg === 'residential' ? 'What do you need?' : 'What does your business need?', st.seg === 'residential' ? 'Pick a service. Prices show right away.' : 'Pick a service. We send a free quote, usually the same day.')}
-      <div class="mt-5">${segTabs(st.seg, 'data-seg', ['Residential', 'Commercial'])}</div>
-      <div class="mt-4 flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 py-1" role="group" aria-label="Service type">
-        ${divsFor(st.seg).map((x) => `<button data-div="${x.id}" aria-pressed="${x.id === d.id}" class="press shrink-0 h-11 px-4 rounded-full text-[13.5px] font-semibold transition-colors ${x.id === d.id ? 'bg-purple text-white' : 'bg-cloud text-ink hover:bg-purple-soft'}">${x.id === 'junk-removal' && st.seg === 'commercial' ? 'Junk & Debris' : x.name}</button>`).join('')}
-      </div>
-      <div class="mt-4 grid gap-2.5">
-        ${subsFor(d).map((s) => {
-          const p = s.tiers.map((t) => t.price).filter((x) => x != null) as number[];
-          return `<button data-sub="${s.slug}" class="${optCls(st.sub === s.slug)}">${radio(st.sub === s.slug)}
-            <span class="flex-1 min-w-0"><span class="block font-semibold text-[15px]">${s.name}</span><span class="block text-[13px] text-muted leading-snug">${s.short}</span></span>
-            <span class="text-right shrink-0">${p.length ? `<span class="block text-[11px] text-muted">from</span><span class="font-heading font-extrabold">${money(Math.min(...p))}</span>${d.segment === 'commercial' ? '<span class="block text-[10.5px] text-muted">+ tax</span>' : ''}` : `<span class="text-[13px] font-semibold text-purple">Free quote</span>`}</span></button>`;
+    if (pickedDiv && subsFor(d).length > 1) {
+      return `<button data-alldivs class="press -mt-1 mb-3 inline-flex items-center gap-1.5 rounded-full bg-cloud px-3.5 h-10 text-[13px] font-semibold">${ic('<path d="M19 12H5M11 6l-6 6 6 6"/>', 'size-4')}All services</button>
+        ${h1(d.name, 'Which one do you need?')}
+        <div class="mt-5 grid gap-2.5">
+          ${subsFor(d).map((s) => {
+            const p = s.tiers.map((t) => t.price).filter((x) => x != null) as number[];
+            return `<button data-sub="${s.slug}" class="${optCls(st.sub === s.slug)}">${radio(st.sub === s.slug)}
+              <span class="flex-1 min-w-0"><span class="block font-semibold text-[15px]">${s.name}</span><span class="bk-x block text-[13px] text-muted leading-snug">${s.short}</span></span>
+              <span class="text-right shrink-0">${p.length ? `<span class="block text-[11px] text-muted">from</span><span class="font-heading font-extrabold">${money(Math.min(...p))}</span>${d.segment === 'commercial' ? '<span class="block text-[10.5px] text-muted">+ tax</span>' : ''}` : `<span class="text-[13px] font-semibold text-purple">Free quote</span>`}</span></button>`;
+          }).join('')}
+        </div>`;
+    }
+    return `${h1(st.seg === 'residential' ? 'What do you need?' : 'What does your business need?', st.seg === 'residential' ? 'Pick a service.' : 'Pick a service. Free quote, usually the same day.')}
+      <div class="mt-4">${segTabs(st.seg, 'data-seg', ['Home', 'Business'])}</div>
+      <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2.5" role="group" aria-label="Services">
+        ${divsFor(st.seg).map((x) => {
+          const ps = subsFor(x).flatMap((s) => s.tiers.map((t) => t.price)).filter((v) => v != null) as number[];
+          const name = x.id === 'junk-removal' && st.seg === 'commercial' ? 'Junk & Debris' : x.name.replace(' Cleaning', '');
+          return `<button data-div="${x.id}" class="press relative overflow-hidden rounded-[18px] bg-cloud text-left border-2 border-transparent hover:border-line">
+            <img src="${x.img}" alt="" class="bk-addimg w-full aspect-[16/10] object-cover bg-line" />
+            <span class="block px-3 py-2"><span class="block font-semibold text-[13.5px] leading-tight">${name}</span><span class="block text-[12px] text-muted">${ps.length ? `from ${money(Math.min(...ps))}${x.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span></span>
+          </button>`;
         }).join('')}
       </div>`;
   }
@@ -342,7 +375,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function vContact() {
     return `${h1('Your details', 'So we can confirm your ' + (isQuote() ? 'quote.' : 'booking.'))}
       ${st.profile ? `<div class="mt-5 rounded-[16px] bg-purple-soft/70 p-3.5 text-[13px] font-semibold text-purple">Signed in · ${esc(st.profile.customer.phone)}</div>`
-        : `<a href="/my-livo?next=${encodeURIComponent(location.pathname + location.search)}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
+        : `<a data-signin href="/my-livo?next=${encodeURIComponent('/book?resume=1')}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
             <span class="size-11 shrink-0 rounded-full bg-lime text-ink grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-5')}</span>
             <span class="flex-1 min-w-0"><span class="block font-heading font-bold text-[15px]">Booked with LIVO before?</span><span class="bk-x block text-[12.5px] text-white/75">Sign in with your phone and we fill this in.</span></span>
             <span class="shrink-0 rounded-full bg-white text-ink px-3.5 py-2 text-[13px] font-bold">Sign in</span>
@@ -410,16 +443,26 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   function vDone(ref: string, quote: boolean, test: boolean, saved: boolean) {
-    return `<div class="text-center pt-6">
-      <div class="relative mx-auto size-20">
-        <div class="confetti absolute inset-0" aria-hidden="true">${Array.from({ length: 18 }, (_, i) => { const a = (i / 18) * Math.PI * 2, r = 70 + (i % 3) * 22; return `<i style="--x:${Math.round(Math.cos(a) * r)}px;--y:${Math.round(Math.sin(a) * r)}px;--r:${i * 47}deg;background:${['#C4D600', '#6B3FA0', '#2C2C2C'][i % 3]}"></i>`; }).join('')}</div>
-        <div class="ring pop-in relative isolate size-20 rounded-full bg-lime grid place-items-center"><span class="draw">${ic(CHECK, 'size-10')}</span></div>
+    const prep: string[] = quote ? [] : (div() as any).prep ?? [];
+    const next = quote
+      ? ['We look at your photos and details.', 'You get your quote by text and email, usually the same day.', 'Say yes and we lock in your date.']
+      : prep;
+    return `<div class="text-center">
+      <div class="relative mx-auto size-16">
+        <div class="confetti absolute inset-0" aria-hidden="true">${Array.from({ length: 18 }, (_, i) => { const a = (i / 18) * Math.PI * 2, r = 60 + (i % 3) * 20; return `<i style="--x:${Math.round(Math.cos(a) * r)}px;--y:${Math.round(Math.sin(a) * r)}px;--r:${i * 47}deg;background:${['#C4D600', '#6B3FA0', '#2C2C2C'][i % 3]}"></i>`; }).join('')}</div>
+        <div class="ring pop-in relative isolate size-16 rounded-full bg-lime grid place-items-center"><span class="draw">${ic(CHECK, 'size-8')}</span></div>
       </div>
-      <h1 tabindex="-1" class="rise outline-none mt-6 text-3xl font-extrabold" style="--i:2">${quote ? 'Quote request sent!' : "You're booked!"}</h1>
-      <p class="rise mt-2 text-muted" style="--i:3">${test ? 'Test version: nothing was sent.' : 'Confirmation sent by text and email.'}<br/>Reference <b class="text-purple">#${esc(ref)}</b></p>
-      <p class="rise mt-6 text-sm text-muted" style="--i:4">${quote ? "We'll review your photos and send your quote, usually the same day." : "We'll call shortly to confirm the details."}</p>
-      ${saved ? `<p class="rise mt-4 text-sm" style="--i:4">Your details are saved. Next time, <a href="/my-livo" class="font-semibold text-purple underline">sign in with your phone</a>.</p>` : ''}
-      <a href="/" class="rise btn-dark mt-8" style="--i:5">Back to home</a>
+      <h1 tabindex="-1" class="rise outline-none mt-4 text-[1.8rem] font-extrabold" style="--i:2">${quote ? 'Quote request sent!' : "You're booked!"}</h1>
+      <p class="rise mt-1 text-muted text-[14px]" style="--i:3">Reference <b class="text-purple">#${esc(ref)}</b> · ${test ? 'test only, nothing was sent' : 'check your text and email'}</p>
+    </div>
+    ${next.length ? `<div class="rise mt-5 rounded-[20px] bg-cloud p-5" style="--i:4">
+      <div class="font-heading font-bold text-[16px]">${quote ? 'What happens next' : 'Get ready for your crew'}</div>
+      <ul class="mt-3 space-y-2.5">${next.map((x, i) => `<li class="flex gap-3 text-[14px]"><span class="shrink-0 size-6 rounded-full ${quote ? 'bg-purple text-white text-[12px] font-bold' : 'bg-lime text-ink'} grid place-items-center" aria-hidden="true">${quote ? i + 1 : ic(CHECK, 'size-3.5')}</span>${esc(x)}</li>`).join('')}</ul>
+      ${quote ? '' : `<p class="mt-3 text-[12.5px] text-muted">We text you when your crew is on the way. Need a change? Call ${esc(D.phone)}.</p>`}
+    </div>` : ''}
+    <div class="rise mt-5 flex flex-col items-center gap-3" style="--i:5">
+      <a href="/" class="btn-dark">Back to home</a>
+      ${saved ? `<p class="text-[13px] text-muted">Details saved. Next time just <a href="/my-livo" class="font-semibold text-purple underline">sign in</a>.</p>` : ''}
     </div>`;
   }
 
@@ -451,6 +494,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const t = totals(); const tr = tier();
     const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total);
     $('#bk-totlabel').textContent = isQuote() ? 'Price' : 'Total';
+    $('#bk-bottom').style.display = st.step === 'service' ? 'none' : ''; // tapping a card moves on; no empty Total / Continue
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
     $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
@@ -478,8 +522,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   $('#bk-view').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button') as HTMLButtonElement | null; if (!b || b.disabled) return;
     const ds = b.dataset;
-    if (ds.seg) { st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = ''; }
-    else if (ds.div) { st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = ''; }
+    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = ''; }
+    else if (ds.div) {
+      st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = '';
+      const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.freq = freqs()[0].id; go('size'); return; }
+      pickedDiv = true;
+    }
+    else if (ds.alldivs !== undefined) { pickedDiv = false; }
     else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.addons = {}; st.freq = freqs()[0].id; render(); setTimeout(() => go('size'), 160); return; }
     else if (ds.tier) { st.tier = ds.tier; }
     else if (ds.add) { const a = addons().find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
@@ -516,6 +565,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
     root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
+    if (st.step === 'done') return; // the thank-you page may scroll; keep it complete
     for (const c of ['bk-tight', 'bk-tighter', 'bk-tightest']) { if (!over()) break; root.classList.add(c); }
   }
   new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
@@ -577,6 +627,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         description: c.description.trim() || undefined,
         notes: [c.notes.trim(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
+        prep: quote ? [] : (div() as any).prep ?? [],
       }, st.photos.map((p) => p.file), (n, all) => { st.progress = `Uploading photo ${n} of ${all}…`; render(); });
       st.step = 'done';
       $('#bk-view').innerHTML = vDone(r.ref, quote, r.test, !!st.profile || st.save);
@@ -590,6 +641,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   if (TEST) $('#bk-testbar').hidden = false;
+  if (resumed && needPhotos() && !st.photos.length) st.step = 'photos'; // photos can't survive a page change: ask again
   render();
 
   // signed-in customers: fill in their details and saved places

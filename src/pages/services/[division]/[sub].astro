@@ -32,7 +32,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
     <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
       <Image src={s.image} alt={`${s.name} by LIVO`} class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
-      <a href={d.subs.length > 1 ? `/services/${d.id}` : '/services'} class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label={d.subs.length > 1 ? `Back to ${d.name}` : 'Back to all services'}><Icon name="back" class="size-4" />{d.subs.length > 1 ? d.short : 'Services'}</a>
+      <a href={d.subs.length > 1 ? `/services#${d.id}` : '/services'} class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
