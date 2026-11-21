@@ -73,6 +73,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     html.bk-tight #bk-bottom > div { padding-top: .6rem; padding-bottom: .25rem; }
   }
   html.bk-tighter #bk-view h1 + p { display: none; }
+  html.bk-tightest #bk-view .bk-x, html.bk-tightest #bk-testbar { display: none !important; }
+  html.bk-tightest #bk-view .mt-5, html.bk-tightest #bk-view .mt-4 { margin-top: .5rem; }
+  html.bk-tightest #bk-view .p-5, html.bk-tightest #bk-view .p-4 { padding: .75rem; }
+  html.bk-tightest #bk-view .bk-addimg { display: none; }
   html.bk-tighter #bk-view .mt-3 { margin-top: .4rem; }
   html.bk-tighter #bk-view textarea { height: 3rem; }
   html.bk-tighter #bk-view input:not([type=file]) { height: 2.5rem; }
@@ -194,7 +198,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     return `${h1(allQuote ? 'How should we quote?' : s.tierLabel, s.name)}
       <div class="mt-5 grid gap-2.5">
         ${s.tiers.map((t) => `<button data-tier="${t.id}" class="${optCls(st.tier === t.id)}">${radio(st.tier === t.id)}
-          <span class="flex-1"><span class="block font-semibold text-[15px]">${t.name}${t.popular ? ' <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>' : ''}</span><span class="block text-[13px] text-muted">${t.sub ?? ''}</span></span>
+          <span class="flex-1"><span class="block font-semibold text-[15px]">${t.name}${t.popular ? ' <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>' : ''}</span><span class="bk-x block text-[13px] text-muted">${t.sub ?? ''}</span></span>
           <span class="font-heading font-extrabold text-lg text-right">${t.price != null ? `${s.quote ? '<span class="block text-[10.5px] font-sans font-medium text-muted leading-none">from</span>' : ''}${money(t.price)}` : `<span class="text-sm text-purple">${allQuote ? 'Free' : 'Quote'}</span>`}</span></button>`).join('')}
       </div>
       ${s.quoteNote ? `<p class="mt-4 text-[13px] text-muted">${s.quoteNote}</p>` : ''}`;
@@ -340,10 +344,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       ${st.profile ? `<div class="mt-5 rounded-[16px] bg-purple-soft/70 p-3.5 text-[13px] font-semibold text-purple">Signed in · ${esc(st.profile.customer.phone)}</div>`
         : `<a href="/my-livo?next=${encodeURIComponent(location.pathname + location.search)}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
             <span class="size-11 shrink-0 rounded-full bg-lime text-ink grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-5')}</span>
-            <span class="flex-1 min-w-0"><span class="block font-heading font-bold text-[15px]">Booked with LIVO before?</span><span class="block text-[12.5px] text-white/75">Sign in with your phone and we fill this in.</span></span>
+            <span class="flex-1 min-w-0"><span class="block font-heading font-bold text-[15px]">Booked with LIVO before?</span><span class="bk-x block text-[12.5px] text-white/75">Sign in with your phone and we fill this in.</span></span>
             <span class="shrink-0 rounded-full bg-white text-ink px-3.5 py-2 text-[13px] font-bold">Sign in</span>
           </a>
-          <div class="mt-4 flex items-center gap-3 text-[12px] text-muted" aria-hidden="true"><span class="h-px flex-1 bg-line"></span>or enter your details<span class="h-px flex-1 bg-line"></span></div>`}
+          <div class="bk-x mt-4 flex items-center gap-3 text-[12px] text-muted" aria-hidden="true"><span class="h-px flex-1 bg-line"></span>or enter your details<span class="h-px flex-1 bg-line"></span></div>`}
       <div class="mt-2">
         ${fld('name', biz() ? 'Contact name' : 'Full name', 'text', 'name')}
         ${fld('phone', 'Mobile number', 'tel', 'tel', 'tel')}
@@ -511,12 +515,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function fit() {
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
-    root.classList.remove('bk-tight', 'bk-tighter');
-    if (over()) root.classList.add('bk-tight');
-    if (over()) root.classList.add('bk-tighter');
+    root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
+    for (const c of ['bk-tight', 'bk-tighter', 'bk-tightest']) { if (!over()) break; root.classList.add(c); }
   }
   new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
   addEventListener('resize', () => requestAnimationFrame(fit));
+  document.fonts?.ready.then(() => requestAnimationFrame(fit)); // fonts can change heights after first paint
+  $('#bk-view').addEventListener('load', () => requestAnimationFrame(fit), true); // add-on photos
   $('#bk-back').addEventListener('click', () => { const i = steps().indexOf(st.step as Step); if (i > 0) go(steps()[i - 1]); });
   $('#bk-next').addEventListener('click', () => {
     if (!canNext()) return;
