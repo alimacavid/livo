@@ -3,6 +3,12 @@
 ## Last updated
 2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
+## 2026-11-20 (late night) — One page per service (branch `flow-nov20`)
+- Ali: "every service has only one independent page". Top menu Services dropdown now lists all 13 services (4 columns by category), each opens its own page. Footer lists the 13 services too.
+- /services = simple photo cards (one per service, from price) under the 4 category headings. Chip row and long lists removed.
+- Division pages with several services removed (airbnb-cleaning, commercial-cleaning, construction-cleaning, junk-removal) → 301 (Airbnb → Turnover page, others → /services#<division>). `divHref` for those = `/services#<division>`; service page back button = "Services".
+- Checked: 18 pages 200, axe 0, no overflow (390 + 1280); menu fits at 1024 and 1280.
+
 ## 2026-11-20 (night) — Booking start, sign-in return, "get ready" messages, site map (branch `flow-nov20`, from `v1.0`)
 - Booking step 1 (/book with no service): Home | Business tabs + photo cards per service area (2 per row phone, 3 desktop) — no sideways chip row. Area with several services (Airbnb, Office & Strata, Post-Construction, Junk) shows its services next with an "All services" chip; one-service areas go straight to Size. Bottom bar (Total/Continue) hidden on step 1.
 - My LIVO: signing in from booking now returns to the SAME step ("Your details") with every choice kept: before leaving, booking saves its state in sessionStorage (`livo-book-resume`), sign-in sends the customer to `/book?resume=1`, booking restores it (quote photos cannot survive a page change, so quotes that need photos reopen on the Photos step). No "Continue your booking" button.

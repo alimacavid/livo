@@ -671,7 +671,8 @@ export const subMin = (s: Sub) => {
   return p.length ? Math.min(...p) : null;
 };
 // one-service divisions open straight to that service (one less tap)
-export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services/${d.id}`);
+// One page per service (Ali, 2026-11-20). A division with several services has no page of its own: it points at its cards on /services.
+export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services#${d.id}`);
 
 // The 4 main categories under Services (Ali's 17 Nov 2026 sitemap). Used by /services, the menu and the footer.
 export type Category = { id: string; label: string; line: string; divs: Division[] };
