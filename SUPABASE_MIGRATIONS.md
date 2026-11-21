@@ -22,3 +22,6 @@ Log every schema / table / RLS change here.
 `RESEND_API_KEY`, `RESEND_FROM`, and from v2: `LIVO_ALERT_PHONE`, `LIVO_ALERT_EMAIL`.
 (`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically.)
 Until the secrets are set, bookings still save; the function just skips sending.
+
+## 0002_quotes_customers — APPLIED 2026-11-20 to project livo (dlzmkkmnmrbvxoazzbpi) as `quotes_customers`
+- Added bookings columns (kind, segment, division, sub_service, tier, business_name, address, access_notes, description, photos, customer_id, place_id), tables customers, places, login_codes, customer_sessions (RLS on, no policies), private bucket quote-photos + anon insert policy under incoming/. Extra indexes: bookings_place_idx, customer_sessions_customer_idx.

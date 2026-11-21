@@ -3,6 +3,14 @@
 ## Last updated
 2026-11-20 — `flow-nov20` (PR #12) merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
+## 2026-11-20 (23:30) — GO-LIVE IN PROGRESS (Ali said "go live", chose "backend first")
+- DONE: backup of live site = branch `backup/pre-v1.0-2026-11-20` (= main 2ce365f; tag push was refused, so a branch).
+- DONE: migration 0002 applied to Supabase `livo` (dlzmkkmnmrbvxoazzbpi) as `quotes_customers` (+ indexes on bookings.place_id, customer_sessions.customer_id). Security advisor: only "RLS on, no policy" INFO — intended (only edge functions read/write).
+- DONE: `send-booking-confirmation` v2 deployed (version 8) and `customer-auth` deployed (version 1), both verify_jwt=false. Could not call them from this sandbox (network blocked) — first real booking is the test.
+- BLOCKER: Twilio auth token is WRONG (log 2026-11-15: "authentication failed, auth token is not valid for account AC7123…"). Texts have not been sent since; sign-in codes cannot be sent. Resend email works.
+- TODO: Ali re-enters TWILIO_AUTH_TOKEN (Supabase → Edge Functions → Secrets); set LIVO_ALERT_PHONE + LIVO_ALERT_EMAIL; then merge `v1.0` → `main`; then one real booking + one quote + one sign-in on livoland.com, delete the test rows.
+- `main` NOT changed yet.
+
 ## 2026-11-20 (late night) — One page per service (branch `flow-nov20`)
 - Ali: "every service has only one independent page". Top menu Services dropdown now lists all 13 services (4 columns by category), each opens its own page. Footer lists the 13 services too.
 - /services = simple photo cards (one per service, from price) under the 4 category headings. Chip row and long lists removed.
