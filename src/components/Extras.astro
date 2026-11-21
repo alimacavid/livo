@@ -3,14 +3,14 @@
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import { getDivision, subMin, isQuoteSub, type Division } from '../data/services';
-interface Props { d: Division; skip?: string }
-const { d, skip } = Astro.props;
+interface Props { d: Division; skip?: string; hideNotIncluded?: boolean }
+const { d, skip, hideNotIncluded = false } = Astro.props;
 const cs = d.crossSell && d.crossSell.sub !== skip ? d.crossSell : undefined;
 const csDiv = cs ? getDivision(cs.div) : undefined;
 const csSub = cs ? csDiv!.subs.find((s) => s.slug === cs.sub)! : undefined;
 const csPrice = csSub && !isQuoteSub(csSub) ? subMin(csSub) : null;
 ---
-<section class="mt-10">
+{!hideNotIncluded && <section class="mt-10">
   <h2 class="text-xl font-extrabold">Not included</h2>
   <p class="text-sm text-muted mt-0.5">So you know before you book.</p>
   <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
@@ -18,7 +18,7 @@ const csPrice = csSub && !isQuoteSub(csSub) ? subMin(csSub) : null;
       <li class="flex gap-3 text-[14.5px]"><span class="shrink-0 size-6 rounded-full bg-cloud text-muted grid place-items-center"><Icon name="x" class="size-3.5" stroke={2.6} /></span>{x}</li>
     ))}
   </ul>
-</section>
+</section>}
 {cs && csSub && (
   <section class="mt-10">
     <a href={`/services/${cs.div}/${cs.sub}`} class="press group flex items-center gap-4 p-3 pr-4 rounded-panel bg-lime-soft border border-lime/40 hover:border-lime-deep transition-colors">

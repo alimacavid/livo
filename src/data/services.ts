@@ -79,8 +79,6 @@ export type Sub = {
   draft?: boolean;
   quote?: boolean;        // request a quote (photos) instead of booking
   quoteNote?: string;
-  recurring?: boolean;    // page shows ONLY the weekly / every 2 weeks / monthly price table
-  recurringTable?: boolean; // page shows the one-time prices AND a recurring price table below
   freqs?: Freq[];         // overrides the division's "how often" options for this service
   addons?: Addon[];       // overrides the division's add-ons for this service
   priceNote?: string;     // small line under the price table
@@ -137,20 +135,14 @@ const RECURRING: Freq[] = [
 ];
 
 const HOUSE_ADDONS: Addon[] = [
-  { id: 'fridge', name: 'Inside Fridge', sub: 'Emptied by you', price: 39, unit: 'each', qty: true },
-  { id: 'oven', name: 'Inside Oven', sub: 'Racks + door glass', price: 49, unit: 'each', qty: true },
-  { id: 'freezer', name: 'Inside Freezer', sub: 'Empty + defrosted', price: 29, unit: 'each', qty: true },
-  { id: 'cabinets', name: 'Inside Cabinets', sub: 'Kitchen, emptied', price: 39, unit: 'each' },
-  { id: 'kitchen', name: 'Kitchen Detail', sub: 'Fronts, backsplash, microwave', price: 65, unit: 'each' },
+  { id: 'fridge', name: 'Fridge & Freezer', sub: 'Whole fridge and freezer, emptied by you', price: 65, unit: 'each', qty: true },
+  { id: 'oven', name: 'Oven', sub: 'Whole oven: racks, walls, door glass', price: 49, unit: 'each', qty: true },
+  { id: 'cabinets', name: 'Inside Cabinets', sub: 'Kitchen cabinets, emptied by you', price: 39, unit: 'each' },
   { id: 'bath', name: 'Extra Bathroom', sub: 'Beyond your home size', price: 39, unit: 'per bathroom', qty: true },
   { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
-  { id: 'blinds', name: 'Blinds', sub: 'Dusted and wiped', price: 10, unit: 'per window', qty: true },
-  { id: 'sheets', name: 'Change Bed Sheets', sub: 'Your clean sheets', price: 25, unit: 'per bed', qty: true },
-  { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole home', price: 85, unit: 'each' },
 ];
-// Deep already details the kitchen; move-out already includes fridge, oven, freezer and cabinets — don't sell them twice
-const DEEP_ADDONS = HOUSE_ADDONS.filter((a) => a.id !== 'kitchen');
-const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['bath', 'windows', 'blinds', 'deodorize'].includes(a.id));
+// Move-out already includes fridge, freezer, oven and cabinets — don't sell them twice
+const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['bath', 'windows'].includes(a.id));
 
 export const DIVISIONS: Division[] = [
   // ───────────────────────── HOUSE CLEANING ─────────────────────────
@@ -158,7 +150,7 @@ export const DIVISIONS: Division[] = [
     id: 'house-cleaning',
     name: 'House Cleaning',
     short: 'House',
-    tagline: 'Standard, recurring and deep cleaning for houses, condos and townhomes.',
+    tagline: 'Standard cleaning for houses, condos and townhomes. Book once or on a schedule.',
     intro: 'LIVO house cleaning crews serve Coquitlam, Port Coquitlam and Port Moody, with prices shown before you book.',
     seoTitle: 'House Cleaning in Coquitlam & Port Coquitlam',
     keyword: 'house cleaning Coquitlam',
@@ -168,10 +160,9 @@ export const DIVISIONS: Division[] = [
     subs: [
       {
         slug: 'regular-cleaning',
-        name: 'Standard & Recurring Cleaning',
+        name: 'Standard Cleaning',
         short: 'Everyday upkeep: kitchen, bathrooms and floors.',
-        desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or put it on a schedule and save from the 2nd visit. We see your home before we set the recurring rate. For heavy buildup, book a Deep Clean.',
-        recurringTable: true,
+        desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or weekly, every 2 weeks or monthly. Need more detail? Add the oven, fridge and freezer, cabinets or windows when you book.',
         image: houseToilet,
         before: toiletBefore,
         after: toiletAfter,
@@ -190,30 +181,6 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['Busy families', 'Condo owners', 'Regular upkeep'],
       },
-      {
-        slug: 'deep-cleaning',
-        name: 'Deep Cleaning',
-        short: 'Extra detail for buildup, trim and tracks.',
-        desc: 'Everything in a standard clean, plus the places that get skipped: baseboards, vents, window tracks, behind and under furniture. The right first visit for any home. Inside the oven, fridge or freezer is an add-on.',
-        image: ovenCleaning,
-        before: ovenBefore,
-        after: ovenAfter,
-        unit: 'per visit',
-        tierLabel: 'Home size',
-        tiers: HOME_SIZES([199, 265, 315, 365, 465]),
-        priceNote: 'Over 2,500 sq ft or more than 2 bathrooms? Add extra bathrooms, or call for a quote.',
-        freqs: ONE_TIME,
-        addons: DEEP_ADDONS,
-        included: [
-          'Everything in Standard Cleaning',
-          'Baseboards, door frames and light switches',
-          'Vents, window sills and tracks',
-          'Behind and under movable furniture',
-          'Cabinet fronts, backsplash and handles degreased',
-          'Bathroom tile and grout scrubbed',
-        ],
-        goodFor: ['First-time clients', 'Seasonal reset', 'Before hosting guests'],
-      },
     ],
     addons: HOUSE_ADDONS,
     freqs: ONE_TIME,
@@ -225,7 +192,7 @@ export const DIVISIONS: Division[] = [
       { q: 'When do I pay?', a: 'After the job is done and you are happy with it.' },
     ],
     notIncluded: ['Outside windows', 'Carpet shampooing', 'Moving heavy furniture', 'Mould or biohazard clean-up'],
-    crossSell: { div: 'house-cleaning', sub: 'regular-cleaning', title: 'Keep it clean', line: 'After a deep clean, weekly visits save 15%, every 2 weeks save 10%.' },
+    crossSell: { div: 'move-cleaning', sub: 'move-in-move-out-cleaning', title: 'Moving soon?', line: 'Empty-home clean with fridge, oven and cabinets included.' },
   },
 
   // ───────────────────────── MOVE-IN / MOVE-OUT ─────────────────────────
@@ -307,7 +274,7 @@ export const DIVISIONS: Division[] = [
         unit: 'per turnover',
         tierLabel: 'Unit size',
         tiers: HOME_SIZES([129, 149, 189, 235, 315]),
-        priceNote: 'Laundry, extra linen sets and restocking are add-ons. Over 3 bathrooms: quote.',
+        priceNote: 'Bed sheets, laundry, deodorizing and restocking are add-ons. Over 3 bathrooms: quote.',
         included: [
           'Beds stripped and remade with your clean linens',
           'Bathrooms cleaned and sanitized',
@@ -341,7 +308,8 @@ export const DIVISIONS: Division[] = [
       },
     ],
     addons: [
-      { id: 'linen', name: 'Extra Linen / Towel Set', sub: 'Changed and staged', price: 25, unit: 'per set', qty: true },
+      { id: 'sheets', name: 'Change Bed Sheets', sub: 'Your clean sheets, beds made', price: 25, unit: 'per bed', qty: true },
+      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole unit', price: 85, unit: 'each' },
       { id: 'laundry', name: 'Laundry', sub: 'Your washer + dryer', price: 25, unit: 'per load', qty: true },
       { id: 'restock', name: 'Guest Essentials Restock', sub: 'You supply the items', price: 15, unit: 'per visit' },
       { id: 'rush', name: 'Same-Day Turnaround', sub: 'Priority slot', price: 35, unit: 'each' },
@@ -722,9 +690,8 @@ const card = (id: string, o: Partial<Card> = {}): Card => {
   return { name: d.name, line: d.tagline, href: divHref(d), price: minPrice(d), tax: d.segment === 'commercial', image: d.image, icon: d.icon, ...o };
 };
 const std = getSub('house-cleaning', 'regular-cleaning');
-const deep = getSub('house-cleaning', 'deep-cleaning');
 export const HOME_CARDS: Card[] = [
-  card('house-cleaning', { line: 'Standard, recurring & deep', href: '/services/house-cleaning', price: subMin(std) }),
+  card('house-cleaning', { line: 'Standard & recurring', price: subMin(std) }),
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
   card('airbnb-cleaning', { name: 'Airbnb Turnover Cleaning', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
   card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),

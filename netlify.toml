@@ -34,7 +34,7 @@
 
 [[redirects]]
   from = "/services/interior/deep-cleaning"
-  to = "/services/house-cleaning/deep-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 
@@ -219,3 +219,9 @@
   to = "/services/commercial-cleaning"
   status = 301
   force = true
+
+# Deep Cleaning page removed (Ali, 2026-11-20): detail work is now add-ons on Standard Cleaning
+[[redirects]]
+  from = "/services/house-cleaning/deep-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301

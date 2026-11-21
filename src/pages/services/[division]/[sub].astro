@@ -13,20 +13,18 @@ const { d, s } = Astro.props as { d: Division; s: Sub };
 const from = subMin(s);
 const quote = isQuoteSub(s);
 const firstOff = !quote && d.segment === 'residential' ? Math.round(FIRST_TIME_DISCOUNT * 100) : 0;
-const cta = quote ? 'Get a free quote' : `Book ${s.name}`;
-const def = s.tiers.find((t) => t.popular) ?? s.tiers[0];
+const cta = quote ? 'Get a free quote' : 'Book now';
 const others = d.subs.filter((x) => x.slug !== s.slug);
-const bookUrl = (tier: string) => `/book?d=${d.id}&s=${s.slug}&t=${tier}`;
-const recurringFreqs = subFreqs(d, s).filter((f) => f.id !== 'onetime');
-const addons = [...subAddons(d, s)].sort((a, b) => Number(d.id !== 'junk-removal' && !!ADDON_IMAGES[b.id]) - Number(d.id !== 'junk-removal' && !!ADDON_IMAGES[a.id])); // photo cards first
+// choices (size, add-ons, how often) are made in booking, one step at a time — this page only informs
+const bookUrl = `/book?d=${d.id}&s=${s.slug}`;
+const recurringFreqs = subFreqs(d, s).filter((f) => f.id !== 'onetime' && f.discount > 0);
+const monthly = subFreqs(d, s).some((f) => f.id === 'monthly');
+const junk = d.id === 'junk-removal';
+const addons = [...subAddons(d, s)].sort((a, b) => Number(!junk && !!ADDON_IMAGES[b.id]) - Number(!junk && !!ADDON_IMAGES[a.id])); // photo cards first
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
-// recurring page: lowest weekly price is the headline
-const recurFrom = s.recurring && from != null ? Math.round(from * (1 - Math.max(...recurringFreqs.map((f) => f.discount)))) : null;
-const shownFrom = recurFrom ?? from;
 const $ = (n: number) => '$' + n.toLocaleString('en-CA');
-const priceText = s.recurring && recurFrom != null ? `from ${$(recurFrom)}` : def.price != null ? `${quote ? 'from ' : ''}${$(def.price)}${tax}` : 'Free quote';
-const nameText = s.recurring ? 'per visit · weekly' : def.name;
+const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}${$(from)}${tax}` : 'Free quote';
 ---
 <Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO in Coquitlam, Port Coquitlam and Port Moody. ${s.short} ${quote ? (from ? `From $${from}, final price after photos.` : 'Free quote, usually the same day.') : `Instant price from $${from}.`} Pay after the job.`} tabBar={false}>
 
@@ -40,7 +38,7 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
         <div class="rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold" style="--i:2">
-          {shownFrom ? <>From {$(shownFrom)}{tax} <span class="font-medium">· {s.unit}</span></> : 'Free quote'}
+          {from ? <>From {$(from)}{tax} <span class="font-medium">· {s.unit}</span></> : 'Free quote'}
         </div>
       </div>
     </div>
@@ -51,59 +49,34 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
       <!-- INTRO -->
       <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{s.desc}</p>
 
-      <!-- PRICE TABLE -->
+      <!-- PRICES (information only; size is picked in booking) -->
       <section class="mt-8" id="prices">
         <div class="flex items-end justify-between">
-          <h2 class="text-xl font-extrabold">{s.recurring ? 'Recurring prices' : quote && from == null ? 'Get a free quote' : quote ? 'Starting prices' : 'Prices'}</h2>
+          <h2 class="text-xl font-extrabold">{quote && from == null ? 'Get a free quote' : quote ? 'Starting prices' : 'Prices'}</h2>
           {s.draft && <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-2 py-1 rounded-full">Draft prices</span>}
         </div>
-        <p class="text-sm text-muted mt-0.5">{s.recurring ? 'Per visit, from your 2nd visit. Your first visit is a one-time Standard Clean.' : quote && from == null ? 'Free, no-obligation. Send photos, or ask for a free site visit.' : quote ? `Starting prices${commercial ? ', before tax' : ''}. Send photos and we confirm the final price.` : d.id === 'junk-removal' ? 'Pick one. Loading and disposal included.' : `Pick your ${s.tierLabel.toLowerCase()}. Supplies included.`}</p>
-
-        {s.recurring ? (
-          <div class="mt-4 card overflow-hidden">
-            <table class="w-full text-sm">
-              <thead class="bg-cloud text-[12px] text-muted">
-                <tr><th class="text-left font-semibold p-3">{s.tierLabel}</th>{recurringFreqs.map((f) => <th class="font-semibold p-3 text-right">{f.name}<span class="block text-lime-ink">{f.discount ? `−${Math.round(f.discount * 100)}%` : 'Regular'}</span></th>)}</tr>
-              </thead>
-              <tbody class="divide-y divide-line">
-                {s.tiers.map((t) => (
-                  <tr><td class="p-3"><b class="font-semibold">{t.name}</b><span class="block text-xs text-muted">{t.sub}</span></td>
-                    {recurringFreqs.map((f) => <td class="p-3 text-right font-heading font-bold">${Math.round((t.price ?? 0) * (1 - f.discount))}</td>)}</tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div class="mt-4 grid gap-2.5" role="radiogroup" aria-label={s.tierLabel} data-tiers>
-            {s.tiers.map((t) => (
-              <label class="press relative flex items-center gap-4 p-4 rounded-panel border-2 border-line bg-white cursor-pointer transition-colors hover:border-gray has-[:checked]:border-purple has-[:checked]:bg-purple-soft/60">
-                <input type="radio" name="tier" value={t.id} data-price={t.price ?? ''} data-name={t.name} checked={t.id === def.id} class="peer sr-only" />
-                <span aria-hidden="true" class="size-5 rounded-full border-2 border-gray grid place-items-center transition-colors peer-checked:border-purple peer-checked:[&>span]:scale-100"><span class="size-2.5 rounded-full bg-purple scale-0 transition duration-300 ease-[var(--ease-spring)]"></span></span>
-                <span class="flex-1 min-w-0">
-                  <span class="block font-semibold text-[15px]">{t.name} {t.popular && <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>}</span>
-                  <span class="block text-[13px] text-muted">{t.sub}</span>
-                </span>
-                <span class="font-heading font-extrabold text-lg">{t.price != null ? <>{quote && <span class="block text-[10.5px] font-sans font-medium text-muted text-right leading-none">from</span>}{$(t.price)}</> : <span class="text-sm text-purple">{from == null ? 'Free' : 'Quote'}</span>}</span>
-              </label>
-            ))}
-          </div>
-        )}
-        {s.recurringTable && (
-          <div class="mt-6" id="recurring">
-            <h3 class="font-heading font-bold text-lg">Recurring prices</h3>
-            <p class="text-sm text-muted mt-0.5">Per visit, from your 2nd visit. Your first visit is the one-time price above. We see your home before we set the recurring rate.</p>
-            <div class="mt-3 card overflow-hidden">
-              <table class="w-full text-sm">
-                <thead class="bg-cloud text-[12px] text-muted">
-                  <tr><th class="text-left font-semibold p-3">{s.tierLabel}</th>{recurringFreqs.map((f) => <th class="font-semibold p-3 text-right">{f.name}<span class="block text-lime-ink">{f.discount ? `−${Math.round(f.discount * 100)}%` : 'Regular'}</span></th>)}</tr>
-                </thead>
-                <tbody class="divide-y divide-line">
-                  {s.tiers.map((t) => (
-                    <tr><td class="p-3"><b class="font-semibold">{t.name}</b><span class="block text-xs text-muted">{t.sub}</span></td>
-                      {recurringFreqs.map((f) => <td class="p-3 text-right font-heading font-bold">${Math.round((t.price ?? 0) * (1 - f.discount))}</td>)}</tr>
-                  ))}
-                </tbody>
-              </table>
+        <p class="text-sm text-muted mt-0.5">{quote && from == null ? 'Free, no-obligation. Send photos, or ask for a free site visit.' : quote ? `Starting prices${commercial ? ', before tax' : ''}. Send photos and we confirm the final price.` : junk ? 'Loading and disposal included.' : `By ${s.tierLabel.toLowerCase()}. Supplies included.`}</p>
+        <ul class="mt-4 card divide-y divide-line overflow-hidden">
+          {s.tiers.map((t) => (
+            <li class="flex items-center gap-4 px-4 py-3.5">
+              <span class="flex-1 min-w-0">
+                <span class="block font-semibold text-[15px]">{t.name} {t.popular && <span class="ml-1 align-middle text-[10px] font-bold uppercase tracking-wider bg-lime text-ink px-1.5 py-0.5 rounded">Popular</span>}</span>
+                <span class="block text-[13px] text-muted">{t.sub}</span>
+              </span>
+              <span class="font-heading font-extrabold text-lg text-right">{t.price != null ? <>{quote && <span class="block text-[10.5px] font-sans font-medium text-muted leading-none">from</span>}{$(t.price)}</> : <span class="text-sm text-purple">{from == null ? 'Free' : 'Quote'}</span>}</span>
+            </li>
+          ))}
+        </ul>
+        {!quote && recurringFreqs.length > 0 && (
+          <div class="mt-3 rounded-panel bg-lime-soft border border-lime/40 p-4 flex gap-3">
+            <span class="shrink-0 size-10 rounded-full bg-white text-lime-ink grid place-items-center" aria-hidden="true"><Icon name="calendar" class="size-5" /></span>
+            <div>
+              <div class="font-heading font-bold text-[15px]">Save with a regular schedule</div>
+              <div class="mt-1.5 flex flex-wrap gap-1.5">
+                {recurringFreqs.map((f) => <span class="rounded-full bg-white px-2.5 py-1 text-[12.5px] font-semibold">{f.name} <span class="text-lime-ink">−{Math.round(f.discount * 100)}%</span></span>)}
+                {monthly && <span class="rounded-full bg-white px-2.5 py-1 text-[12.5px] font-semibold">Monthly <span class="text-muted font-medium">regular price</span></span>}
+              </div>
+              <p class="mt-1.5 text-[12.5px] text-ink/70">Choose how often when you book. Savings start from your 2nd visit.</p>
             </div>
           </div>
         )}
@@ -118,14 +91,46 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
         )}
       </section>
 
-      <!-- INCLUDED -->
-      <section class="mt-10">
-        <h2 class="text-xl font-extrabold">What's included</h2>
-        <ul class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-3">
-          {s.included.map((i) => (
-            <li class="flex gap-3 text-[14.5px]"><span class="shrink-0 size-6 rounded-full bg-lime-soft text-lime-ink grid place-items-center"><Icon name="check" class="size-3.5" stroke={3} /></span>{i}</li>
+      <!-- ADD-ONS (information; added in booking) -->
+      {addons.length > 0 && <section class="mt-10">
+        <h2 class="text-xl font-extrabold">Add-ons</h2>
+        <p class="text-sm text-muted mt-0.5">Add any of these when you book.</p>
+        <ul tabindex="0" aria-label="Add-ons, scroll sideways for more" class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 rounded-panel">
+          {addons.map((a) => (
+            <li class="relative overflow-hidden shrink-0 w-40 md:w-auto rounded-panel bg-cloud p-4">
+              {!junk && ADDON_IMAGES[a.id] && <Image src={ADDON_IMAGES[a.id]} alt="" class="-mx-4 -mt-4 mb-3 w-[calc(100%+2rem)] max-w-none aspect-[16/9] object-cover" widths={[240, 400]} sizes="(min-width:768px) 260px, 160px" />}
+              <span class="block font-semibold text-[14px] leading-snug">{a.name}</span>
+              <span class="block text-[12px] text-muted">{a.sub}</span>
+              <span class="block mt-2 text-sm"><b>+${a.price}</b> <span class="text-muted text-[11px]">{a.unit}</span></span>
+            </li>
           ))}
         </ul>
+      </section>}
+
+      <!-- INCLUDED / NOT INCLUDED -->
+      <section class="mt-10 grid md:grid-cols-[1.35fr_1fr] gap-3" aria-label="What is and is not included">
+        <div class="on-dark relative overflow-hidden rounded-[24px] bg-purple-ink text-white p-6 md:p-7">
+          <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-purple/40 blur-2xl"></div>
+          <div class="relative">
+            <div class="text-[11px] font-bold uppercase tracking-[0.18em] text-lime">{quote ? 'In every job' : 'In every visit'}</div>
+            <h2 class="mt-1 text-2xl font-extrabold text-white">What's included</h2>
+            <ul class="mt-5 space-y-3">
+              {s.included.map((i) => (
+                <li class="flex gap-3 text-[14.5px] text-white/90"><span class="shrink-0 size-6 rounded-full bg-lime text-ink grid place-items-center" aria-hidden="true"><Icon name="check" class="size-3.5" stroke={3} /></span>{i}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div class="rounded-[24px] bg-cloud p-6 md:p-7">
+          <div class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted">Good to know</div>
+          <h2 class="mt-1 text-2xl font-extrabold">Not included</h2>
+          <ul class="mt-5 space-y-3">
+            {d.notIncluded.map((x) => (
+              <li class="flex gap-3 text-[14.5px] text-ink/80"><span class="shrink-0 size-6 rounded-full bg-white border border-line text-muted grid place-items-center" aria-hidden="true"><Icon name="x" class="size-3.5" stroke={2.6} /></span>{x}</li>
+            ))}
+          </ul>
+          <p class="mt-5 text-[13px] text-muted">Not sure? Call <a href={`tel:${PHONE_TEL}`} class="font-semibold text-ink underline">{PHONE}</a>.</p>
+        </div>
       </section>
 
       {s.before && s.after && (
@@ -135,27 +140,7 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
         </section>
       )}
 
-      <!-- ADD-ONS -->
-      {addons.length > 0 && <section class="mt-10">
-        <h2 class="text-xl font-extrabold">Popular add-ons</h2>
-        <p class="text-sm text-muted mt-0.5">Tap to add. They carry over to your booking.</p>
-        <div class="mt-4 flex gap-3 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3" data-addons>
-          {addons.map((a) => (
-            <button type="button" data-addon={a.id} data-aprice={a.price} aria-pressed="false"
-              class="press group relative overflow-hidden shrink-0 w-40 md:w-auto text-left rounded-panel border-2 border-transparent bg-cloud p-4 transition-colors aria-pressed:border-purple aria-pressed:bg-purple-soft">
-              <span aria-hidden="true" class="absolute z-10 top-3 right-3 size-6 rounded-full grid place-items-center bg-white shadow-sm text-muted transition duration-300 group-aria-pressed:bg-purple group-aria-pressed:text-white group-aria-pressed:rotate-[360deg]">
-                <Icon name="plus" class="size-3.5 group-aria-pressed:hidden" stroke={2.4} /><Icon name="check" class="size-3.5 hidden group-aria-pressed:block" stroke={3} />
-              </span>
-              {d.id !== 'junk-removal' && ADDON_IMAGES[a.id] && <Image src={ADDON_IMAGES[a.id]} alt="" class="-mx-4 -mt-4 mb-3 w-[calc(100%+2rem)] max-w-none aspect-[16/9] object-cover rounded-t-[inherit]" widths={[240, 400]} sizes="(min-width:768px) 260px, 160px" />}
-              <span class="block font-semibold text-[14px] leading-snug pr-7">{a.name}</span>
-              <span class="block text-[12px] text-muted">{a.sub}</span>
-              <span class="block mt-2 text-sm"><b>+${a.price}</b> <span class="text-muted text-[11px]">{a.unit}</span></span>
-            </button>
-          ))}
-        </div>
-      </section>}
-
-      <Extras d={d} skip={s.slug} />
+      <Extras d={d} skip={s.slug} hideNotIncluded />
 
       <!-- FAQ -->
       <section class="mt-10">
@@ -189,10 +174,10 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
     <!-- DESKTOP BOOKING CARD -->
     <aside class="hidden md:block">
       <div class="sticky top-24 mt-8 card p-6">
-        <div class="text-sm text-muted">{quote ? (from ? 'Estimate' : 'Price') : 'Your price'}</div>
-        <div class="font-heading font-extrabold text-4xl mt-1" data-price-out data-pre={quote ? 'from ' : ''} data-suf={tax} data-static={s.recurring ? '' : undefined} aria-live="polite">{priceText}</div>
-        <div class="text-sm text-muted" data-name-out>{nameText}</div>
-        <a href={bookUrl(def.id)} data-book class="sheen btn-lime w-full mt-5">{cta}</a>
+        <div class="text-sm text-muted">{quote ? (from ? 'Estimate' : 'Price') : 'Price'}</div>
+        <div class="font-heading font-extrabold text-4xl mt-1">{priceText}</div>
+        <div class="text-sm text-muted">{s.unit}</div>
+        <a href={bookUrl} class="sheen btn-lime w-full mt-5">{cta}</a>
         <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
         <ul class="mt-5 space-y-2 text-[13px] text-muted">
           <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />Pay after the job</li>
@@ -208,52 +193,13 @@ const nameText = s.recurring ? 'per visit · weekly' : def.name;
   <div slot="after" style="view-transition-name: tab-bar" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
     <div class="flex items-center gap-3 px-4 h-[76px]">
       <div class="flex-1 min-w-0">
-        <div class="font-heading font-extrabold text-xl leading-none" data-price-out data-pre={quote ? 'from ' : ''} data-suf={tax} data-static={s.recurring ? '' : undefined}>{priceText}</div>
-        <div class="text-[12px] text-muted truncate mt-1" data-name-out>{nameText}</div>
+        <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText}</div>
+        <div class="text-[12px] text-muted truncate mt-1">{s.unit}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
-      <a href={bookUrl(def.id)} data-book class="sheen btn-lime px-7">{quote ? 'Get quote' : 'Book now'}</a>
+      <a href={bookUrl} class="sheen btn-lime px-7">{quote ? 'Get quote' : 'Book now'}</a>
     </div>
   </div>
   <div class="md:hidden h-24"></div>
 </Base>
 
-<script>
-  // selected size + add-ons → live price, name and Book link
-  const out0 = document.querySelector<HTMLElement>('[data-price-out]');
-  const st = { tier: '', price: null as number | null, name: document.querySelector('[data-name-out]')?.textContent ?? '', addons: new Set<string>() };
-  const checked = document.querySelector<HTMLInputElement>('[data-tiers] input:checked');
-  if (checked) { st.tier = checked.value; st.price = checked.dataset.price ? +checked.dataset.price : null; st.name = checked.dataset.name!; }
-  else { const a = document.querySelector<HTMLAnchorElement>('[data-book]'); st.tier = a ? new URL(a.href).searchParams.get('t') ?? '' : ''; }
-  const fmt = (n: number) => '$' + n.toLocaleString('en-CA');
-  function update() {
-    let add = 0; const names: string[] = [];
-    document.querySelectorAll<HTMLButtonElement>('[data-addon]').forEach((b) => {
-      if (st.addons.has(b.dataset.addon!)) { add += +b.dataset.aprice!; names.push(b.querySelector('span.block')!.textContent!); }
-    });
-    if (out0 && !out0.hasAttribute('data-static')) {
-      const price = st.price != null ? `${out0.dataset.pre ?? ''}${fmt(st.price + add)}${out0.dataset.suf ?? ''}` : 'Free quote';
-      document.querySelectorAll<HTMLElement>('[data-price-out]').forEach((el) => {
-        if (el.textContent === price) return;
-        el.textContent = price; el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
-      });
-    }
-    document.querySelectorAll('[data-name-out]').forEach((el) => (el.textContent = st.name + (names.length ? ` + ${names.length} add-on${names.length > 1 ? 's' : ''}` : '')));
-    document.querySelectorAll<HTMLAnchorElement>('[data-book]').forEach((a) => {
-      const u = new URL(a.href); if (st.tier) u.searchParams.set('t', st.tier);
-      st.addons.size ? u.searchParams.set('a', [...st.addons].join(',')) : u.searchParams.delete('a');
-      a.href = u.pathname + u.search;
-    });
-  }
-  document.querySelector('[data-tiers]')?.addEventListener('change', (e) => {
-    const r = e.target as HTMLInputElement;
-    st.tier = r.value; st.price = r.dataset.price ? +r.dataset.price : null; st.name = r.dataset.name!;
-    update();
-  });
-  document.querySelectorAll<HTMLButtonElement>('[data-addon]').forEach((b) => b.addEventListener('click', () => {
-    const id = b.dataset.addon!;
-    st.addons.has(id) ? st.addons.delete(id) : st.addons.add(id);
-    b.setAttribute('aria-pressed', String(st.addons.has(id)));
-    update();
-  }));
-</script>
