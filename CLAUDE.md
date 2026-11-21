@@ -1,7 +1,7 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-11-17
+2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
 ## 2026-11-17 (late) — LIVE DESIGN KEPT + services exactly as Ali's sitemap (branch `prices-nov17`)
 - Ali: "keep design of live website". Codex UI pass (PR #8) REVERTED (commit 0b97b03) — pages use the live livoland.com look again: text on photos for cards and headers, grey trust boxes, "Popular right now" swipe row back (new prices).
@@ -29,9 +29,9 @@
   - Before/after sliders tested (drag + keyboard) on every page that has one.
 - Service pages = information, booking = choices (Ali, 2026-11-20, "page by page like the live site"):
   - **Deep Cleaning page removed** (detail work is now add-ons) → 301 to Standard Cleaning. House Cleaning = one service, renamed **"Standard House Cleaning"** (Ali, 2026-11-20) (no more "Standard & Recurring"); recurring price table removed — a lime "Save with a regular schedule" note shows the discounts, frequency is picked in booking.
-  - Home add-ons now: **Fridge & Freezer $65** (merged; was fridge $39 + freezer $29 — Ali to confirm price), **Oven $49**, Inside Cabinets $39, Extra Bathroom $39, Interior Windows $40. Removed: Blinds, Kitchen Detail. Deodorize & Sanitize ($85) and Change Bed Sheets ($25/bed) moved to Airbnb (replaced "Extra Linen / Towel Set"). Move add-ons = Extra Bathroom + Interior Windows.
+  - Home add-ons now: **Fridge & Freezer $65** (merged; was fridge $39 + freezer $29 — Ali OK'd $65 "for now", 2026-11-20), **Oven $49**, Inside Cabinets $39, Extra Bathroom $39, Interior Windows $40. Removed: Blinds, Kitchen Detail. Deodorize & Sanitize ($85) and Change Bed Sheets ($25/bed) moved to Airbnb (replaced "Extra Linen / Towel Set"). Move add-ons = Extra Bathroom + Interior Windows.
   - Service page: size list and add-ons are display-only (no selecting); Book → /book?d=&s= (booking opens on size). Page order: hero → intro → prices (+ schedule savings) → add-ons → **What's included (dark purple card) / Not included (grey card)** → before & after → cross-sell → questions → more services. Old page script removed.
-  - Open question for Ali: Airbnb turnover already includes "beds stripped and remade", so the new "Change Bed Sheets" add-on may double-charge.
+  - Airbnb "Change Bed Sheets" add-on: Ali said keep it (2026-11-20), even though turnover includes remaking beds.
 - Service page = Ali's exact order (2026-11-20, later): hero → description → before/after slider → What's included / Not included → Questions. Prices list, schedule note, add-ons row, cross-sell card and "More services" row REMOVED from service pages (no more sideways-scrolling rows). Price stays in the hero pill, desktop side card and phone bottom bar; "Book now" opens booking on the size step. `Extras` no longer used on service pages.
 - Booking (Ali, 2026-11-20 night): Back button moved from the top into the bottom bar (left; Total in the middle; Continue right). Steps auto-fit the screen: if a step would scroll, the script adds `bk-tight` then `bk-tighter` on <html> (smaller headings/padding, add-on photos shorter then hidden). Checked at 390×844, 375×667, 1280×800, 1280×600, 1366×650, 1717×800 — no scrolling (only iPhone SE commercial Review in test mode, 6 px). Add-on photo cards restyled like the old service-page cards (16:9 photo, name, short description, price, + badge).
 - Booking polish (Ali, 2026-11-20 late): add-on picture cards all the same size (4:3 photo, one line name, one line price; quantity − n + sits on the photo); "Booked before?" is now a dark purple sign-in card with a white "Sign in" button and an "or enter your details" divider; Time step = picture tiles (sunrise / sun / sunset / moon icons; 3 across on computers, stacked on phones) with a "date · change" chip that goes back to the Date step.
