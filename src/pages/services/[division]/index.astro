@@ -6,7 +6,8 @@ import Extras from '../../../components/Extras.astro';
 import { Image } from 'astro:assets';
 import { DIVISIONS, minPrice, isQuoteSub, categoryOf, type Division } from '../../../data/services';
 export function getStaticPaths() {
-  return DIVISIONS.map((d) => ({ params: { division: d.id }, props: { d } }));
+  // one-service sections (House, Move, Restaurant) have no section page: links go straight to the service
+  return DIVISIONS.filter((d) => d.subs.length > 1).map((d) => ({ params: { division: d.id }, props: { d } }));
 }
 const { d } = Astro.props as { d: Division };
 const from = minPrice(d);

@@ -22,7 +22,7 @@
 # specific rules first, then wildcards
 [[redirects]]
   from = "/services/interior"
-  to = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 
@@ -58,7 +58,7 @@
 
 [[redirects]]
   from = "/services/interior/*"
-  to = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
   status = 301
   force = true
 
@@ -224,4 +224,18 @@
 [[redirects]]
   from = "/services/house-cleaning/deep-cleaning"
   to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+
+# One-service sections have no section page (Ali, 2026-11-20): go straight to the service
+[[redirects]]
+  from = "/services/house-cleaning"
+  to = "/services/house-cleaning/regular-cleaning"
+  status = 301
+[[redirects]]
+  from = "/services/move-cleaning"
+  to = "/services/move-cleaning/move-in-move-out-cleaning"
+  status = 301
+[[redirects]]
+  from = "/services/restaurant-kitchen-cleaning"
+  to = "/services/restaurant-kitchen-cleaning/kitchen-cleaning"
   status = 301

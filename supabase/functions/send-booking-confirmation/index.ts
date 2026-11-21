@@ -1,4 +1,4 @@
-// LIVO — send-booking-confirmation (v2, 2026-10-12)
+// LIVO — send-booking-confirmation (v2, 2026-10-12; 2026-11-20: "get ready" checklist in text + email)
 // Stores a booking OR a quote request, saves the customer's details when they
 // asked for it, and sends text + email confirmations (customer) and a new-job
 // alert with photo links (LIVO).
@@ -29,7 +29,10 @@ interface Payload {
   items: Item[]; total: number; firstTime: boolean;
   description?: string; notes?: string;
   photos?: string[]; save?: boolean; placeId?: string; session?: string;
+  prep?: string[];
 }
+// "Get ready for your crew" lines sent by the website (src/data/services.ts PREP); max 6, short text only
+const prepOf = (p: Payload) => (Array.isArray(p.prep) ? p.prep : []).map((x) => clip(x, 140)).filter(Boolean).slice(0, 6);
 
 async function sha256(s: string) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -94,13 +97,14 @@ Deno.serve(async (req) => {
     if (dbErr) return json({ error: "Could not save request.", detail: dbErr.message }, 500);
 
     const ref = booking.id.slice(0, 8).toUpperCase();
-    const when = `${body.date} · ${body.time}`;
+    const nice = /^\d{4}-\d{2}-\d{2}$/.test(body.date) ? new Date(body.date + "T12:00:00Z").toLocaleDateString("en-CA", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }) : body.date;
+    const when = `${nice} · ${body.time}`;
     const service = clip(body.service, 120) || body.items[0].group;
 
     // ---- customer confirmation ----
     const sms = kind === "quote"
       ? `LIVO: we got your quote request (#${ref}) for ${service}. We'll send your quote, usually the same day. Questions? 888-802-LIVO`
-      : `LIVO booking received! Ref ${ref}\n${when}\nTotal ${money(body.total)}. We'll call to confirm. Questions? 888-802-LIVO`;
+      : `LIVO booking received! Ref ${ref}\n${when}\nTotal ${money(body.total)}. We'll call to confirm.${prepOf(body).length ? `\n\nGet ready:\n${prepOf(body).slice(0, 3).map((x) => `- ${x}`).join("\n")}\nFull list in your email.` : ""}\nQuestions? 888-802-LIVO`;
     const smsResult = await sendSms(body.phone, sms);
     const emailResult = await sendEmail(body.email, kind === "quote" ? `We got your LIVO quote request — #${ref}` : `Your LIVO booking — #${ref}`, customerHtml(kind, ref, when, body));
 
@@ -164,12 +168,16 @@ function customerHtml(kind: string, ref: string, when: string, p: Payload) {
     ? frame("Quote request received", `Reference #${ref}`, `<p>Hi ${esc(p.name)}, thanks for asking LIVO for a quote.</p>
         <table style="width:100%;border-collapse:collapse;margin:12px 0">${rows}</table>
         <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px">Preferred date: <b>${esc(when)}</b> (we confirm it with you).</p>
-        <p style="color:#777;font-size:13px">We review your photos and send your quote, usually the same day. Questions? Call <b>888-802-LIVO</b>.</p>`)
+        <p style="background:#F6F9D9;border-radius:10px;padding:12px 14px"><b>What happens next</b><br>1. We look at your photos and details.<br>2. You get your quote by text and email, usually the same day.<br>3. Say yes and we lock in your date.</p>
+        <p style="color:#777;font-size:13px">Questions? Call <b>888-802-LIVO</b>.</p>`)
     : frame("Booking received", `Reference #${ref}`, `<p>Hi ${esc(p.name)}, thanks for booking with LIVO.</p>
         <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px;font-weight:700">${esc(when)}</p>
         <table style="width:100%;border-collapse:collapse;margin:12px 0">${rows}</table>
         <table style="width:100%;border-collapse:collapse"><tr><td style="font-weight:800;font-size:18px;padding-top:10px">Total${p.firstTime ? " (first-booking discount applied)" : ""}</td>
         <td align="right" style="font-weight:800;font-size:18px;padding-top:10px">${money(p.total)}</td></tr></table>
+        ${prepOf(p).length ? `<div style="background:#F6F9D9;border-radius:10px;padding:14px 16px;margin:16px 0"><b style="font-size:15px">Get ready for your crew</b>
+          <ul style="margin:8px 0 0;padding-left:18px;line-height:1.6">${prepOf(p).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+          <p style="margin:8px 0 0;color:#555;font-size:13px">We text you when your crew is on the way.</p></div>` : ""}
         <p style="color:#777;font-size:13px">No payment now. You pay after the job. Need a change? Call <b>888-802-LIVO</b>.</p>`);
 }
 

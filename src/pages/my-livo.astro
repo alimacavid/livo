@@ -35,7 +35,7 @@ import { PHONE, PHONE_TEL } from '../data/services';
     return `<div class="mx-auto max-w-sm"><div class="text-center">
         <span class="mx-auto size-16 rounded-full bg-purple-soft text-purple grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-8')}</span>
         <h1 tabindex="-1" class="outline-none mt-4 text-[1.9rem] md:text-4xl font-extrabold">Sign in</h1>
-        <p class="mt-1 text-muted">No password. We text you a code.</p>
+        <p class="mt-1 text-muted">No password. We text you a code.${safeNext ? '<br>Then we take you back to your booking.' : ''}</p>
       </div>
       <form id="f-phone" class="mt-7" novalidate>
         ${field('phone', 'Mobile number', 'tel', 'tel', 'tel', st.phone)}
@@ -124,6 +124,7 @@ import { PHONE, PHONE_TEL } from '../data/services';
       st.busy = false;
       if (!ok) { st.err = 'That code is not right or has expired.'; render(); return; }
       $('#ml-live').textContent = 'Signed in';
+      if (safeNext) { location.replace(safeNext); return; } // came from booking: go straight back
       await loadProfile();
     }
   });

@@ -705,3 +705,51 @@ export const AREAS = [
   'Pitt Meadows', 'Surrey', 'Vancouver', 'North Vancouver', 'West Vancouver', 'Richmond',
   'Langley', 'Delta', 'Abbotsford',
 ];
+
+// "Get ready for your crew" — shown after booking and sent in the confirmation text + email.
+// Keep each line short; the text message uses the first 3.
+export const PREP: Record<string, string[]> = {
+  'house-cleaning': [
+    'Clear counters, floors and beds so we can reach every surface.',
+    'Put away cash, jewellery and anything fragile.',
+    'Tell us how to get in: door code, key or buzzer.',
+    'Shy or nervous pets: keep them in one room.',
+    'Booked fridge & freezer? Empty them before we arrive.',
+  ],
+  'move-cleaning': [
+    'The home must be empty: furniture, boxes and garbage out.',
+    'Power and water on, lights working.',
+    'Leave keys or a fob, or tell us who lets us in.',
+    'Save a parking spot for our van.',
+  ],
+  'airbnb-cleaning': [
+    'Send us the checkout time and door code before the visit.',
+    'Leave clean sheets and towels where we can find them.',
+    'Tell us about any damage you already know about.',
+    'Booked a restock? Leave the supplies out.',
+  ],
+  'construction-cleaning': [
+    'Trades finished and big debris removed (we do not haul bulk waste).',
+    'Power and water on, lights working.',
+    'Tell us about wet paint or fresh finishes to avoid.',
+    'Site access and parking for our van.',
+  ],
+  'junk-removal': [
+    'Put items in one spot if you can: garage, driveway or curb.',
+    'Clear a path from the items to the door.',
+    'Tell us about stairs, elevators or long carries.',
+    'No paint, chemicals or asbestos. We cannot take them.',
+  ],
+  'commercial-cleaning': [
+    'Share keys, fob or alarm code and your opening hours.',
+    'Clear desks of papers you do not want touched.',
+    'Tell us about locked or private rooms to skip.',
+    'Show us the supply closet and garbage area.',
+  ],
+  'restaurant-kitchen-cleaning': [
+    'Kitchen closed and equipment cooled down before we start.',
+    'Clear food from prep tables and the line.',
+    'Share keys or alarm code and where we can dump water.',
+    'Tell us about equipment we must not move.',
+  ],
+};

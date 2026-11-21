@@ -38,6 +38,7 @@ export type RequestPayload = {
   notes?: string;
   save: boolean;           // customer ticked "Save my details"
   placeId?: string;        // existing saved place used
+  prep?: string[];         // "get ready" checklist for the confirmation text + email
 };
 
 const SESSION_KEY = 'livo-session';
