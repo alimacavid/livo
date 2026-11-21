@@ -3,6 +3,13 @@
 ## Last updated
 2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
 
+## ⚙ HOW WE WORK (Ali, 2026-11-21) — same as VORX
+- **Claude** = system designer + reviewer. Claude writes the plan and the Codex prompt, then checks Codex's report/PR. Claude does NOT write site code or push code.
+- **Codex** = does all coding, builds, tests, branches and PRs.
+- **Ali** = pastes Claude's prompt into Codex, pastes Codex's report back to Claude, gives final OK.
+- Every Codex prompt: one part at a time, a branch name, exact files, what NOT to touch, how to test, and a short report format.
+- Same safety rules for everyone: work on a branch → PR into `v1.0` (test) → Ali OKs → `main` (livoland.com) only when Ali says "go live".
+
 ## 2026-11-20 (23:50) — Sign-in text for new numbers (Ali: "add it")
 - Ali tried My LIVO sign-in: no code arrived. Correct behaviour: codes are only texted to numbers with saved details, and there were 0 customers.
 - `customer-auth` now texts new numbers: "LIVO: there is no account for this number yet. Book at livoland.com/book and tick "Save my details" - then you can sign in." Website answer unchanged (same for both). Rate limit still 5 per number per hour.
