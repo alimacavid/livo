@@ -3,6 +3,10 @@
 ## Last updated
 2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
+## 2026-11-20 — My LIVO sign-in simplified (branch `ui-nov20`, from `v1.0`)
+- Ali: "too much text". Sign-in screen now: icon, "Sign in", "No password. We text you a code.", phone field (placeholder), "Text me a code", one line "New here? Book a service. We save your details for next time." Code screen centred; test notice is a small pill. Privacy Policy stays in the footer and on the booking review step.
+- `prices-nov17` was merged into `v1.0` (PR #7) on 2026-11-20 with Ali's OK.
+
 ## 2026-11-17 (late) — LIVE DESIGN KEPT + services exactly as Ali's sitemap (branch `prices-nov17`)
 - Ali: "keep design of live website". Codex UI pass (PR #8) REVERTED (commit 0b97b03) — pages use the live livoland.com look again: text on photos for cards and headers, grey trust boxes, "Popular right now" swipe row back (new prices).
 - Services now match `LIVO_Visual_Sitemap.pdf` (17 Nov): 4 categories (`CATEGORIES` in services.ts: Residential Cleaning · Commercial Cleaning · Post-Construction · Junk Removal) used by /services, desktop menu and division eyebrow; footer = Residential + "Commercial & more".
@@ -34,6 +38,7 @@
   - Airbnb "Change Bed Sheets" add-on: Ali said keep it (2026-11-20), even though turnover includes remaking beds.
 - Service page = Ali's exact order (2026-11-20, later): hero → description → before/after slider → What's included / Not included → Questions. Prices list, schedule note, add-ons row, cross-sell card and "More services" row REMOVED from service pages (no more sideways-scrolling rows). Price stays in the hero pill, desktop side card and phone bottom bar; "Book now" opens booking on the size step. `Extras` no longer used on service pages.
 - Booking (Ali, 2026-11-20 night): Back button moved from the top into the bottom bar (left; Total in the middle; Continue right). Steps auto-fit the screen: if a step would scroll, the script adds `bk-tight` then `bk-tighter` on <html> (smaller headings/padding, add-on photos shorter then hidden). Checked at 390×844, 375×667, 1280×800, 1280×600, 1366×650, 1717×800 — no scrolling (only iPhone SE commercial Review in test mode, 6 px). Add-on photo cards restyled like the old service-page cards (16:9 photo, name, short description, price, + badge).
+- Booking auto-fit has 3 levels (`bk-tight`, `bk-tighter`, `bk-tightest` — last hides size sub-lines, sign-in sub-text, divider, test pill, add-on photos) and re-runs after fonts and photos load. No scrolling at 360×640 up to 1920×900 incl. 1280×560 (Ali, 2026-11-20).
 - Booking polish (Ali, 2026-11-20 late): add-on picture cards all the same size (4:3 photo, one line name, one line price; quantity − n + sits on the photo); "Booked before?" is now a dark purple sign-in card with a white "Sign in" button and an "or enter your details" divider; Time step = picture tiles (sunrise / sun / sunset / moon icons; 3 across on computers, stacked on phones) with a "date · change" chip that goes back to the Date step.
 - Booking add-ons: photo cards (2 per row on phones, 3 on computers) when the add-on has a photo (`ADDON_IMAGES`, small WebP via getImage in book.astro); compact text cards otherwise (Airbnb, junk). Photos hidden on short screens (max-height 720px) so the step still fits.
 - Homepage trust boxes (Instant prices / Pay after / Uniformed crews / Same-day response) removed — repeated the hero line and How it works (Ali, 2026-11-18).
