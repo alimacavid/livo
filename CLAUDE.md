@@ -1,7 +1,7 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-11-20 — `prices-nov17` merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
+2026-11-20 — `flow-nov20` (PR #12) merged into `v1.0` (test site) with Ali's OK. NOT on livoland.com.
 
 ## 2026-11-20 (late night) — One page per service (branch `flow-nov20`)
 - Ali: "every service has only one independent page". Top menu Services dropdown now lists all 13 services (4 columns by category), each opens its own page. Footer lists the 13 services too.
