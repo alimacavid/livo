@@ -160,7 +160,7 @@ export const DIVISIONS: Division[] = [
     subs: [
       {
         slug: 'regular-cleaning',
-        name: 'Standard Cleaning',
+        name: 'Standard House Cleaning',
         short: 'Everyday upkeep: kitchen, bathrooms and floors.',
         desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or weekly, every 2 weeks or monthly. Need more detail? Add the oven, fridge and freezer, cabinets or windows when you book.',
         image: houseToilet,
