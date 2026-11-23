@@ -4,7 +4,7 @@ import Icon from '../components/Icon.astro';
 import ServiceCards from '../components/ServiceCards.astro';
 import { Image } from 'astro:assets';
 import heroVan from '../assets/photos/hero-van.png';
-import { AREAS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
+import { HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
 
 ---
 <Base title="LIVO Property Services — House, Commercial Cleaning & Junk Removal in Coquitlam" header="overlay">
@@ -66,18 +66,6 @@ import { AREAS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
     </ol>
   </section>
 
-  <!-- ───── AREAS ───── -->
-  <section id="areas" class="mx-auto max-w-6xl px-4 md:px-6 mt-9 md:mt-24 scroll-mt-20">
-    <div class="eyebrow">Where we work</div>
-    <h2 class="mt-2 text-[1.4rem] md:text-4xl font-extrabold">Tri-Cities & Greater Vancouver.</h2>
-    <ul class="mt-5 flex flex-wrap gap-2 outline-none" aria-label="Service areas">
-      {AREAS.map((a, i) => (
-        <li class:list={['px-3.5 py-2 rounded-full text-[13px] font-medium', i < 3 ? 'bg-purple text-white' : 'bg-cloud text-ink', i >= 3 && 'hidden md:block area-more']}>{a}</li>
-      ))}
-      <li class="md:hidden"><button type="button" data-more-areas class="press px-3.5 py-2 min-h-11 rounded-full text-[13px] font-semibold bg-cloud text-purple" aria-expanded="false">+{AREAS.length - 3} more</button></li>
-    </ul>
-  </section>
-
   <!-- ───── CTA (desktop) ───── -->
   <section class="hidden md:block mx-auto max-w-6xl px-4 md:px-6 mt-24">
     <div class="on-dark hero-grad rounded-[28px] p-7 md:p-14 text-white relative overflow-hidden" data-reveal>
@@ -94,12 +82,6 @@ import { AREAS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
 </Base>
 
 <script>
-  document.querySelector<HTMLButtonElement>('[data-more-areas]')?.addEventListener('click', (e) => {
-    document.querySelectorAll('.area-more').forEach((el) => el.classList.remove('hidden'));
-    const ul = (e.currentTarget as HTMLElement).closest('ul')!; (e.currentTarget as HTMLElement).parentElement!.remove();
-    ul.setAttribute('tabindex', '-1'); ul.focus();
-  });
-
   // hero video: plays only when motion is allowed and not on data-saver; pause button
   const v = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const tg = document.querySelector<HTMLButtonElement>('[data-video-toggle]');

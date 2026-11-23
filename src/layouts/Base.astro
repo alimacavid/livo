@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
 import logoFooter from '../assets/logo-footer.png';
 import Icon from '../components/Icon.astro';
-import { divHref, DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES } from '../data/services';
+import { DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES, subMin } from '../data/services';
 
 interface Props {
   title: string;
@@ -75,26 +75,40 @@ const tabs = [
         <Image src={logo} alt="LIVO" class="h-8 w-auto" widths={[140, 280]} sizes="70px" loading="eager" />
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
-        <div class="group" data-dd>
-          <a href="/services" aria-current={path.startsWith('/services') ? 'page' : undefined} class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1 aria-[current]:text-purple">Services <Icon name="down" class="size-4 transition group-hover:rotate-180 group-focus-within:rotate-180" /></a>
-          <div class="invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0 transition duration-200 absolute inset-x-4 md:inset-x-6 top-full pt-2">
-            <div class="card p-3 grid grid-cols-4 gap-2">
-              {CATEGORIES.map(({ label, divs: list }) => (
-                <div>
-                  <div class="px-2.5 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-muted">{label}</div>
-                  {list.flatMap((d) => d.subs.map((s) => (
-                    <a href={`/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-cloud aria-[current]:text-purple">
-                      <span class="shrink-0 size-8 rounded-lg bg-purple-soft text-purple grid place-items-center" aria-hidden="true"><Icon name={d.icon} class="size-4" /></span>
-                      <span class="font-semibold text-[13.5px] leading-snug">{s.name}</span>
-                    </a>
-                  )))}
-                </div>
-              ))}
+        <div data-dd>
+          <button type="button" id="services-toggle" aria-expanded="false" aria-controls="services-dropdown" class="px-3 min-h-11 rounded-full hover:bg-cloud inline-flex items-center gap-1" data-service-toggle>
+            Services <Icon name="down" class="size-4 transition-transform duration-150" />
+          </button>
+          <div id="services-dropdown" hidden class="absolute inset-x-4 md:inset-x-6 top-full pt-2" data-service-dropdown>
+            <div class="card overflow-hidden bg-white text-ink shadow-lift">
+              <div class="grid grid-cols-4 gap-2 p-3" data-menu-categories>
+                {CATEGORIES.map(({ label, divs: list }) => (
+                  <div class="min-w-0">
+                    <div class="px-2 pt-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted">{label}</div>
+                    {list.flatMap((d) => d.subs.map((s) => {
+                      const price = subMin(s);
+                      return <a href={`/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="mega-service relative flex items-center gap-2.5 p-2 rounded-xl min-h-20">
+                        <span class="shrink-0 size-12 rounded-[10px] overflow-hidden">
+                          <Image src={s.image} alt="" class={`size-full object-cover ${s.pos ?? ''}`} widths={[128, 256]} sizes="128px" quality={85} />
+                        </span>
+                        <span class="min-w-0">
+                          <span class="mega-name block font-semibold text-[13px] leading-snug">{s.name}</span>
+                          <span class="block mt-1 text-[11.5px] text-muted">{price != null ? `from $${price.toLocaleString('en-CA')}${d.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span>
+                        </span>
+                      </a>;
+                    }))}
+                  </div>
+                ))}
+              </div>
+              <div class="flex items-center justify-between gap-4 px-5 py-3 bg-purple-soft border-t border-line">
+                <a href={`tel:${PHONE_TEL}`} class="inline-flex items-center min-h-11 text-sm font-semibold text-purple">Not sure? Call {PHONE}</a>
+                <a href="/book" class="btn-lime px-6">Book now</a>
+              </div>
             </div>
           </div>
         </div>
         <a href="/#how" class="px-3 py-2 rounded-full hover:bg-cloud">How it works</a>
-        <a href="/#areas" class="px-3 py-2 rounded-full hover:bg-cloud">Areas</a>
+        <a href="#areas" class="px-3 py-2 rounded-full hover:bg-cloud">Areas</a>
         <a href="/careers.html" class="px-3 py-2 rounded-full hover:bg-cloud">Careers</a>
         <a href="/my-livo" aria-current={path.startsWith('/my-livo') ? 'page' : undefined} class="px-3 py-2 rounded-full hover:bg-cloud inline-flex items-center gap-1.5 aria-[current]:text-purple"><Icon name="user" class="size-4" />My LIVO</a>
       </nav>
@@ -109,14 +123,14 @@ const tabs = [
   <main id="main" tabindex="-1" class="outline-none"><slot /></main>
 
   <!-- ───── Footer ───── -->
-  {footer && <footer class="on-dark bg-purple-ink text-white/75 mt-20">
-    <div class="mx-auto max-w-6xl px-5 md:px-6 py-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
-      <div class="col-span-2 md:col-span-1">
+  <footer hidden={!footer} data-footer-on-demand={!footer ? "" : undefined} class="on-dark bg-purple-ink text-white/75 mt-20">
+    <div class="mx-auto max-w-6xl px-5 md:px-6 py-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-5">
+      <div class="col-span-2 md:col-span-5">
         <Image src={logoFooter} alt="LIVO" class="h-9 w-auto" widths={[160, 320]} sizes="80px" />
         <p class="mt-3 text-sm leading-relaxed">Property services across the Tri-Cities and Greater Vancouver. One crew. One standard.</p>
         <a href={`tel:${PHONE_TEL}`} class="mt-4 inline-flex items-center gap-2 text-white font-semibold"><Icon name="phone" class="size-4" />{PHONE}</a>
       </div>
-      {[CATEGORIES[0], { label: 'Commercial & more', divs: [...CATEGORIES[1].divs, ...CATEGORIES[2].divs, ...CATEGORIES[3].divs] }].map(({ label, divs: list }) => (
+      {CATEGORIES.map(({ label, divs: list }) => (
         <div>
           <div class="text-white font-semibold text-sm mb-3">{label}</div>
           <ul class="space-y-2 text-sm">{list.flatMap((d) => d.subs.map((s) => <li><a class="hover:text-lime inline-block py-1" href={`/services/${d.id}/${s.slug}`}>{s.name}</a></li>))}</ul>
@@ -131,13 +145,20 @@ const tabs = [
         </ul>
       </div>
     </div>
+    <section id="areas" class="mx-auto max-w-6xl px-5 md:px-6 pb-10 scroll-mt-24" aria-labelledby="areas-heading">
+      <h2 id="areas-heading" class="text-sm font-bold text-white">Serving Greater Vancouver</h2>
+      <ul class="mt-4 flex flex-wrap gap-2" aria-label="Service areas">
+        {AREAS.map((area) => <li class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] text-white/85">{area}</li>)}
+      </ul>
+      <p class="mt-4 text-sm">Based in Port Coquitlam.</p>
+    </section>
     <div class="border-t border-white/10">
       <div class="mx-auto max-w-6xl px-5 md:px-6 py-5 text-xs flex flex-col md:flex-row gap-2 justify-between">
         <span>© {new Date().getFullYear()} LIVO Property Services Ltd. · Port Coquitlam, BC</span>
         <span>Uniformed crews · Pay after the job</span>
       </div>
     </div>
-  </footer>}
+  </footer>
 
   <!-- ───── Mobile tab bar (app style) ───── -->
   {tabBar && (
@@ -176,18 +197,55 @@ const tabs = [
       if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', String([...(el.parentElement?.children ?? [])].indexOf(el) % 6));
       io.observe(el);
     });
-    // Esc closes the desktop services menu
-    document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => dd.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { dd.setAttribute('data-closed', ''); dd.querySelector<HTMLElement>('a')?.focus(); }
-    }));
-    document.querySelectorAll<HTMLElement>('[data-dd]').forEach((dd) => {
-      const open = () => dd.removeAttribute('data-closed');
-      dd.addEventListener('mouseleave', open); dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget as Node)) open(); });
+    // Disclosure navigation: pointer hover previews, click pins, native button keys toggle.
+    const dd = document.querySelector<HTMLElement>('[data-dd]')!;
+    const toggle = document.querySelector<HTMLButtonElement>('[data-service-toggle]')!;
+    const menu = document.querySelector<HTMLElement>('[data-service-dropdown]')!;
+    let pinned = false;
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+    dd.addEventListener('mouseenter', () => setOpen(true));
+    dd.addEventListener('mouseleave', () => { if (!pinned && !dd.contains(document.activeElement)) setOpen(false); });
+    toggle.addEventListener('click', () => { pinned = !pinned; setOpen(pinned); });
+    dd.addEventListener('focusout', (event) => {
+      if (!dd.contains(event.relatedTarget as Node)) { pinned = false; setOpen(false); }
     });
+    document.addEventListener('pointerdown', (event) => {
+      if (!dd.contains(event.target as Node)) { pinned = false; setOpen(false); }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !menu.hidden) { pinned = false; setOpen(false); toggle.focus(); }
+    });
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) { pinned = false; setOpen(false); }
+    });
+    // Booking keeps one screen per step; its Areas link opens the shared footer on demand.
+    const onDemandFooter = document.querySelector<HTMLElement>('[data-footer-on-demand]');
+    if (onDemandFooter) {
+      const syncAreas = () => {
+        onDemandFooter.hidden = location.hash !== '#areas';
+        if (!onDemandFooter.hidden) document.getElementById('areas')?.scrollIntoView();
+      };
+      addEventListener('hashchange', syncAreas);
+      document.querySelector('header a[href="#areas"]')?.addEventListener('click', () => { onDemandFooter.hidden = false; });
+      syncAreas();
+    }
   </script>
   <style is:global>
     .tab-dot { animation: pop-in 420ms var(--ease-spring) both; }
-    [data-dd][data-closed] > div:last-child { visibility: hidden !important; opacity: 0 !important; }
+    [data-service-toggle][aria-expanded="true"] svg { transform: rotate(180deg); }
+    .mega-service, .mega-name, .mega-service img { transition: background-color 150ms, color 150ms, transform 150ms; }
+    .mega-service::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--color-lime); opacity: 0; transition: opacity 150ms; }
+    .mega-service:is(:hover, :focus-visible) { background: var(--color-purple-soft); }
+    .mega-service:is(:hover, :focus-visible) .mega-name { color: var(--color-purple); }
+    .mega-service:is(:hover, :focus-visible)::before { opacity: 1; }
+    .mega-service:is(:hover, :focus-visible) img { transform: scale(1.08); }
+    @media (prefers-reduced-motion: reduce) {
+      .mega-service, .mega-name, .mega-service img, .mega-service::before { transition: none; }
+      .mega-service:is(:hover, :focus-visible) img { transform: none; }
+    }
   </style>
 </body>
 </html>
