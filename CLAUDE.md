@@ -4,6 +4,7 @@
 2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
 
 ## ⚙ HOW WE WORK (Ali, 2026-11-21) — same as VORX
+2026-11-23 — Codex: junk location fees (Ali OK: curb $0, garage/ground +$25, stairs +$50, condo/elevator +$50; JUNK_LOCATIONS in services.ts), One Item = one tier $119, no size step for one-tier junk, no site visit / no Home-Business tabs for junk, photo always required — PR #25. Pre-launch audit: Livo project doc claude/livo-prelaunch-audit-2026-11-23.md (next: Prompt A messages, Prompt B phone footer + Detail).
 2026-11-23 — Codex: junk page row price pills removed (Ali) — only 'Get a free quote' button per row; sticky bar keeps 'from $119' — PR #24
 2026-11-23 — Codex: ALL junk services = free quote with photos (Ali) — 'from' prices kept as estimates, required 'Where is it?' (curbside / ground floor / stairs / elevator) on the photos step → 'Location: …' in notes + Review; junk page CTA 'Get a free quote' (top, rows, phone sticky bar); service pages: instant = 'Book now', quote = 'Get a free quote'; basement before/after photos — PR #23. Known: site-visit tier on junk now also needs a photo; junk Same-Day $89 add-on not offered in quote flow.
 2026-11-23 — Codex: junk before/after sliders on all 8 junk rows + own photos per junk sub-page and menu thumbnail (Ali's AI photos: furniture, appliance, storage, yard, hot tub, office, reno) — PR #22
