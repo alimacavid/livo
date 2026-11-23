@@ -4,6 +4,7 @@
 2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
 
 ## ⚙ HOW WE WORK (Ali, 2026-11-21) — same as VORX
+2026-11-22 — Codex: 6 UI fixes (quote wording, tax, textarea, 4/5-card layout, photo quality, restaurant crop) — PR #__
 - **Claude** = system designer + reviewer. Claude writes the plan and the Codex prompt, then checks Codex's report/PR. Claude does NOT write site code or push code.
 - **Codex** = does all coding, builds, tests, branches and PRs.
 - **Ali** = pastes Claude's prompt into Codex, pastes Codex's report back to Claude, gives final OK.

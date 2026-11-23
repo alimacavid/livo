@@ -30,7 +30,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
   <!-- HERO -->
   <section class="px-3 md:px-6 pt-1 md:pt-6">
     <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
-      <Image src={s.image} alt={`${s.name} by LIVO`} class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      <Image src={s.image} alt={`${s.name} by LIVO`} class={`absolute inset-0 size-full object-cover ${s.pos ?? ''}`} widths={[640, 1024, 1600, 2400]} quality={90} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
       <a href={d.subs.length > 1 ? `/services#${d.id}` : '/services'} class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
@@ -101,8 +101,8 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
     <!-- DESKTOP BOOKING CARD -->
     <aside class="hidden md:block">
       <div class="sticky top-24 mt-8 card p-6">
-        <div class="text-sm text-muted">{quote ? (from ? 'Estimate' : 'Price') : 'Price'}</div>
-        <div class="font-heading font-extrabold text-4xl mt-1">{priceText}</div>
+        <div class="text-sm text-muted">{priceText === 'Free quote' ? 'Quote' : 'Price'}</div>
+        <div class="font-heading font-extrabold text-4xl mt-1">{priceText === 'Free quote' ? 'Free' : priceText.replace(' + tax', '')}</div>
         <div class="text-sm text-muted">{s.unit}</div>
         <a href={bookUrl} class="sheen btn-lime w-full mt-5">{cta}</a>
         <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
@@ -120,7 +120,8 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
   <div slot="after" style="view-transition-name: tab-bar" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
     <div class="flex items-center gap-3 px-4 h-[76px]">
       <div class="flex-1 min-w-0">
-        <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText}</div>
+        {priceText === 'Free quote' && <div class="text-[12px] text-muted mb-1">Quote</div>}
+        <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText === 'Free quote' ? 'Free' : priceText}</div>
         <div class="text-[12px] text-muted truncate mt-1">{s.unit}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>

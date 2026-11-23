@@ -68,6 +68,7 @@ export type Sub = {
   short: string;          // one line for cards
   desc: string;           // intro paragraph on the page
   image: ImageMetadata;
+  pos?: string;           // Tailwind object-position class
   before?: ImageMetadata;
   after?: ImageMetadata;
   realPhotos?: boolean;   // true only when before/after are real LIVO jobs
@@ -609,6 +610,7 @@ export const DIVISIONS: Division[] = [
         short: 'Kitchen, dining areas and washrooms.',
         desc: 'Commercial kitchens deep cleaned with industrial steam cleaners that cut grease and baked-on buildup, plus dining areas and washrooms. We agree the kitchen scope on site; a walkthrough is required. Hoods, ducts and grease traps are not included.',
         image: restaurantKitchen,
+        pos: 'object-[22%_50%]',
         before: stoveBefore,
         after: stoveAfter,
         unit: 'per visit',

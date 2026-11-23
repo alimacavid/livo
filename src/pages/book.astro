@@ -5,14 +5,14 @@ import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs,
 
 // small photos for the add-on cards (junk 'fridge' = disposal, so no cleaning photo there)
 const ADDON_SRC: Record<string, string> = {};
-for (const [id, img] of Object.entries(ADDON_IMAGES)) ADDON_SRC[id] = (await getImage({ src: img, width: 480, format: 'webp' })).src;
+for (const [id, img] of Object.entries(ADDON_IMAGES)) ADDON_SRC[id] = (await getImage({ src: img, width: 544, quality: 85, format: 'webp' })).src;
 const DIV_SRC: Record<string, string> = {};
-for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width: 480, format: 'webp' })).src;
+for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width: 1088, quality: 85, format: 'webp' })).src;
 
 // send only plain data to the browser (no images)
 const data = DIVISIONS.map((d) => ({
   id: d.id, name: d.name, short: d.short, icon: d.icon, segment: d.segment, img: DIV_SRC[d.id], prep: PREP[d.id] ?? [],
-  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
+  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', pos: s.pos ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
   times: d.times,
 }));
 // divisions businesses can ask about (quote-type services only)
@@ -59,6 +59,11 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
 <style is:global>
   /* every step fits the screen: if it would scroll, the page script adds .bk-tight, then .bk-tighter */
+  /* Sub-service cards keep the name readable even in the two-column phone grid. */
+  .bk-services [data-sub] { flex-wrap: wrap; gap: .5rem; align-content: start; }
+  .bk-services [data-sub] > .flex-1 { flex-basis: calc(100% - 2rem); }
+  .bk-services [data-sub] > .text-right { width: 100%; text-align: left; padding-left: 1.75rem; }
+  html.bk-fitting #bk-view * { transition: none !important; }
   html.bk-tight #bk-view h1 { font-size: 1.35rem; }
   html.bk-tight #bk-view h1 + p { font-size: 13px; }
   html.bk-tight #bk-view .mt-5 { margin-top: .75rem; }
@@ -94,7 +99,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
   type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
   type Freq = { id: string; name: string; sub: string; discount: number };
-  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
+  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
   type Seg = 'residential' | 'commercial';
   type Div = { id: string; name: string; short: string; icon: string; segment: Seg; subs: SubD[]; times: { id: string; sub: string }[] };
 
@@ -203,7 +208,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (pickedDiv && subsFor(d).length > 1) {
       return `<button data-alldivs class="press -mt-1 mb-3 inline-flex items-center gap-1.5 rounded-full bg-cloud px-3.5 h-10 text-[13px] font-semibold">${ic('<path d="M19 12H5M11 6l-6 6 6 6"/>', 'size-4')}All services</button>
         ${h1(d.name, 'Which one do you need?')}
-        <div class="mt-5 grid gap-2.5">
+        <div class="mt-5 service-card-grid bk-services gap-2.5" data-count="${subsFor(d).length}">
           ${subsFor(d).map((s) => {
             const p = s.tiers.map((t) => t.price).filter((x) => x != null) as number[];
             return `<button data-sub="${s.slug}" class="${optCls(st.sub === s.slug)}">${radio(st.sub === s.slug)}
@@ -214,12 +219,12 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     }
     return `${h1(st.seg === 'residential' ? 'What do you need?' : 'What does your business need?', st.seg === 'residential' ? 'Pick a service.' : 'Pick a service. Free quote, usually the same day.')}
       <div class="mt-4">${segTabs(st.seg, 'data-seg', ['Home', 'Business'])}</div>
-      <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2.5" role="group" aria-label="Services">
+      <div class="mt-4 service-card-grid bk-services gap-2.5" data-count="${divsFor(st.seg).length}" role="group" aria-label="Services">
         ${divsFor(st.seg).map((x) => {
           const ps = subsFor(x).flatMap((s) => s.tiers.map((t) => t.price)).filter((v) => v != null) as number[];
           const name = x.id === 'junk-removal' && st.seg === 'commercial' ? 'Junk & Debris' : x.name.replace(' Cleaning', '');
           return `<button data-div="${x.id}" class="press relative overflow-hidden rounded-[18px] bg-cloud text-left border-2 border-transparent hover:border-line">
-            <img src="${x.img}" alt="" class="bk-addimg w-full aspect-[16/10] object-cover bg-line" />
+            <img src="${x.img}" alt="" class="bk-addimg w-full aspect-[16/10] object-cover bg-line ${subsFor(x).find((s) => s.pos)?.pos ?? ''}" />
             <span class="block px-3 py-2"><span class="block font-semibold text-[13.5px] leading-tight">${name}</span><span class="block text-[12px] text-muted">${ps.length ? `from ${money(Math.min(...ps))}${x.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span></span>
           </button>`;
         }).join('')}
@@ -297,7 +302,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       </div>
       ${needBusiness() ? fld('business', 'Business name', 'text', 'organization', '', true) : ''}
       <div class="mt-4"><label for="c-description" class="text-[13px] font-semibold text-ink/80">Tell us about the job <span class="font-normal text-muted">(optional)</span></label>
-        <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div>`;
+        <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div>`;
   }
 
   function vFreq() {
@@ -400,7 +405,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         ${fld('address', biz() ? 'Business address' : 'Service address', 'text', 'street-address')}
         ${fld('access', biz() ? 'Access and hours' : 'Parking, entry and pets', 'text', 'off', '', false)}
         <div class="mt-3"><label for="c-notes" class="text-[13px] font-semibold text-ink/80">Notes <span class="font-normal text-muted">(optional)</span></label>
-          <textarea id="c-notes" rows="2" class="mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.notes)}</textarea></div>
+          <textarea id="c-notes" rows="2" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.notes)}</textarea></div>
       </div>
       ${st.profile ? `<p class="mt-4 text-[12.5px] text-muted">Saved to your LIVO account for next time.</p>` : `<button id="sv" role="checkbox" aria-checked="${st.save}" class="press mt-4 w-full flex items-start gap-3 p-3 min-h-12 rounded-[12px] bg-cloud text-left">
           <span aria-hidden="true" class="mt-0.5 size-5 shrink-0 rounded-[6px] grid place-items-center ${st.save ? 'bg-purple text-white' : 'border-2 border-gray bg-white'}">${st.save ? ic(CHECK, 'size-3.5') : ''}</span>
@@ -492,8 +497,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
     v.innerHTML = ({ service: vService, size: vSize, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
     const t = totals(); const tr = tier();
-    const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total);
-    $('#bk-totlabel').textContent = isQuote() ? 'Price' : 'Total';
+    const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
+    $('#bk-totlabel').textContent = isQuote() ? (tr?.price == null ? 'Quote' : 'Price') : 'Total';
     $('#bk-bottom').style.display = st.step === 'service' ? 'none' : ''; // tapping a card moves on; no empty Total / Continue
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
@@ -564,9 +569,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function fit() {
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
+    if (st.step === 'done') { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
+    // Measure final field heights; height transitions otherwise report the previous step's compact size.
+    root.classList.add('bk-fitting');
     root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
-    if (st.step === 'done') return; // the thank-you page may scroll; keep it complete
     for (const c of ['bk-tight', 'bk-tighter', 'bk-tightest']) { if (!over()) break; root.classList.add(c); }
+    void root.offsetHeight;
+    root.classList.remove('bk-fitting');
   }
   new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
   addEventListener('resize', () => requestAnimationFrame(fit));
