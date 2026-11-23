@@ -46,7 +46,8 @@ import { PHONE, PHONE_TEL } from '../data/services';
 
   function vCode() {
     return `<div class="mx-auto max-w-sm"><div class="text-center"><h1 tabindex="-1" class="outline-none text-[1.9rem] font-extrabold">Enter your code</h1>
-      <p class="mt-1 text-muted">Sent to ${esc(st.phone)} · <button type="button" data-act="change" class="font-semibold text-purple underline min-h-11">change</button></p></div>
+      <p class="mt-1 text-muted">If ${esc(st.phone)} has saved details, we texted a code. · <button type="button" data-act="change" class="font-semibold text-purple underline min-h-11">change</button></p>
+      <p class="mt-1 text-muted">New here? We texted you how to start.</p></div>
       ${st.testCode ? `<p class="mt-4 rounded-[12px] bg-amber-50 border border-amber-200 text-amber-900 px-3 py-2 text-[13.5px]">Test code: <b class="tracking-widest">${st.testCode}</b></p>` : ''}
       <form id="f-code" class="mt-5" novalidate>
         ${field('code', '6-digit code', 'text', 'one-time-code', 'numeric', '')}
