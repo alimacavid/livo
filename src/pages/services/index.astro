@@ -1,44 +1,10 @@
 ---
-// /services (Ali, 2026-11-20): one card per service. Every card opens that service's own page. No chips, no long lists.
-import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import Icon from '../../components/Icon.astro';
-import { CATEGORIES, subMin } from '../../data/services';
-const groups = CATEGORIES.map((c) => ({
-  ...c,
-  items: c.divs.flatMap((d) => d.subs.map((s, i) => ({ d, s, first: i === 0, href: `/services/${d.id}/${s.slug}`, price: subMin(s), tax: d.segment === 'commercial' }))),
-}));
+import ServiceCards from '../../components/ServiceCards.astro';
 ---
-<Base title="Cleaning & Junk Removal Services in Coquitlam" description="All LIVO services: house cleaning, move out cleaning, post construction cleaning, Airbnb cleaning, office and strata cleaning, restaurant kitchen cleaning and junk removal in Coquitlam, Port Coquitlam and Port Moody.">
+<Base title="Cleaning & Junk Removal Services in Coquitlam" description="House cleaning, appliance and detail cleaning, Airbnb turnovers, commercial cleaning, post-construction cleaning and junk removal in Coquitlam, Port Coquitlam and Port Moody.">
   <section class="mx-auto max-w-6xl px-4 md:px-6 pt-4 md:pt-12">
     <h1 class="rise text-[1.9rem] md:text-5xl font-extrabold" style="--i:0">Services</h1>
-    <p class="rise mt-1 text-muted" style="--i:1">Pick a service to see what's included.</p>
+    <ServiceCards class="mt-5" />
   </section>
-  <div class="mx-auto max-w-6xl px-4 md:px-6">
-    {groups.map((g) => (
-      <section id={g.id} class="scroll-mt-24 mt-8 md:mt-12">
-        <h2 class="eyebrow mb-2.5 md:mb-3">{g.label}</h2>
-        <div class="service-card-grid services-grid gap-3 md:gap-5" data-count={g.items.length}>
-          {g.items.map(({ d, s, first, href, price, tax }) => (
-            <a href={href} id={first ? d.id : undefined} class="press group relative overflow-hidden rounded-panel bg-cloud aspect-[4/5] md:aspect-auto md:h-[320px] scroll-mt-24" data-reveal>
-              <Image src={s.image} alt="" class={`absolute inset-0 size-full object-cover ${s.pos ?? ''} transition duration-700 group-hover:scale-105`} widths={[400, 700, 1000]} quality={85} sizes="(min-width:1152px) 1000px, (min-width:768px) 100vw, 200vw" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
-              <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple" aria-hidden="true"><Icon name={d.icon} class="size-[18px]" /></span>
-              <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">
-                <div class="font-heading font-bold text-[15px] md:text-lg leading-tight">{s.name}</div>
-                <div class="mt-1 text-[12px] md:text-sm text-white/85">{price != null ? <>From <b class="text-lime">${price.toLocaleString('en-CA')}</b>{tax && <span class="text-white/75"> + tax</span>}</> : <b class="text-lime font-semibold">Free quote</b>}</div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-    ))}
-  </div>
 </Base>
-
-<style>
-  @media (min-width: 768px) {
-    .services-grid[data-count="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .services-grid[data-count="4"] > a { grid-column: auto; }
-  }
-</style>

@@ -69,6 +69,9 @@ export type Sub = {
   desc: string;           // intro paragraph on the page
   image: ImageMetadata;
   pos?: string;           // Tailwind object-position class
+  fromPrice?: number;     // Advertised starting combination, including the visit fee
+  itemsRequired?: boolean;
+  itemGallery?: { label: string; before: ImageMetadata; after: ImageMetadata }[];
   before?: ImageMetadata;
   after?: ImageMetadata;
   realPhotos?: boolean;   // true only when before/after are real LIVO jobs
@@ -256,7 +259,7 @@ export const DIVISIONS: Division[] = [
     id: 'airbnb-cleaning',
     name: 'Airbnb Turnover Cleaning',
     short: 'Airbnb',
-    tagline: 'Between-guest cleaning. Deep Reset optional.',
+    tagline: 'Between-guest cleaning, timed to your next check-in.',
     intro: 'Airbnb cleaning and short-term rental turnovers in Coquitlam, Port Coquitlam and Port Moody, timed to your check-in and checkout.',
     seoTitle: 'Airbnb Cleaning in Coquitlam & Port Moody',
     keyword: 'Airbnb cleaning Coquitlam',
@@ -286,27 +289,6 @@ export const DIVISIONS: Division[] = [
         ],
         goodFor: ['Airbnb and Vrbo hosts', 'Property managers', 'Back-to-back bookings'],
       },
-      {
-        slug: 'deep-reset',
-        name: 'Deep Reset',
-        short: 'Between seasons or long stays.',
-        desc: 'Everything in a turnover plus a full detail: baseboards, inside appliances, under furniture. Keeps a busy listing in top shape.',
-        image: fridgeCleaning,
-        before: fridgeBefore,
-        after: fridgeAfter,
-        unit: 'per visit',
-        tierLabel: 'Unit size',
-        tiers: HOME_SIZES([199, 239, 289, 345, 419]),
-        included: [
-          'Everything in Airbnb Turnover Cleaning',
-          'Baseboards, vents and window tracks',
-          'Inside fridge, oven and microwave',
-          'Under and behind furniture',
-          'Mattress and upholstery vacuumed',
-          'Disinfect and deodorize',
-        ],
-        goodFor: ['High-turnover listings', 'Between long stays', 'Seasonal refresh'],
-      },
     ],
     addons: [
       { id: 'sheets', name: 'Change Bed Sheets', sub: 'Your clean sheets, beds made', price: 25, unit: 'per bed', qty: true },
@@ -331,7 +313,58 @@ export const DIVISIONS: Division[] = [
       { q: 'Do you do the laundry?', a: 'Yes, as an add-on, using the washer and dryer in your unit. Agree linens, restocking and check-in time with us when you book.' },
     ],
     notIncluded: ['Off-site laundry', 'Repairs', 'Buying supplies (you supply, we restock)'],
-    crossSell: { div: 'airbnb-cleaning', sub: 'deep-reset', title: 'Busy listing?', line: 'Add a Deep Reset between seasons or long stays.' },
+    crossSell: { div: 'detail-cleaning', sub: 'appliance-detail-cleaning', title: 'Need appliance detail?', line: 'Pick the appliances and detail work your listing needs.' },
+  },
+
+  // Appliance and detail work is priced per item, plus one visit fee.
+  {
+    id: 'detail-cleaning',
+    name: 'Appliance & Detail Cleaning',
+    short: 'Appliance & Detail',
+    tagline: 'Deep cleaning, item by item.',
+    intro: 'Appliance and detail cleaning for homes, rentals and Airbnbs in Coquitlam, Port Coquitlam and Port Moody.',
+    seoTitle: 'Appliance & Detail Cleaning in Coquitlam',
+    keyword: 'appliance cleaning Coquitlam',
+    segment: 'residential',
+    icon: 'sparkle',
+    image: ovenCleaning,
+    subs: [{
+      slug: 'appliance-detail-cleaning',
+      name: 'Appliance & Detail Cleaning',
+      short: 'Oven, stove, fridge, cabinets, blinds and grout — item by item.',
+      desc: 'We deep clean single items in homes, rentals and Airbnbs. Pick only what you need: each item has its own price, plus one visit fee per order. Pay after the job.',
+      image: ovenCleaning,
+      unit: 'visit fee + items',
+      tierLabel: 'One visit fee',
+      tiers: [{ id: 'visit', name: 'Visit fee', sub: 'Travel and setup, once per order', price: 59 }],
+      fromPrice: 108,
+      itemsRequired: true,
+      included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One travel and setup fee per order'],
+      goodFor: ['Homes and rentals', 'Airbnb hosts', 'Single-item deep cleaning'],
+      itemGallery: [
+        { label: 'Oven', before: ovenBefore, after: ovenAfter },
+        { label: 'Stove', before: stoveBefore, after: stoveAfter },
+        { label: 'Fridge & Freezer', before: fridgeBefore, after: fridgeAfter },
+        { label: 'Cabinets', before: cabinetBefore, after: cabinetAfter },
+      ],
+    }],
+    addons: [
+      { id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
+      { id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
+      { id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
+      { id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
+      { id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
+      { id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area (up to 50 sq ft)', qty: true },
+      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Accessible surfaces; odour removal is not guaranteed', price: 85, unit: 'whole home' },
+    ],
+    freqs: ONE_TIME,
+    times: DAY_TIMES,
+    faqs: [
+      { q: 'Can I book just one item?', a: 'Yes. Pick at least one item. The visit fee covers travel and setup once per order, then we add the selected items.' },
+      { q: 'What should I empty first?', a: 'Empty any fridge, freezer or cabinets you book. Clear counters and leave access to the items.' },
+      { q: 'Do you repair appliances or grout?', a: 'No. This is cleaning only. We do not move heavy appliances, repair faults, remove mould, seal grout or re-grout.' },
+    ],
+    notIncluded: ['Moving heavy appliances', 'Repairs', 'Mould remediation', 'Grout sealing or re-grouting'],
   },
 
   // ───────────────────────── POST-CONSTRUCTION ─────────────────────────
@@ -610,7 +643,7 @@ export const DIVISIONS: Division[] = [
         short: 'Kitchen, dining areas and washrooms.',
         desc: 'Commercial kitchens deep cleaned with industrial steam cleaners that cut grease and baked-on buildup, plus dining areas and washrooms. We agree the kitchen scope on site; a walkthrough is required. Hoods, ducts and grease traps are not included.',
         image: restaurantKitchen,
-        pos: 'object-[22%_50%]',
+        pos: 'object-[85%_40%]',
         before: stoveBefore,
         after: stoveAfter,
         unit: 'per visit',
@@ -665,10 +698,11 @@ export const isQuoteSub = (s: Sub) => !!s.quote || s.tiers.every((t) => t.price 
 export const subFreqs = (d: Division, s: Sub) => s.freqs ?? d.freqs;
 export const subAddons = (d: Division, s: Sub) => s.addons ?? d.addons;
 export const minPrice = (d: Division): number | null => {
-  const p = d.subs.flatMap((s) => s.tiers.map((t) => t.price)).filter((x): x is number => x != null);
+  const p = d.subs.flatMap((s) => s.fromPrice != null ? [s.fromPrice] : s.tiers.map((t) => t.price)).filter((x): x is number => x != null);
   return p.length ? Math.min(...p) : null;
 };
 export const subMin = (s: Sub) => {
+  if (s.fromPrice != null) return s.fromPrice;
   const p = s.tiers.map((t) => t.price).filter((x): x is number => x != null);
   return p.length ? Math.min(...p) : null;
 };
@@ -679,7 +713,7 @@ export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id
 // The 4 main categories under Services (Ali's 17 Nov 2026 sitemap). Used by /services, the menu and the footer.
 export type Category = { id: string; label: string; line: string; divs: Division[] };
 export const CATEGORIES: Category[] = [
-  { id: 'residential', label: 'Residential Cleaning', line: 'Homes, condos and rentals. Prices show right away.', divs: ['house-cleaning', 'move-cleaning', 'airbnb-cleaning'].map(getDivision) },
+  { id: 'residential', label: 'Residential Cleaning', line: 'Homes, condos and rentals. Prices show right away.', divs: ['house-cleaning', 'move-cleaning', 'airbnb-cleaning', 'detail-cleaning'].map(getDivision) },
   { id: 'commercial', label: 'Commercial Cleaning', line: 'Offices, strata and restaurants. Starting prices plus tax; free quote, usually the same day.', divs: ['commercial-cleaning', 'restaurant-kitchen-cleaning'].map(getDivision) },
   { id: 'construction', label: 'Post-Construction Cleaning', line: 'Homes and commercial sites, after the trades.', divs: [getDivision('construction-cleaning')] },
   { id: 'junk', label: 'Junk Removal', line: 'One item to full clear-outs.', divs: [getDivision('junk-removal')] },
@@ -687,18 +721,19 @@ export const CATEGORIES: Category[] = [
 export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;
 
 // Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
-export type Card = { name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string; pos?: string };
+export type Card = { divisionId: string; name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string; pos?: string };
 const card = (id: string, o: Partial<Card> = {}): Card => {
   const d = getDivision(id);
-  return { name: d.name, line: d.tagline, href: divHref(d), price: minPrice(d), tax: d.segment === 'commercial', image: d.image, icon: d.icon, ...o };
+  return { divisionId: d.id, name: d.name, line: d.tagline, href: `/services/${d.id}/${d.subs[0].slug}`, price: minPrice(d), tax: d.segment === 'commercial', image: d.image, icon: d.icon, ...o };
 };
 const std = getSub('house-cleaning', 'regular-cleaning');
 export const HOME_CARDS: Card[] = [
-  card('house-cleaning', { line: 'Standard & recurring', price: subMin(std) }),
+  card('house-cleaning', { name: 'Standard House Cleaning', line: 'Standard & recurring', price: subMin(std) }),
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
   card('airbnb-cleaning', { name: 'Airbnb Turnover Cleaning', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
+  card('detail-cleaning'),
   card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
-  card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens', pos: 'object-[22%_50%]' }),
+  card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens', pos: 'object-[85%_40%]' }),
   card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
   card('junk-removal', { line: 'One item to full clear-outs' }),
 ];
@@ -730,6 +765,12 @@ export const PREP: Record<string, string[]> = {
     'Leave clean sheets and towels where we can find them.',
     'Tell us about any damage you already know about.',
     'Booked a restock? Leave the supplies out.',
+  ],
+  'detail-cleaning': [
+    'Empty any fridge, freezer and cabinets you book.',
+    'Clear counters and leave space around each item.',
+    'Open blinds and clear access to windows.',
+    'Tell us how to get in and where to park.',
   ],
   'construction-cleaning': [
     'Trades finished and big debris removed (we do not haul bulk waste).',

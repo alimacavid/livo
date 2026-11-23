@@ -23,7 +23,7 @@ const addons = [...subAddons(d, s)].sort((a, b) => Number(!junk && !!ADDON_IMAGE
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
 const $ = (n: number) => '$' + n.toLocaleString('en-CA');
-const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}${$(from)}${tax}` : 'Free quote';
+const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice != null ? 'From ' : ''}${$(from)}${tax}` : 'Free quote';
 ---
 <Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO in Coquitlam, Port Coquitlam and Port Moody. ${s.short} ${quote ? (from ? `From $${from}, final price after photos.` : 'Free quote, usually the same day.') : `Instant price from $${from}.`} Pay after the job.`} tabBar={false}>
 
@@ -32,7 +32,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
     <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
       <Image src={s.image} alt={`${s.name} by LIVO`} class={`absolute inset-0 size-full object-cover ${s.pos ?? ''}`} widths={[640, 1024, 1600, 2400]} quality={90} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
-      <a href={d.subs.length > 1 ? `/services#${d.id}` : '/services'} class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
+      <a href="/services" class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
@@ -47,6 +47,20 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
     <div>
       <!-- INTRO -->
       <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{s.desc}</p>
+
+      {s.itemGallery?.length && (
+        <section class="mt-8">
+          <h2 class="text-xl font-extrabold">Before & after</h2>
+          <div class="mt-4 grid md:grid-cols-2 gap-5">
+            {s.itemGallery.map((item) => (
+              <div>
+                <h3 class="text-sm font-semibold mb-2">{item.label}</h3>
+                <BeforeAfter before={item.before} after={item.after} alt={item.label} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {s.before && s.after && (
         <section class="mt-8">
