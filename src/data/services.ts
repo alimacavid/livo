@@ -24,6 +24,18 @@ import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
 import junkRenoBefore from '../assets/photos/junk-reno-before.jpg';
 import junkRenoAfter from '../assets/photos/junk-reno-after.jpg';
+import junkFurnitureBefore from '../assets/photos/junk-furniture-before.jpg';
+import junkFurnitureAfter from '../assets/photos/junk-furniture-after.jpg';
+import junkApplianceBefore from '../assets/photos/junk-appliance-before.jpg';
+import junkApplianceAfter from '../assets/photos/junk-appliance-after.jpg';
+import junkStorageBefore from '../assets/photos/junk-storage-before.jpg';
+import junkStorageAfter from '../assets/photos/junk-storage-after.jpg';
+import junkYardBefore from '../assets/photos/junk-yard-before.jpg';
+import junkYardAfter from '../assets/photos/junk-yard-after.jpg';
+import junkHottubBefore from '../assets/photos/junk-hottub-before.jpg';
+import junkHottubAfter from '../assets/photos/junk-hottub-after.jpg';
+import junkOfficeBefore from '../assets/photos/junk-office-before.jpg';
+import junkOfficeAfter from '../assets/photos/junk-office-after.jpg';
 import teamVan from '../assets/photos/team-van.jpg';
 import houseToilet from '../assets/photos/house-toilet-cleaning.jpg';
 import toiletBefore from '../assets/photos/toilet-before.jpg';
@@ -469,7 +481,9 @@ export const DIVISIONS: Division[] = [
         name: 'One Item Pickup',
         short: 'A sofa, mattress, dresser or TV.',
         desc: 'Just one thing to go? Send a photo and tell us if it is at the curb or inside. We pick it up and dispose of it properly.',
-        image: junkTruck,
+        image: junkFurnitureBefore,
+        before: junkFurnitureBefore,
+        after: junkFurnitureAfter,
         unit: 'per item',
         tierLabel: 'Where is it?',
         tiers: [
@@ -506,7 +520,7 @@ export const DIVISIONS: Division[] = [
         name: 'Renovation Waste',
         short: 'Loose wood, cabinets, flooring and carpet.',
         desc: 'Renovation waste removal: loose wood, old cabinets, flooring, carpet and fixtures. Send photos and a short list of materials for a quote. We do not do demolition.',
-        image: junkTruck,
+        image: junkRenoBefore,
         before: junkRenoBefore,
         after: junkRenoAfter,
         unit: 'custom quote',
@@ -522,7 +536,9 @@ export const DIVISIONS: Division[] = [
         name: 'Hot Tub Removal',
         short: 'Hot tubs and jacuzzis, cut up and hauled away.',
         desc: 'We cut up your old hot tub and haul it away. Power must be disconnected by an electrician before we arrive. Send photos and tell us about access for a quote.',
-        image: junkTruck,
+        image: junkHottubBefore,
+        before: junkHottubBefore,
+        after: junkHottubAfter,
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
@@ -536,7 +552,9 @@ export const DIVISIONS: Division[] = [
         name: 'Office & Building Clearouts',
         short: 'Desks, chairs, shelves and filing cabinets.',
         desc: 'Moving office or closing a space? We remove desks, chairs, shelving and filing cabinets, and recycle or donate what we can. Ask for a walkthrough for offices and shared areas.',
-        image: teamVan,
+        image: junkOfficeBefore,
+        before: junkOfficeBefore,
+        after: junkOfficeAfter,
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
@@ -749,14 +767,14 @@ export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.include
 
 // Display categories on the Junk overview share the existing booking services.
 export const JUNK_CATEGORIES = [
-  { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkTruck },
-  { id: 'appliances', name: 'Appliances & Electronics', text: 'Fridges, washers, stoves, TVs and computers. Recycled properly.', sub: 'single-item-pickup', image: teamVan },
+  { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkFurnitureBefore, before: junkFurnitureBefore, after: junkFurnitureAfter },
+  { id: 'appliances', name: 'Appliances & Electronics', text: 'Fridges, washers, stoves, TVs and computers. Recycled properly.', sub: 'single-item-pickup', image: junkApplianceBefore, before: junkApplianceBefore, after: junkApplianceAfter },
   { id: 'home', name: 'Home & Basement Clear-Outs', text: 'Mixed junk from any room. Pay by how much of the truck you fill.', sub: 'junk-removal-by-load', image: junkTruck, before: junkBefore, after: junkAfter },
-  { id: 'garage', name: 'Garage & Storage Unit Clear-Outs', text: 'Garages, sheds and storage lockers, emptied in one visit.', sub: 'junk-removal-by-load', image: junkTruck },
-  { id: 'yard', name: 'Yard & Garden Waste', text: 'Branches, bagged leaves and old patio furniture. Soil, rock and sod are quoted.', sub: 'junk-removal-by-load', image: teamVan },
+  { id: 'garage', name: 'Garage & Storage Unit Clear-Outs', text: 'Garages, sheds and storage lockers, emptied in one visit.', sub: 'junk-removal-by-load', image: junkStorageBefore, before: junkStorageBefore, after: junkStorageAfter },
+  { id: 'yard', name: 'Yard & Garden Waste', text: 'Branches, bagged leaves and old patio furniture. Soil, rock and sod are quoted.', sub: 'junk-removal-by-load', image: junkYardBefore, before: junkYardBefore, after: junkYardAfter },
   { id: 'renovation', name: 'Kitchen & Renovation Waste', text: 'Old cabinets, counters, flooring and wood after a reno.', sub: 'renovation-debris', image: junkTruck, before: junkRenoBefore, after: junkRenoAfter },
-  { id: 'hot-tub', name: 'Hot Tub Removal', text: 'We cut it up and haul it away. Power must be disconnected by an electrician first.', sub: 'hot-tub-removal', image: junkTruck },
-  { id: 'office', name: 'Office & Building Clear-Outs', text: 'Desks, chairs, shelving and filing cabinets.', sub: 'office-clearouts', image: teamVan },
+  { id: 'hot-tub', name: 'Hot Tub Removal', text: 'We cut it up and haul it away. Power must be disconnected by an electrician first.', sub: 'hot-tub-removal', image: junkHottubBefore, before: junkHottubBefore, after: junkHottubAfter },
+  { id: 'office', name: 'Office & Building Clear-Outs', text: 'Desks, chairs, shelving and filing cabinets.', sub: 'office-clearouts', image: junkOfficeBefore, before: junkOfficeBefore, after: junkOfficeAfter },
 ];
 
 // Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
