@@ -491,6 +491,7 @@ export const DIVISIONS: Division[] = [
         unit: 'per load',
         tierLabel: 'Load size',
         tiers: [
+          { id: 'small', name: 'Small Load', sub: 'About 1.25 cu yd · 2–3 items', price: 139 },
           { id: 'quarter', name: 'Quarter Truck', sub: 'About 2.5 cu yd · a few big items', price: 185 },
           { id: 'half', name: 'Half Truck', sub: 'About 5 cu yd · a small room', price: 299, popular: true },
           { id: 'three-quarter', name: 'Three-Quarter Truck', sub: 'About 7.5 cu yd · a garage', price: 439 },
