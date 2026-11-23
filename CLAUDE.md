@@ -1,7 +1,8 @@
 # LIVO Property Services — CLAUDE.md
 
 ## Last updated
-2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
+2026-11-23 03:35 — **LIVE on livoland.com (2nd go-live).** `v1.0` (PRs #15–#27) fast-forwarded into `main` after Ali said "go live" + "yes". Backup of the previous live site = branch `backup/pre-golive-2026-11-23` (main 66bd295). `send-booking-confirmation` deployed as version 10 (= repo, verify_jwt=false). TODO: Ali's real booking + junk quote with photo + sign-in on livoland.com → check logs → delete test rows. Rollback: reset `main` to the backup branch (only with Ali's OK).
+Previous: 2026-11-20 23:40 — first go-live (PR #14), backup `backup/pre-v1.0-2026-11-20`.
 
 ## ⚙ HOW WE WORK (Ali, 2026-11-21) — same as VORX
 2026-11-23 — Codex: phone footer compact (service groups = accordions, areas one line; 571px), Detail booking skips one-option visit-fee step, Detail item prices = plain purple text — PR #27. Old PRs #6, #9, #10 closed (Ali). Pre-launch audit fixes all merged; remaining before live: deploy send-booking-confirmation from repo + Ali's real booking/quote/sign-in test on livoland.com.
