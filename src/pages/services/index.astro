@@ -18,9 +18,9 @@ const groups = CATEGORIES.map((c) => ({
     {groups.map((g) => (
       <section id={g.id} class="scroll-mt-24 mt-8 md:mt-12">
         <h2 class="eyebrow mb-2.5 md:mb-3">{g.label}</h2>
-        <div class="service-card-grid gap-3 md:gap-5" data-count={g.items.length}>
+        <div class="service-card-grid services-grid gap-3 md:gap-5" data-count={g.items.length}>
           {g.items.map(({ d, s, first, href, price, tax }) => (
-            <a href={href} id={first ? d.id : undefined} class="press group relative overflow-hidden rounded-panel bg-cloud aspect-[4/5] md:aspect-[3/4] scroll-mt-24" data-reveal>
+            <a href={href} id={first ? d.id : undefined} class="press group relative overflow-hidden rounded-panel bg-cloud aspect-[4/5] md:aspect-auto md:h-[320px] scroll-mt-24" data-reveal>
               <Image src={s.image} alt="" class={`absolute inset-0 size-full object-cover ${s.pos ?? ''} transition duration-700 group-hover:scale-105`} widths={[400, 700, 1000]} quality={85} sizes="(min-width:1152px) 1000px, (min-width:768px) 100vw, 200vw" />
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
               <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple" aria-hidden="true"><Icon name={d.icon} class="size-[18px]" /></span>
@@ -35,3 +35,10 @@ const groups = CATEGORIES.map((c) => ({
     ))}
   </div>
 </Base>
+
+<style>
+  @media (min-width: 768px) {
+    .services-grid[data-count="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .services-grid[data-count="4"] > a { grid-column: auto; }
+  }
+</style>
