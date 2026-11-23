@@ -761,7 +761,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     ];
     st.sending = true; render(); err.textContent = '';
     try {
-      const r = await sendRequest({
+      const payload: Parameters<typeof sendRequest>[0] & { estimate?: number | null; location?: string } = {
         kind: quote ? 'quote' : 'booking', segment: segment(),
         name: c.name.trim(), email: c.email.trim(), phone,
         business: needBusiness() ? c.business.trim() : undefined,
@@ -772,8 +772,11 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         description: c.description.trim() || undefined,
         notes: [c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
-        prep: quote ? [] : (div() as any).prep ?? [],
-      }, st.photos.map((p) => p.file), (n, all) => { st.progress = `Uploading photo ${n} of ${all}…`; render(); });
+        prep: (div() as any).prep ?? [],
+        estimate: quote ? (junkQuote() ? junkEstimate() : tr.price) : null,
+        location: junkQuote() ? selectedJunkLocation()?.name : undefined,
+      };
+      const r = await sendRequest(payload, st.photos.map((p) => p.file), (n, all) => { st.progress = `Uploading photo ${n} of ${all}…`; render(); });
       st.step = 'done';
       $('#bk-view').innerHTML = vDone(r.ref, quote, r.test, !!st.profile || st.save);
       $('#bk-view').querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
