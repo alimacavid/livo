@@ -76,6 +76,14 @@ export const ADDON_IMAGES: Record<string, ImageMetadata> = {
   fridge: fridgeCleaning, oven: ovenCleaning, cabinets: cabinetCleaning, windows: windowCleaning, bath: houseToilet, stove: stovetopAfter, blinds: blindsAfter, grout: groutAfter, carpet: carpetAfter,
 };
 
+export const JUNK_LOCATIONS = [
+  { id: 'curb', name: 'Curbside / driveway', fee: 0 },
+  { id: 'ground', name: 'Garage or ground floor', fee: 25 },
+  { id: 'stairs', name: 'Upstairs or basement (stairs)', fee: 50 },
+  { id: 'condo', name: 'Apartment / condo (elevator)', fee: 50 },
+];
+const JUNK_QUOTE_NOTE = 'Rough price from your photos. Final price confirmed on site before we start. Mattresses, fridges and heavy items may add a small disposal fee.';
+
 export const PHONE = '888-802-LIVO';
 export const PHONE_TEL = '+18888025486';
 // 2026-11-17 (Ali): first-booking discount removed — at the new prices it would
@@ -487,13 +495,10 @@ export const DIVISIONS: Division[] = [
         before: junkFurnitureBefore,
         after: junkFurnitureAfter,
         unit: 'per item',
-        tierLabel: 'Where is it?',
+        tierLabel: 'Item',
         quote: true,
-        quoteNote: 'Rough price from your photos. Final price confirmed on site before we start. Mattresses, fridges and heavy items may add a small disposal fee.',
-        tiers: [
-          { id: 'curb', name: 'Curbside or Ground Floor', sub: 'Easy access, no stairs', price: 119, popular: true },
-          { id: 'inside', name: 'Inside the Home', sub: 'We carry it out, stairs OK', price: 169 },
-        ],
+        quoteNote: JUNK_QUOTE_NOTE,
+        tiers: [{ id: 'item', name: 'One item', sub: 'Sofa, mattress, dresser, appliance…', price: 119 }],
         priceNote: 'Mattresses, box springs and fridges have a small disposal add-on.',
         included: ['Pickup and loading', 'Carry-out from inside (inside option)', 'Proper disposal or recycling'],
         goodFor: ['Old mattress', 'Sofa or recliner', 'TV or appliance'],
@@ -509,7 +514,7 @@ export const DIVISIONS: Division[] = [
         unit: 'per load',
         tierLabel: 'Load size',
         quote: true,
-        quoteNote: 'Rough price from your photos. Final price confirmed on site before we start. Mattresses, fridges and heavy items may add a small disposal fee.',
+        quoteNote: JUNK_QUOTE_NOTE,
         tiers: [
           { id: 'small', name: 'Small Load', sub: 'About 1.25 cu yd · 2–3 items', price: 139 },
           { id: 'quarter', name: 'Quarter Truck', sub: 'About 2.5 cu yd · a few big items', price: 185 },
@@ -532,8 +537,8 @@ export const DIVISIONS: Division[] = [
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: 'Priced like our loads, plus any extra disposal fees for heavy materials. Send photos and a material list.',
+        tiers: [{ id: 'photos', name: 'Send photos', price: null }],
+        quoteNote: JUNK_QUOTE_NOTE,
         included: ['Loading and hauling', 'Sorting for recycling', 'Site swept after', 'Disposal fees included in the quote'],
         goodFor: ['Homeowners after a reno', 'Contractors', 'Kitchen and flooring jobs'],
       },
@@ -548,8 +553,8 @@ export const DIVISIONS: Division[] = [
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: QUOTE_NOTE,
+        tiers: [{ id: 'photos', name: 'Send photos', price: null }],
+        quoteNote: JUNK_QUOTE_NOTE,
         included: ['Cutting and loading', 'Hauling and disposal', 'Area swept after'],
         goodFor: ['Old hot tubs', 'Backyard makeovers', 'Moving out'],
       },
@@ -564,8 +569,8 @@ export const DIVISIONS: Division[] = [
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: QUOTE_NOTE,
+        tiers: [{ id: 'photos', name: 'Send photos', price: null }],
+        quoteNote: JUNK_QUOTE_NOTE,
         included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
         goodFor: ['Office moves', 'End of lease', 'Property managers'],
       },
