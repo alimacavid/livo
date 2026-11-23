@@ -136,7 +136,7 @@ label:has(> input.sr-only:focus-visible) { outline: 3px solid var(--color-purple
   .service-card-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .service-card-grid > * { grid-column: span 2; }
   .service-card-grid > :last-child:nth-child(odd) { grid-column: span 2; }
-  .service-card-grid[data-count="1"] > * { grid-column: 1 / -1; }
+  .service-card-grid[data-count="1"] > :only-child { grid-column: 1 / -1; }
   .service-card-grid[data-count="2"] > *, .service-card-grid[data-count="4"] > * { grid-column: span 3; }
   .service-card-grid[data-count="5"] > :nth-child(n+4) { grid-column: span 3; }
 }
