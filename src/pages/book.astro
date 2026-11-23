@@ -8,11 +8,15 @@ const ADDON_SRC: Record<string, string> = {};
 for (const [id, img] of Object.entries(ADDON_IMAGES)) ADDON_SRC[id] = (await getImage({ src: img, width: 544, quality: 85, format: 'webp' })).src;
 const DIV_SRC: Record<string, string> = {};
 for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width: 1088, quality: 85, format: 'webp' })).src;
+const SUB_SRC: Record<string, string> = {};
+for (const d of DIVISIONS.filter((d) => d.id === 'commercial-cleaning')) {
+  for (const sub of d.subs) SUB_SRC[sub.slug] = (await getImage({ src: sub.image, width: 128, quality: 85, format: 'webp' })).src;
+}
 
 // send only plain data to the browser (no images)
 const data = DIVISIONS.map((d) => ({
   id: d.id, name: d.name, short: d.short, icon: d.icon, segment: d.segment, img: DIV_SRC[d.id], prep: PREP[d.id] ?? [],
-  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', fromPrice: s.fromPrice, minOrder: s.minOrder, itemsRequired: !!s.itemsRequired, pos: s.pos ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map(({ line, before, after, ...a }) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
+  subs: d.subs.map((s) => ({ slug: s.slug, img: SUB_SRC[s.slug] ?? '', name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', fromPrice: s.fromPrice, minOrder: s.minOrder, itemsRequired: !!s.itemsRequired, pos: s.pos ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map(({ line, before, after, ...a }) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
   times: d.times,
 }));
 // divisions businesses can ask about (quote-type services only)
@@ -68,12 +72,26 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     .bk-services [data-sub] > .flex-1 { flex-basis: calc(100% - 2rem); }
     .bk-services [data-sub] > .text-right { width: 100%; text-align: left; padding-left: 1.75rem; }
   }
+  /* Keep incomplete add-on rows centred without changing card widths. */
+  .bk-addons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bk-addons > * { grid-column: span 2; }
+  .bk-addons > :last-child:nth-child(odd) { grid-column: 2 / span 2; }
+  @media (min-width: 768px) {
+    .bk-addons { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .bk-addons > :last-child:nth-child(odd) { grid-column: span 2; }
+    .bk-addons > :last-child:nth-child(3n+1) { grid-column: 3 / span 2; }
+    .bk-addons > :nth-last-child(2):nth-child(3n+1) { grid-column: 2 / span 2; }
+    .bk-addons > :last-child:nth-child(3n+2) { grid-column: 4 / span 2; }
+    .bk-services [data-sub]:has(img) > .flex-1 { flex-basis: calc(100% - 5.5rem); }
+  }
   .bk-items .bk-itemprice { flex-wrap: wrap; }
   .bk-items .bk-itemprice > span:first-child { width: 100%; }
   @media (min-width: 768px) {
-    .bk-items .bk-addimg { aspect-ratio: 16 / 9; }
+    #bk-view .bk-items { margin-top: .75rem; }
+    .bk-items .bk-addimg { aspect-ratio: 12 / 5; }
   }
   @media (max-height: 720px) {
+    #bk-view .bk-items > div:not(:has(img)) { padding-block: .5rem; }
     #bk-view .bk-review { padding: .75rem; margin-top: .5rem; }
     #bk-view .bk-review .mt-4 { margin-top: .5rem; }
     #bk-view .bk-review .pt-4 { padding-top: .5rem; }
@@ -115,7 +133,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
   type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
   type Freq = { id: string; name: string; sub: string; discount: number };
-  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; minOrder?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
+  type SubD = { slug: string; img?: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; minOrder?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
   type Seg = 'residential' | 'commercial';
   type Div = { id: string; name: string; short: string; icon: string; segment: Seg; subs: SubD[]; times: { id: string; sub: string }[] };
 
@@ -228,6 +246,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           ${subsFor(d).map((s) => {
             const p = s.tiers.map((t) => t.price).filter((x) => x != null) as number[];
             return `<button data-sub="${s.slug}" class="${optCls(st.sub === s.slug)}">${radio(st.sub === s.slug)}
+              ${s.img ? `<img src="${s.img}" alt="" class="size-12 shrink-0 rounded-lg object-cover ${s.pos ?? ''}" />` : ''}
               <span class="flex-1 min-w-0"><span class="block font-semibold text-[15px]">${s.name}</span><span class="bk-x block text-[13px] text-muted leading-snug">${s.short}</span></span>
               <span class="text-right shrink-0">${p.length ? `<span class="block text-[11px] text-muted">from</span><span class="font-heading font-extrabold">${money(Math.min(...p))}</span>${d.segment === 'commercial' ? '<span class="block text-[10.5px] text-muted">+ tax</span>' : ''}` : `<span class="text-[13px] font-semibold text-purple">Free quote</span>`}</span></button>`;
           }).join('')}
@@ -260,7 +279,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   function vAddons() {
     return `${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? 'Choose at least one. One visit fee per order.' : 'Optional. Tap to add.')}
-      <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2 ${sub()?.itemsRequired ? 'bk-items' : ''}">
+      <div class="mt-5 bk-addons gap-2 ${sub()?.itemsRequired ? 'bk-items' : ''}">
         ${addons().map((a) => {
           const n = st.addons[a.id] ?? 0; const on = n > 0;
           if (a.img) return `<div class="press relative h-full flex flex-col overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">

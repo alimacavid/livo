@@ -55,16 +55,19 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
         <section class="mt-8" aria-labelledby="items-title">
           <h2 id="items-title" class="text-xl font-extrabold">What we clean</h2>
           <div class="mt-4 divide-y divide-line border-y border-line">
-            {itemRows.map((item) => (
-              <article class:list={["py-6 md:py-8", item.before && item.after && "md:grid md:grid-cols-[2fr_3fr] md:gap-8 md:items-center"]} data-item-row>
-                <div>
-                  <h3 class="text-lg font-extrabold">{item.name}</h3>
-                  <p class="mt-1 text-sm text-muted">{item.line ?? item.sub}</p>
-                  <p class="mt-3 text-sm font-semibold">{$(item.price)} {item.unit}</p>
+            {itemRows.map((item, index) => {
+              const hasPhoto = !!(item.before && item.after);
+              const reverse = hasPhoto && itemRows.slice(0, index).filter((row) => row.before && row.after).length % 2 === 1;
+              return <article class:list={["detail-row", hasPhoto && "has-photo", reverse && "reverse"]} data-item-row>
+                <div class="detail-copy">
+                  <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
+                  <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
+                  <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{item.line ?? item.sub}</p>
+                  <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{$(item.price)} {item.unit.split(' (')[0]}</p>
                 </div>
-                {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} class="mt-4 md:mt-0" />}
-              </article>
-            ))}
+                {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} aspect="aspect-[16/10]" class="detail-slider mt-4 md:mt-0 w-full" />}
+              </article>;
+            })}
           </div>
         </section>
       )}
@@ -152,3 +155,14 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
   <div class="md:hidden h-24"></div>
 </Base>
 
+
+<style>
+  .detail-row { padding-block: 16px; }
+  @media (min-width: 768px) {
+    .detail-row.has-photo { display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: 32px; align-items: center; padding-block: 8px; }
+    .detail-row.reverse { grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); }
+    .detail-row.reverse .detail-copy { order: 2; }
+    .detail-row :global(.detail-slider) { width: min(100%, 400px); max-width: 460px; justify-self: end; }
+    .detail-row.reverse :global(.detail-slider) { order: 1; justify-self: start; }
+  }
+</style>

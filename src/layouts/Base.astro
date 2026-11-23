@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
 import logoFooter from '../assets/logo-footer.png';
 import Icon from '../components/Icon.astro';
-import { DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES, subMin } from '../data/services';
+import { DIVISIONS, AREAS, PHONE, PHONE_TEL, CATEGORIES, HOME_CARDS, subMin } from '../data/services';
 
 interface Props {
   title: string;
@@ -82,23 +82,24 @@ const tabs = [
           <div id="services-dropdown" hidden class="absolute inset-x-4 md:inset-x-6 top-full pt-2" data-service-dropdown>
             <div class="card overflow-hidden bg-white text-ink shadow-lift">
               <div class="grid grid-cols-4 gap-2 p-3" data-menu-categories>
-                {CATEGORIES.map(({ label, divs: list }) => (
-                  <div class="min-w-0">
-                    <div class="px-2 pt-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-muted">{label}</div>
+                {CATEGORIES.map(({ label, divs: list }) => {
+                  const feature = HOME_CARDS.find((card) => card.divisionId === list[0].id)!;
+                  const first = list[0].subs[0];
+                  return <div class="min-w-0">
+                    <a href={`/services/${list[0].id}/${first.slug}`} class="relative block h-[120px] overflow-hidden rounded-xl mb-3" data-category-photo>
+                      <Image src={feature.image} alt="" class={`absolute inset-0 size-full object-cover ${feature.pos ?? ''}`} widths={[400, 700, 1000]} sizes="(min-width:1152px) 280px, 25vw" quality={85} />
+                      <span class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></span>
+                      <span class="absolute inset-x-0 bottom-0 p-3 text-white font-heading font-extrabold text-sm leading-tight">{label}</span>
+                    </a>
                     {list.flatMap((d) => d.subs.map((s) => {
                       const price = subMin(s);
-                      return <a href={`/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="mega-service relative flex items-center gap-2.5 p-2 rounded-xl min-h-20">
-                        <span class="shrink-0 size-12 rounded-[10px] overflow-hidden">
-                          <Image src={s.image} alt="" class={`size-full object-cover ${s.pos ?? ''}`} widths={[128, 256]} sizes="128px" quality={85} />
-                        </span>
-                        <span class="min-w-0">
-                          <span class="mega-name block font-semibold text-[13px] leading-snug">{s.name}</span>
-                          <span class="block mt-1 text-[11.5px] text-muted">{price != null ? `from $${price.toLocaleString('en-CA')}${d.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span>
-                        </span>
+                      return <a href={`/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="mega-service relative flex items-center justify-between gap-2 px-2.5 py-3 rounded-xl min-h-14">
+                        <span class="mega-name min-w-0 font-semibold text-[13px] leading-snug">{s.name}</span>
+                        <span class="shrink-0 text-right text-[11.5px] text-muted">{price != null ? `from $${price.toLocaleString('en-CA')}${d.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span>
                       </a>;
                     }))}
-                  </div>
-                ))}
+                  </div>;
+                })}
               </div>
               <div class="flex items-center justify-between gap-4 px-5 py-3 bg-purple-soft border-t border-line">
                 <a href={`tel:${PHONE_TEL}`} class="inline-flex items-center min-h-11 text-sm font-semibold text-purple">Not sure? Call {PHONE}</a>
@@ -150,12 +151,10 @@ const tabs = [
       <ul class="mt-4 flex flex-wrap gap-2" aria-label="Service areas">
         {AREAS.map((area) => <li class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] text-white/85">{area}</li>)}
       </ul>
-      <p class="mt-4 text-sm">Based in Port Coquitlam.</p>
     </section>
     <div class="border-t border-white/10">
       <div class="mx-auto max-w-6xl px-5 md:px-6 py-5 text-xs flex flex-col md:flex-row gap-2 justify-between">
-        <span>© {new Date().getFullYear()} LIVO Property Services Ltd. · Port Coquitlam, BC</span>
-        <span>Uniformed crews · Pay after the job</span>
+        <span>© {new Date().getFullYear()} LIVO Property Services Ltd.</span>
       </div>
     </div>
   </footer>
@@ -236,15 +235,13 @@ const tabs = [
   <style is:global>
     .tab-dot { animation: pop-in 420ms var(--ease-spring) both; }
     [data-service-toggle][aria-expanded="true"] svg { transform: rotate(180deg); }
-    .mega-service, .mega-name, .mega-service img { transition: background-color 150ms, color 150ms, transform 150ms; }
+    .mega-service, .mega-name { transition: background-color 150ms, color 150ms; }
     .mega-service::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 3px; background: var(--color-lime); opacity: 0; transition: opacity 150ms; }
     .mega-service:is(:hover, :focus-visible) { background: var(--color-purple-soft); }
     .mega-service:is(:hover, :focus-visible) .mega-name { color: var(--color-purple); }
     .mega-service:is(:hover, :focus-visible)::before { opacity: 1; }
-    .mega-service:is(:hover, :focus-visible) img { transform: scale(1.08); }
     @media (prefers-reduced-motion: reduce) {
-      .mega-service, .mega-name, .mega-service img, .mega-service::before { transition: none; }
-      .mega-service:is(:hover, :focus-visible) img { transform: none; }
+      .mega-service, .mega-name, .mega-service::before { transition: none; }
     }
   </style>
 </body>
