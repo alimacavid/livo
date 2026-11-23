@@ -1,4 +1,5 @@
 ---
+import DetailSelection from '../../../components/DetailSelection.astro';
 import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import BeforeAfter from '../../../components/BeforeAfter.astro';
@@ -39,9 +40,9 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
         <div class={hasItems ? "rise mt-3 inline-block max-w-full rounded-full bg-lime text-ink px-3.5 py-1.5 text-[12px] md:text-[13px] font-bold" : "rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold"} style="--i:2">
-          {from ? <>From {$(from)}{tax} <span class="font-medium">· {hasItems ? priceNote : s.unit}</span></> : 'Free quote'}
+          {from ? <>From {$(from)}{tax} {!hasItems && <span class="font-medium">· {s.unit}</span>}</> : 'Free quote'}
         </div>
-        {s.minOrder != null && !hasItems && <p class="mt-2 text-[12px] text-white/85">{priceNote}</p>}
+        {s.minOrder != null && <p class="mt-2 text-[12px] text-white/80">{priceNote}</p>}
       </div>
     </div>
   </section>
@@ -58,12 +59,13 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
             {itemRows.map((item, index) => {
               const hasPhoto = !!(item.before && item.after);
               const reverse = hasPhoto && itemRows.slice(0, index).filter((row) => row.before && row.after).length % 2 === 1;
-              return <article class:list={["detail-row", hasPhoto && "has-photo", reverse && "reverse"]} data-item-row>
+              return <article class:list={["detail-row", hasPhoto && "has-photo", reverse && "reverse"]} data-item-row data-detail-item={item.id}>
                 <div class="detail-copy">
                   <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
                   <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
                   <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{item.line ?? item.sub}</p>
                   <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{$(item.price)} {item.unit.split(' (')[0]}</p>
+                  <DetailSelection item={item} />
                 </div>
                 {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} aspect="aspect-[16/10]" class="detail-slider mt-4 md:mt-0 w-full" />}
               </article>;
@@ -141,7 +143,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
   </div>
 
   <!-- MOBILE STICKY BOOK BAR -->
-  <div slot="after" style="view-transition-name: tab-bar" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
+  <div slot="after" style="view-transition-name: tab-bar" data-default-bookbar class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
     <div class="flex items-center gap-3 px-4 h-[76px]">
       <div class="flex-1 min-w-0">
         {priceText === 'Free quote' && <div class="text-[12px] text-muted mb-1">Quote</div>}
@@ -152,7 +154,8 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <a href={bookUrl} class="sheen btn-lime px-7">{quote ? 'Get quote' : 'Book now'}</a>
     </div>
   </div>
-  <div class="md:hidden h-24"></div>
+  {hasItems && <DetailSelection items={itemRows} visitFee={s.tiers[0].price ?? 0} minOrder={s.minOrder ?? 0} bookUrl={bookUrl} />}
+  <div class={hasItems ? "h-24" : "md:hidden h-24"}></div>
 </Base>
 
 
