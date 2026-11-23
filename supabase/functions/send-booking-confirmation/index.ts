@@ -1,9 +1,8 @@
-// LIVO — send-booking-confirmation (v2, 2026-10-12; 2026-11-20: "get ready" checklist in text + email)
+// LIVO — send-booking-confirmation (2026-11-23: estimates, location and preparation in confirmations)
 // Stores a booking OR a quote request, saves the customer's details when they
 // asked for it, and sends text + email confirmations (customer) and a new-job
 // alert with photo links (LIVO).
-// v2 NOT DEPLOYED YET — deploy together with migration 0002 when Ali approves go-live:
-//   supabase functions deploy send-booking-confirmation --project-ref dlzmkkmnmrbvxoazzbpi --no-verify-jwt
+// Deployment is handled separately by Claude after review.
 //
 // Secrets: TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM, RESEND_API_KEY, RESEND_FROM,
 //          LIVO_ALERT_PHONE, LIVO_ALERT_EMAIL (where new-job alerts go)
@@ -29,10 +28,44 @@ interface Payload {
   items: Item[]; total: number; firstTime: boolean;
   description?: string; notes?: string;
   photos?: string[]; save?: boolean; placeId?: string; session?: string;
-  prep?: string[];
+  prep?: string[]; estimate?: number | null; location?: string;
 }
 // "Get ready for your crew" lines sent by the website (src/data/services.ts PREP); max 6, short text only
 const prepOf = (p: Payload) => (Array.isArray(p.prep) ? p.prep : []).map((x) => clip(x, 140)).filter(Boolean).slice(0, 6);
+
+const estimateOf = (p: Payload): number | null => typeof p.estimate === "number" && Number.isFinite(p.estimate) && p.estimate >= 0 ? Math.round(p.estimate) : null;
+const locationOf = (p: Payload) => clip(p.location, 160);
+const serviceOf = (p: Payload) => clip(p.service, 120) || clip(p.items[0]?.group, 120);
+
+function customerSms(kind: string, ref: string, when: string, p: Payload) {
+  const service = serviceOf(p), estimate = estimateOf(p);
+  if (kind === "quote") return [
+    `LIVO: quote request received #${ref} for ${service}.`,
+    estimate != null ? `Rough price from ${money(estimate)}. Final price confirmed on site.` : "",
+    "We'll text your quote, usually the same day. Questions? 888-802-LIVO",
+  ].filter(Boolean).join("\n");
+  return [
+    `LIVO: booking received #${ref}`,
+    when,
+    `${service} · ${money(p.total)}, pay after the job`,
+    "We'll text you to confirm your crew.",
+    prepOf(p).length ? `Get ready: ${prepOf(p).slice(0, 2).join(" ")}` : "",
+    "Full list in your email. Questions? 888-802-LIVO",
+  ].filter(Boolean).join("\n");
+}
+
+function alertSms(kind: string, ref: string, when: string, p: Payload, photoCount: number) {
+  const estimate = estimateOf(p);
+  return [
+    `NEW ${kind.toUpperCase()} #${ref} · ${p.segment === "commercial" ? "commercial" : "residential"}`,
+    serviceOf(p),
+    `${clip(p.business, 60) || p.name} · ${p.phone}`,
+    when,
+    locationOf(p) ? `Location: ${locationOf(p)}` : "",
+    kind === "quote" && estimate != null ? `Rough price from ${money(estimate)}` : "",
+    photoCount ? `${photoCount} photos — see email` : "",
+  ].filter(Boolean).join("\n");
+}
 
 async function sha256(s: string) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -102,11 +135,9 @@ Deno.serve(async (req) => {
     const service = clip(body.service, 120) || body.items[0].group;
 
     // ---- customer confirmation ----
-    const sms = kind === "quote"
-      ? `LIVO: we got your quote request (#${ref}) for ${service}. We'll send your quote, usually the same day. Questions? 888-802-LIVO`
-      : `LIVO booking received! Ref ${ref}\n${when}\nTotal ${money(body.total)}. We'll call to confirm.${prepOf(body).length ? `\n\nGet ready:\n${prepOf(body).slice(0, 3).map((x) => `- ${x}`).join("\n")}\nFull list in your email.` : ""}\nQuestions? 888-802-LIVO`;
+    const sms = customerSms(kind, ref, when, body);
     const smsResult = await sendSms(body.phone, sms);
-    const emailResult = await sendEmail(body.email, kind === "quote" ? `We got your LIVO quote request — #${ref}` : `Your LIVO booking — #${ref}`, customerHtml(kind, ref, when, body));
+    const emailResult = await sendEmail(body.email, kind === "quote" ? `We got your LIVO quote request — #${ref}` : `Your LIVO booking — #${ref}`, customerHtml(kind, ref, when, { ...body, photos }));
 
     // ---- alert LIVO (with 7-day photo links) ----
     const links: string[] = [];
@@ -115,9 +146,9 @@ Deno.serve(async (req) => {
       if (data?.signedUrl) links.push(data.signedUrl);
     }
     const alertTo = Deno.env.get("LIVO_ALERT_PHONE");
-    if (alertTo) await sendSms(alertTo, `NEW ${kind.toUpperCase()} #${ref} · ${segment}\n${service}\n${clip(body.business, 60) || body.name} · ${body.phone}\n${when}${photos.length ? `\n${photos.length} photos — see email` : ""}`);
+    if (alertTo) await sendSms(alertTo, alertSms(kind, ref, when, body, photos.length));
     const alertMail = Deno.env.get("LIVO_ALERT_EMAIL");
-    if (alertMail) await sendEmail(alertMail, `New ${kind} #${ref} — ${service}`, alertHtml(kind, ref, when, body, links));
+    if (alertMail) await sendEmail(alertMail, `New ${kind} #${ref} — ${service}`, alertHtml(kind, ref, when, { ...body, photos }, links));
 
     return json({ ok: true, ref, booking_id: booking.id, sms: smsResult, email: emailResult });
   } catch (e) {
@@ -155,35 +186,51 @@ async function sendEmail(to: string, subject: string, html: string) {
 
 const frame = (title: string, sub: string, inner: string) => `
   <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#2C2C2C">
-    <div style="background:linear-gradient(135deg,#6B3FA0,#4A2A73);padding:24px;border-radius:14px 14px 0 0">
+    <div style="background-color:#6B3FA0;background-image:linear-gradient(135deg,#6B3FA0,#4A2A73);padding:24px;border-radius:14px 14px 0 0">
       <h1 style="color:#fff;margin:0;font-size:22px">${title}</h1><p style="color:#e9dcf3;margin:6px 0 0">${sub}</p>
     </div>
     <div style="border:1px solid #eee;border-top:none;padding:24px;border-radius:0 0 14px 14px">${inner}</div>
   </div>`;
 
+const emailLine = (label: string, value?: string) => value ? `<tr><th scope="row" align="left" style="vertical-align:top;color:#666;font-weight:400;padding:5px 12px 5px 0;white-space:nowrap">${esc(label)}</th><td style="padding:5px 0;overflow-wrap:anywhere">${esc(value).replace(/\n/g, "<br>")}</td></tr>` : "";
+
+function requestDetails(kind: string, when: string, p: Payload) {
+  return `<table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+    ${emailLine("Service", serviceOf(p))}${emailLine(kind === "quote" ? "Preferred date" : "Date", when)}${emailLine("Address", clip(p.address, 300) || "Not provided")}${emailLine("Access notes", clip(p.access, 300))}${emailLine("Location", locationOf(p))}${emailLine("Photos sent", String(Array.isArray(p.photos) ? p.photos.length : 0))}
+  </table>`;
+}
+
+function prepHtml(p: Payload) {
+  const prep = prepOf(p);
+  return prep.length ? `<div style="background:#F6F9D9;border-radius:10px;padding:14px 16px;margin:16px 0"><b style="font-size:15px">Get ready for your crew</b>
+    <ul style="margin:8px 0 0;padding-left:18px;line-height:1.6">${prep.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+}
+
 function customerHtml(kind: string, ref: string, when: string, p: Payload) {
+  const details = requestDetails(kind, when, p);
+  const footer = `<p style="color:#666;font-size:13px">We text you to confirm your crew. Questions? Call <b>888-802-LIVO</b>.</p>`;
+  if (kind === "quote") {
+    const estimate = estimateOf(p);
+    return frame("Quote request received", `Reference #${esc(ref)}`, `<p>Hi ${esc(p.name)}, thanks for asking LIVO for a quote.</p>
+      ${details}
+      <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px">${estimate != null ? `<b>Rough price from ${money(estimate)}</b> (final price confirmed on site)` : "<b>Price:</b> in your quote"}</p>
+      <p style="background:#F6F9D9;border-radius:10px;padding:12px 14px"><b>What happens next</b><br>1. We look at your photos and details.<br>2. You get your quote by text and email, usually the same day.<br>3. Say yes and we lock in your date.</p>
+      ${prepHtml(p)}${footer}`);
+  }
   const rows = p.items.map((i) => `<tr><td style="padding:8px 0;border-bottom:1px solid #eee">${esc(i.group)}<br><span style="color:#777;font-size:13px">${esc(i.size)} · ${esc(i.freq)}</span></td>` +
-    `<td align="right" style="padding:8px 0;border-bottom:1px solid #eee;font-weight:700;color:#6B3FA0">${kind === "quote" ? "" : money(i.price)}</td></tr>`).join("");
-  return kind === "quote"
-    ? frame("Quote request received", `Reference #${ref}`, `<p>Hi ${esc(p.name)}, thanks for asking LIVO for a quote.</p>
-        <table style="width:100%;border-collapse:collapse;margin:12px 0">${rows}</table>
-        <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px">Preferred date: <b>${esc(when)}</b> (we confirm it with you).</p>
-        <p style="background:#F6F9D9;border-radius:10px;padding:12px 14px"><b>What happens next</b><br>1. We look at your photos and details.<br>2. You get your quote by text and email, usually the same day.<br>3. Say yes and we lock in your date.</p>
-        <p style="color:#777;font-size:13px">Questions? Call <b>888-802-LIVO</b>.</p>`)
-    : frame("Booking received", `Reference #${ref}`, `<p>Hi ${esc(p.name)}, thanks for booking with LIVO.</p>
-        <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px;font-weight:700">${esc(when)}</p>
-        <table style="width:100%;border-collapse:collapse;margin:12px 0">${rows}</table>
-        <table style="width:100%;border-collapse:collapse"><tr><td style="font-weight:800;font-size:18px;padding-top:10px">Total${p.firstTime ? " (first-booking discount applied)" : ""}</td>
-        <td align="right" style="font-weight:800;font-size:18px;padding-top:10px">${money(p.total)}</td></tr></table>
-        ${prepOf(p).length ? `<div style="background:#F6F9D9;border-radius:10px;padding:14px 16px;margin:16px 0"><b style="font-size:15px">Get ready for your crew</b>
-          <ul style="margin:8px 0 0;padding-left:18px;line-height:1.6">${prepOf(p).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-          <p style="margin:8px 0 0;color:#555;font-size:13px">We text you when your crew is on the way.</p></div>` : ""}
-        <p style="color:#777;font-size:13px">No payment now. You pay after the job. Need a change? Call <b>888-802-LIVO</b>.</p>`);
+    `<td align="right" style="padding:8px 0;border-bottom:1px solid #eee;font-weight:700;color:#6B3FA0">${money(i.price)}</td></tr>`).join("");
+  return frame("Booking received", `Reference #${esc(ref)}`, `<p>Hi ${esc(p.name)}, thanks for booking with LIVO.</p>
+    ${details}
+    <table style="width:100%;border-collapse:collapse;margin:12px 0">${rows}</table>
+    <table style="width:100%;border-collapse:collapse"><tr><td style="font-weight:800;font-size:18px;padding-top:10px">Total${p.firstTime ? " (first-booking discount applied)" : ""}</td><td align="right" style="font-weight:800;font-size:18px;padding-top:10px">${money(p.total)}</td></tr></table>
+    ${p.notes ? `<p style="font-size:13px;line-height:1.5"><b>Notes:</b> ${esc(clip(p.notes, 1000))}</p>` : ""}
+    ${prepHtml(p)}
+    <p style="color:#666;font-size:13px">No payment now. <b>Pay after the job.</b></p>${footer}`);
 }
 
 function alertHtml(kind: string, ref: string, when: string, p: Payload, links: string[]) {
-  const line = (k: string, v?: string) => (v ? `<tr><td style="color:#777;padding:4px 12px 4px 0">${k}</td><td>${esc(v)}</td></tr>` : "");
-  return frame(`New ${kind} #${ref}`, `${esc(p.segment ?? "")} · ${esc(p.service ?? p.items[0].group)}`, `
-    <table style="font-size:14px">${line("Name", p.name)}${line("Business", p.business)}${line("Phone", p.phone)}${line("Email", p.email)}${line("Address", p.address)}${line("Access", p.access)}${line("When", when)}${line("Size / quote", p.items[0].size)}${line("How often", p.items[0].freq)}${kind === "booking" ? line("Total", money(p.total)) : ""}${line("Description", p.description)}${line("Notes", p.notes)}</table>
-    ${links.length ? `<p style="margin-top:16px;font-weight:700">Photos (links work for 7 days)</p>${links.map((u, i) => `<a href="${u}" style="display:inline-block;margin:0 8px 8px 0">Photo ${i + 1}</a>`).join("")}` : ""}`);
+  const estimate = estimateOf(p);
+  return frame(`New ${esc(kind)} #${esc(ref)}`, `${esc(p.segment ?? "")} · ${esc(serviceOf(p))}`, `
+    <table style="font-size:14px">${emailLine("Name", p.name)}${emailLine("Business", p.business)}${emailLine("Phone", p.phone)}${emailLine("Email", p.email)}${emailLine("Address", p.address)}${emailLine("Access", p.access)}${emailLine("Location", locationOf(p))}${emailLine("When", when)}${emailLine("Size / quote", p.items[0].size)}${emailLine("How often", p.items[0].freq)}${kind === "booking" ? emailLine("Total", money(p.total)) : ""}${kind === "quote" && estimate != null ? emailLine("Rough price", `from ${money(estimate)} (final price confirmed on site)`) : ""}${emailLine("Photos sent", String(Array.isArray(p.photos) ? p.photos.length : 0))}${emailLine("Description", p.description)}${emailLine("Notes", p.notes)}</table>
+    ${links.length ? `<p style="margin-top:16px;font-weight:700">Photos (links work for 7 days)</p>${links.map((u, i) => `<a href="${esc(u)}" style="display:inline-block;margin:0 8px 8px 0">Photo ${i + 1}</a>`).join("")}` : ""}`);
 }
