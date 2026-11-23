@@ -228,10 +228,11 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const junkRoughPriceNote = () => junkQuote() && junkEstimate() != null ? `Rough price from ${money(junkEstimate()!)}` : '';
   const segment = (): Seg => junkQuote() ? 'residential' : (div().segment === 'commercial' || st.seg === 'commercial' || st.forBusiness ? 'commercial' : 'residential');
   const skipJunkSize = () => junkQuote() && sub()?.tiers.length === 1;
-  const serviceStart = (): Step => skipJunkSize() ? 'photos' : 'size';
+  const skipPricedSize = () => !isQuote() && sub()?.tiers.length === 1 && sub()!.tiers[0].price != null;
+  const serviceStart = (): Step => skipJunkSize() ? 'photos' : skipPricedSize() ? steps().find((step) => step !== 'service' && step !== 'size')! : 'size';
   const discountOK = () => D.firstTime > 0 && !isQuote() && segment() === 'residential';
   const steps = () => ALL_STEPS.filter((x) =>
-    (x !== 'size' || !skipJunkSize()) &&
+    (x !== 'size' || !(skipJunkSize() || skipPricedSize())) &&
     (x !== 'addons' || (!isQuote() && addons().length > 0)) &&
     (x !== 'photos' || isQuote()) &&
     (x !== 'freq' || freqs().length > 1));
