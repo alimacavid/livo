@@ -3,14 +3,14 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import BeforeAfter from '../../components/BeforeAfter.astro';
 import { Image } from 'astro:assets';
-import { getDivision, subMin, isQuoteSub, PHONE, PHONE_TEL } from '../../data/services';
+import { getDivision, JUNK_CATEGORIES, subMin, isQuoteSub, PHONE, PHONE_TEL } from '../../data/services';
 const d = getDivision('junk-removal');
-const rows = ['single-item-pickup', 'junk-removal-by-load', 'renovation-debris', 'office-clearouts'].map(slug => d.subs.find(s => s.slug === slug)!);
+const rows = JUNK_CATEGORIES.map(row => ({ ...row, service: d.subs.find(s => s.slug === row.sub)! }));
 const money = (n: number | null) => n == null ? 'Free quote' : '$' + n.toLocaleString('en-CA');
-const price = (s: typeof rows[number]) => s.slug === 'single-item-pickup'
+const price = (s: typeof rows[number]['service']) => s.slug === 'single-item-pickup'
   ? `${money(s.tiers.find(t => t.id === 'curb')!.price)} curb · ${money(s.tiers.find(t => t.id === 'inside')!.price)} inside`
-  : isQuoteSub(s) ? 'Free quote' : `From ${money(subMin(s))} · priced by truck load`;
-const included = rows[1].included;
+  : isQuoteSub(s) ? 'Free quote' : `From ${money(subMin(s))}`;
+const included = d.subs.find(s => s.slug === 'junk-removal-by-load')!.included;
 ---
 <Base title={d.seoTitle} description={d.intro}>
   <section class="px-3 md:px-6 pt-1 md:pt-6">
@@ -29,16 +29,16 @@ const included = rows[1].included;
     <section class="mt-8" aria-labelledby="junk-services-title">
       <h2 id="junk-services-title" class="text-xl font-extrabold">What do you need removed?</h2>
       <div class="mt-4 divide-y divide-line border-y border-line">
-        {rows.map((s, index) => <article id={s.slug} class:list={['junk-row', index % 2 === 1 && 'reverse']} data-junk-row>
+        {rows.map((row, index) => <article id={row.id} class:list={['junk-row', index % 2 === 1 && 'reverse']} data-junk-row>
           <div class="junk-copy">
             <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
-            <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{s.name}</h3>
-            <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{s.desc}</p>
-            <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{price(s)}</p>
-            <div class="mt-3"><a href={`/book?d=${d.id}&s=${s.slug}`} class="btn-lime px-6">{isQuoteSub(s) ? 'Get a quote' : 'Book'}</a></div>
+            <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{row.name}</h3>
+            <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{row.text}</p>
+            <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{price(row.service)}</p>
+            <div class="mt-3"><a href={`/book?d=${d.id}&s=${row.service.slug}`} class="btn-lime px-6">{isQuoteSub(row.service) ? 'Get a quote' : 'Book'}</a></div>
           </div>
-          {s.before && s.after ? <BeforeAfter before={s.before} after={s.after} alt={s.name} aspect="aspect-[16/10]" class="junk-media mt-4 md:mt-0 w-full" /> :
-            <Image src={s.image} alt={s.name} class={`junk-media mt-4 md:mt-0 w-full aspect-[16/10] rounded-panel object-cover ${s.pos ?? ''}`} widths={[640, 1024, 1600]} quality={88} sizes="(min-width:768px) 460px, 100vw" />}
+          {row.before && row.after ? <BeforeAfter before={row.before} after={row.after} alt={row.name} aspect="aspect-[16/10]" class="junk-media mt-4 md:mt-0 w-full" /> :
+            <Image src={row.image} alt={row.name} class={`junk-media mt-4 md:mt-0 w-full aspect-[16/10] rounded-panel object-cover ${row.service.pos ?? ''}`} widths={[640, 1024, 1600]} quality={88} sizes="(min-width:768px) 460px, 100vw" />}
         </article>)}
       </div>
     </section>

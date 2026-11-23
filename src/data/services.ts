@@ -502,20 +502,6 @@ export const DIVISIONS: Division[] = [
         goodFor: ['Garage and basement clear-outs', 'Old furniture', 'Moving day'],
       },
       {
-        slug: 'office-clearouts',
-        name: 'Office & Building Clearouts',
-        short: 'Desks, chairs, shelves and filing cabinets.',
-        desc: 'Moving office or closing a space? We remove desks, chairs, shelving and filing cabinets, and recycle or donate what we can. Ask for a walkthrough for offices and shared areas.',
-        image: teamVan,
-        unit: 'custom quote',
-        tierLabel: 'How to quote',
-        quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: QUOTE_NOTE,
-        included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
-        goodFor: ['Office moves', 'End of lease', 'Property managers'],
-      },
-      {
         slug: 'renovation-debris',
         name: 'Renovation Waste',
         short: 'Loose wood, cabinets, flooring and carpet.',
@@ -531,6 +517,34 @@ export const DIVISIONS: Division[] = [
         included: ['Loading and hauling', 'Sorting for recycling', 'Site swept after', 'Disposal fees included in the quote'],
         goodFor: ['Homeowners after a reno', 'Contractors', 'Kitchen and flooring jobs'],
       },
+      {
+        slug: 'hot-tub-removal',
+        name: 'Hot Tub Removal',
+        short: 'Hot tubs and jacuzzis, cut up and hauled away.',
+        desc: 'We cut up your old hot tub and haul it away. Power must be disconnected by an electrician before we arrive. Send photos and tell us about access for a quote.',
+        image: junkTruck,
+        unit: 'custom quote',
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: QUOTE_NOTE,
+        included: ['Cutting and loading', 'Hauling and disposal', 'Area swept after'],
+        goodFor: ['Old hot tubs', 'Backyard makeovers', 'Moving out'],
+      },
+      {
+        slug: 'office-clearouts',
+        name: 'Office & Building Clearouts',
+        short: 'Desks, chairs, shelves and filing cabinets.',
+        desc: 'Moving office or closing a space? We remove desks, chairs, shelving and filing cabinets, and recycle or donate what we can. Ask for a walkthrough for offices and shared areas.',
+        image: teamVan,
+        unit: 'custom quote',
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: QUOTE_NOTE,
+        included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
+        goodFor: ['Office moves', 'End of lease', 'Property managers'],
+      },
     ],
     addons: [
       { id: 'heavy', name: 'Heavy / Bulky Item', sub: 'Over 150 lb', price: 45, unit: 'per item', qty: true },
@@ -544,10 +558,10 @@ export const DIVISIONS: Division[] = [
     faqs: [
       { q: 'Do I need to carry things outside?', a: 'No. For loads and the "inside" item price, we remove items from anywhere on the property.' },
       { q: 'What if I have more than I thought?', a: 'We confirm the load size on site before we start. No surprises.' },
-      { q: 'What do you take?', a: 'Furniture, mattresses, appliances, electronics, wood and flooring. Ask first about fridges, drywall, concrete, soil, yard waste, pianos and hot tubs.' },
+      { q: 'What do you take?', a: 'Furniture, mattresses, appliances, electronics, yard waste, hot tubs and renovation waste. Ask first about pianos, drywall, concrete and soil.' },
       { q: 'Do you take business junk?', a: 'Yes. For offices, stores and job sites, send photos for a quote.' },
     ],
-    notIncluded: ['Asbestos, paint and chemicals', 'Propane tanks or unknown hazardous waste', 'Demolition'],
+    notIncluded: ['Asbestos, paint and chemicals', 'Propane tanks or unknown hazardous waste', 'Demolition', 'Disconnecting hot tub power (needs an electrician)'],
     crossSell: { div: 'construction-cleaning', sub: 'post-construction-cleaning', title: 'After a renovation?', line: 'Add a post-construction clean from the same company.' },
   },
 
@@ -732,6 +746,18 @@ export const CATEGORIES: Category[] = [
   { id: 'junk', label: 'Junk Removal', line: 'One item to full clear-outs.', divs: [getDivision('junk-removal')] },
 ];
 export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;
+
+// Display categories on the Junk overview share the existing booking services.
+export const JUNK_CATEGORIES = [
+  { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkTruck },
+  { id: 'appliances', name: 'Appliances & Electronics', text: 'Fridges, washers, stoves, TVs and computers. Recycled properly.', sub: 'single-item-pickup', image: teamVan },
+  { id: 'home', name: 'Home & Basement Clear-Outs', text: 'Mixed junk from any room. Pay by how much of the truck you fill.', sub: 'junk-removal-by-load', image: junkTruck, before: junkBefore, after: junkAfter },
+  { id: 'garage', name: 'Garage & Storage Unit Clear-Outs', text: 'Garages, sheds and storage lockers, emptied in one visit.', sub: 'junk-removal-by-load', image: junkTruck },
+  { id: 'yard', name: 'Yard & Garden Waste', text: 'Branches, bagged leaves and old patio furniture. Soil, rock and sod are quoted.', sub: 'junk-removal-by-load', image: teamVan },
+  { id: 'renovation', name: 'Kitchen & Renovation Waste', text: 'Old cabinets, counters, flooring and wood after a reno.', sub: 'renovation-debris', image: junkTruck, before: junkRenoBefore, after: junkRenoAfter },
+  { id: 'hot-tub', name: 'Hot Tub Removal', text: 'We cut it up and haul it away. Power must be disconnected by an electrician first.', sub: 'hot-tub-removal', image: junkTruck },
+  { id: 'office', name: 'Office & Building Clear-Outs', text: 'Desks, chairs, shelving and filing cabinets.', sub: 'office-clearouts', image: teamVan },
+];
 
 // Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
 export type Card = { divisionId: string; name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string; pos?: string };
