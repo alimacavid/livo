@@ -4,6 +4,7 @@
 2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
 
 ## ⚙ HOW WE WORK (Ali, 2026-11-21) — same as VORX
+2026-11-23 — Codex: junk before/after sliders on all 8 junk rows + own photos per junk sub-page and menu thumbnail (Ali's AI photos: furniture, appliance, storage, yard, hot tub, office, reno) — PR #22
 2026-11-23 — Codex: Junk Removal overview page /services/junk-removal (8 category rows in Detail style: Furniture & Mattresses, Appliances & Electronics, Home & Basement, Garage & Storage, Yard & Garden, Kitchen & Renovation Waste, Hot Tub (new quote sub), Office), Small Load $139 tier (Ali OK), Services click → /services (hover opens menu), thumbnails in menu/chooser/phone add-ons, Ali's reno before/after photos — PR #21. Still need real junk photos per row.
 2026-11-23 — Codex: footer text Greater Vancouver only — PR #20
 2026-11-23 — Codex: house add-ons = all detail items, Detail page Add buttons + bottom bar into booking, hero pill 'From $99', move crew photo + short units — PR #19
