@@ -24,6 +24,8 @@ import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
 import junkRenoBefore from '../assets/photos/junk-reno-before.jpg';
 import junkRenoAfter from '../assets/photos/junk-reno-after.jpg';
+import junkBasementBefore from '../assets/photos/junk-basement-before.jpg';
+import junkBasementAfter from '../assets/photos/junk-basement-after.jpg';
 import junkFurnitureBefore from '../assets/photos/junk-furniture-before.jpg';
 import junkFurnitureAfter from '../assets/photos/junk-furniture-after.jpg';
 import junkApplianceBefore from '../assets/photos/junk-appliance-before.jpg';
@@ -486,6 +488,8 @@ export const DIVISIONS: Division[] = [
         after: junkFurnitureAfter,
         unit: 'per item',
         tierLabel: 'Where is it?',
+        quote: true,
+        quoteNote: 'Rough price from your photos. Final price confirmed on site before we start. Mattresses, fridges and heavy items may add a small disposal fee.',
         tiers: [
           { id: 'curb', name: 'Curbside or Ground Floor', sub: 'Easy access, no stairs', price: 119, popular: true },
           { id: 'inside', name: 'Inside the Home', sub: 'We carry it out, stairs OK', price: 169 },
@@ -499,11 +503,13 @@ export const DIVISIONS: Division[] = [
         name: 'Home & Garage Clearouts',
         short: 'Furniture, boxes and clutter, priced by load.',
         desc: 'Point, and it is gone. You pay by how much of the truck you use. We do all the lifting and loading, sweep up after, and donate or recycle what we can.',
-        image: junkTruck,
-        before: junkBefore,
-        after: junkAfter,
+        image: junkBasementBefore,
+        before: junkBasementBefore,
+        after: junkBasementAfter,
         unit: 'per load',
         tierLabel: 'Load size',
+        quote: true,
+        quoteNote: 'Rough price from your photos. Final price confirmed on site before we start. Mattresses, fridges and heavy items may add a small disposal fee.',
         tiers: [
           { id: 'small', name: 'Small Load', sub: 'About 1.25 cu yd · 2–3 items', price: 139 },
           { id: 'quarter', name: 'Quarter Truck', sub: 'About 2.5 cu yd · a few big items', price: 185 },
@@ -769,7 +775,7 @@ export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.include
 export const JUNK_CATEGORIES = [
   { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkFurnitureBefore, before: junkFurnitureBefore, after: junkFurnitureAfter },
   { id: 'appliances', name: 'Appliances & Electronics', text: 'Fridges, washers, stoves, TVs and computers. Recycled properly.', sub: 'single-item-pickup', image: junkApplianceBefore, before: junkApplianceBefore, after: junkApplianceAfter },
-  { id: 'home', name: 'Home & Basement Clear-Outs', text: 'Mixed junk from any room. Pay by how much of the truck you fill.', sub: 'junk-removal-by-load', image: junkTruck, before: junkBefore, after: junkAfter },
+  { id: 'home', name: 'Home & Basement Clear-Outs', text: 'Mixed junk from any room. Pay by how much of the truck you fill.', sub: 'junk-removal-by-load', image: junkBasementBefore, before: junkBasementBefore, after: junkBasementAfter },
   { id: 'garage', name: 'Garage & Storage Unit Clear-Outs', text: 'Garages, sheds and storage lockers, emptied in one visit.', sub: 'junk-removal-by-load', image: junkStorageBefore, before: junkStorageBefore, after: junkStorageAfter },
   { id: 'yard', name: 'Yard & Garden Waste', text: 'Branches, bagged leaves and old patio furniture. Soil, rock and sod are quoted.', sub: 'junk-removal-by-load', image: junkYardBefore, before: junkYardBefore, after: junkYardAfter },
   { id: 'renovation', name: 'Kitchen & Renovation Waste', text: 'Old cabinets, counters, flooring and wood after a reno.', sub: 'renovation-debris', image: junkTruck, before: junkRenoBefore, after: junkRenoAfter },
