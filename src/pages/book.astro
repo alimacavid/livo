@@ -117,7 +117,11 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tightest #bk-view .mt-5, html.bk-tightest #bk-view .mt-4 { margin-top: .5rem; }
   html.bk-tightest #bk-view .p-5, html.bk-tightest #bk-view .p-4 { padding: .75rem; }
   html.bk-tightest #bk-view .pt-4 { padding-top: .5rem; }
-  html.bk-tightest #bk-view .bk-addimg { display: none; }
+  html.bk-tightest #bk-view .bk-addimg, html.bk-tightest #bk-view .bk-addphoto { display: none; }
+  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 4px; }
+  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > :first-child { grid-column: 1 / -1; }
+  html.bk-tightest #bk-view .bk-addqty { margin-top: 0; padding: 0; box-shadow: none; }
+  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) .bk-addprice .text-muted { display: none; }
   html.bk-tighter #bk-view .mt-3 { margin-top: .4rem; }
   html.bk-tighter #bk-view textarea { height: 3rem; }
   html.bk-tighter #bk-view input:not([type=file]) { height: 2.5rem; }
@@ -189,10 +193,15 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   if (!sub()) st.sub = '';
   if (st.seg === 'commercial') st.forBusiness = true;
-  (q.get('a') ?? '').split(',').forEach((id) => { if (addons().some((a) => a.id === id)) st.addons[id] = 1; });
+  (q.get('a') ?? '').split(',').forEach((entry) => {
+    const [id, raw = '1'] = entry.split(':');
+    const a = addons().find((a) => a.id === id);
+    const n = Number(raw);
+    if (a && Number.isSafeInteger(n) && n > 0) st.addons[id] = a.qty ? n : 1;
+  });
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (sub()) st.freq = freq().id;
-  if (st.sub) st.step = 'size'; // service known: always start with the size
+  if (st.sub) st.step = sub()?.itemsRequired && Object.keys(st.addons).length ? 'addons' : 'size'; // Item links keep selections and open the items step; other links start at size.
   // back from sign-in: restore everything the customer already picked and continue at "Your details"
   const RESUME = 'livo-book-resume'; let resumed = false;
   if (q.get('resume')) {
@@ -284,17 +293,18 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           const n = st.addons[a.id] ?? 0; const on = n > 0;
           if (a.img) return `<div class="press relative h-full flex flex-col overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
             <button data-add="${a.id}" class="absolute inset-0 z-10 rounded-[18px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <div class="relative">
+            <div class="relative bk-addphoto">
               <img src="${a.img}" alt="" class="bk-addimg w-full aspect-[4/3] object-cover bg-line" />
               <span aria-hidden="true" class="absolute top-2 right-2 size-8 rounded-full grid place-items-center shadow-md transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-white text-ink'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-4')}</span>
-              ${a.qty && on ? `<span class="absolute z-20 bottom-2 right-2 flex items-center gap-1 rounded-full bg-white/95 shadow-md p-1">
-                <button data-dec="${a.id}" class="press size-8 rounded-full bg-cloud grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
-                <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
-                <button data-inc="${a.id}" class="press size-8 rounded-full bg-cloud grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
+
             </div>
-            <div class="px-3 py-2">
+            <div class="bk-addcopy px-3 py-2 flex flex-col">
               <div class="font-semibold text-[13.5px] leading-tight truncate">${a.name}</div>
-              <div class="text-[12.5px] truncate"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></div>
+              <div class="bk-addprice text-[12.5px] truncate"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></div>
+              ${a.qty && on ? `<span class="bk-addqty relative z-20 mt-1 self-end flex items-center gap-1 rounded-full bg-white/95 shadow-md p-1">
+                <button data-dec="${a.id}" class="press size-9 rounded-full bg-cloud grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
+                <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
+                <button data-inc="${a.id}" class="press size-9 rounded-full bg-cloud grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
             </div>
           </div>`;
           return `<div class="press relative px-3.5 py-3 rounded-[16px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
