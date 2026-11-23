@@ -24,6 +24,8 @@ import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
 import junkRenoBefore from '../assets/photos/junk-reno-before.jpg';
 import junkRenoAfter from '../assets/photos/junk-reno-after.jpg';
+import junkFurnitureBefore from '../assets/photos/junk-furniture-before.jpg';
+import junkFurnitureAfter from '../assets/photos/junk-furniture-after.jpg';
 import junkApplianceBefore from '../assets/photos/junk-appliance-before.jpg';
 import junkApplianceAfter from '../assets/photos/junk-appliance-after.jpg';
 import junkStorageBefore from '../assets/photos/junk-storage-before.jpg';
@@ -479,9 +481,9 @@ export const DIVISIONS: Division[] = [
         name: 'One Item Pickup',
         short: 'A sofa, mattress, dresser or TV.',
         desc: 'Just one thing to go? Send a photo and tell us if it is at the curb or inside. We pick it up and dispose of it properly.',
-        image: junkApplianceBefore,
-        before: junkApplianceBefore,
-        after: junkApplianceAfter,
+        image: junkFurnitureBefore,
+        before: junkFurnitureBefore,
+        after: junkFurnitureAfter,
         unit: 'per item',
         tierLabel: 'Where is it?',
         tiers: [
@@ -765,7 +767,7 @@ export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.include
 
 // Display categories on the Junk overview share the existing booking services.
 export const JUNK_CATEGORIES = [
-  { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkTruck },
+  { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkFurnitureBefore, before: junkFurnitureBefore, after: junkFurnitureAfter },
   { id: 'appliances', name: 'Appliances & Electronics', text: 'Fridges, washers, stoves, TVs and computers. Recycled properly.', sub: 'single-item-pickup', image: junkApplianceBefore, before: junkApplianceBefore, after: junkApplianceAfter },
   { id: 'home', name: 'Home & Basement Clear-Outs', text: 'Mixed junk from any room. Pay by how much of the truck you fill.', sub: 'junk-removal-by-load', image: junkTruck, before: junkBefore, after: junkAfter },
   { id: 'garage', name: 'Garage & Storage Unit Clear-Outs', text: 'Garages, sheds and storage lockers, emptied in one visit.', sub: 'junk-removal-by-load', image: junkStorageBefore, before: junkStorageBefore, after: junkStorageAfter },
