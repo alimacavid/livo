@@ -128,3 +128,15 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* Custom radio/checkbox cards: show focus ring on the card when the hidden input has keyboard focus */
 label:has(> input.sr-only:focus-visible) { outline: 3px solid var(--color-purple); outline-offset: 3px; }
+
+/* Service counts: fill the final row on phones and balance 4/5 cards on desktop. */
+.service-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.service-card-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 768px) {
+  .service-card-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .service-card-grid > * { grid-column: span 2; }
+  .service-card-grid > :last-child:nth-child(odd) { grid-column: span 2; }
+  .service-card-grid[data-count="1"] > :only-child { grid-column: 1 / -1; }
+  .service-card-grid[data-count="2"] > *, .service-card-grid[data-count="4"] > * { grid-column: span 3; }
+  .service-card-grid[data-count="5"] > :nth-child(n+4) { grid-column: span 3; }
+}

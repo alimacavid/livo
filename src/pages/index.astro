@@ -1,16 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import ServiceCards from '../components/ServiceCards.astro';
 import { Image } from 'astro:assets';
 import heroVan from '../assets/photos/hero-van.png';
-import { AREAS, HOME_CARDS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
-// Homepage cards grouped under Ali's 4 sitemap categories
-const GROUPS = [
-  { label: 'Residential', cards: HOME_CARDS.slice(0, 3), wrap: 'col-span-2 md:col-span-4', grid: 'grid-cols-2 md:grid-cols-3', wide: true },
-  { label: 'Commercial', cards: HOME_CARDS.slice(3, 5), wrap: 'col-span-2', grid: 'grid-cols-2' },
-  { label: 'Post-Construction', cards: HOME_CARDS.slice(5, 6), wrap: 'col-span-1', grid: 'grid-cols-1' },
-  { label: 'Junk Removal', cards: HOME_CARDS.slice(6, 7), wrap: 'col-span-1', grid: 'grid-cols-1' },
-];
+import { AREAS, HERO_VIDEO, PHONE, PHONE_TEL } from '../data/services';
 
 ---
 <Base title="LIVO Property Services — House, Commercial Cleaning & Junk Removal in Coquitlam" header="overlay">
@@ -47,26 +41,7 @@ const GROUPS = [
       <h2 class="text-[1.4rem] md:text-4xl font-extrabold">What do you need?</h2>
       <a href="/services" class="text-sm font-semibold text-purple inline-flex items-center gap-1 min-h-11">All <Icon name="chevron" class="size-4" /></a>
     </div>
-    <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-x-3 md:gap-x-5 gap-y-6 md:gap-y-8">
-      {GROUPS.map((g) => (
-        <div class={g.wrap}>
-          <h3 class="eyebrow mb-2.5 md:mb-3">{g.label}</h3>
-          <div class={`grid ${g.grid} gap-3 md:gap-5`}>
-            {g.cards.map((c, i) => (
-              <a href={c.href} class={`press group relative overflow-hidden rounded-panel bg-cloud ${g.wide ? (i === 2 ? 'col-span-2 md:col-span-1 aspect-[2/1] md:aspect-square' : 'aspect-[4/5] md:aspect-square') : 'aspect-[4/5] md:aspect-[3/4]'}`} data-reveal>
-                <Image src={c.image} alt="" class={`absolute inset-0 size-full object-cover ${c.pos ?? ''} transition duration-700 group-hover:scale-105`} widths={[320, 520, 700]} sizes="(min-width:768px) 280px, 50vw" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
-                <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple" aria-hidden="true"><Icon name={c.icon} class="size-[18px]" /></span>
-                <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">
-                  <div class="font-heading font-bold text-[15px] md:text-lg leading-tight">{c.name}</div>
-                  <div class="mt-1 text-[12px] md:text-sm text-white/85">{c.price != null ? <>From <b class="text-lime">${c.price.toLocaleString('en-CA')}</b>{c.tax && <span class="text-white/75"> + tax</span>}</> : <b class="text-lime font-semibold">Free quote</b>}</div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+    <ServiceCards class="mt-5" />
     <p class="mt-4 text-[14px] text-muted">Booked before? <a href="/my-livo" class="font-semibold text-purple underline underline-offset-2 inline-flex items-center min-h-11">Sign in</a> and your details are filled in.</p>
   </section>
 

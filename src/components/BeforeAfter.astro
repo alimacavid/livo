@@ -5,9 +5,9 @@ interface Props { before: ImageMetadata; after: ImageMetadata; alt: string; clas
 const { before, after, alt, class: cls = '' } = Astro.props;
 ---
 <div class:list={['ba relative overflow-hidden rounded-panel bg-cloud select-none aspect-[4/3] md:aspect-[16/9]', cls]} style="--p:50%">
-  <Image src={after} alt={`${alt} — after`} class="absolute inset-0 size-full object-cover" widths={[480, 800, 1200]} sizes="(min-width:768px) 720px, 100vw" />
+  <Image src={after} alt={`${alt} — after`} class="absolute inset-0 size-full object-cover" widths={[640, 1024, 1600]} quality={88} sizes="(min-width:768px) 720px, 100vw" />
   <div class="absolute inset-0" style="clip-path: inset(0 calc(100% - var(--p)) 0 0)">
-    <Image src={before} alt={`${alt} — before`} class="absolute inset-0 size-full object-cover" widths={[480, 800, 1200]} sizes="(min-width:768px) 720px, 100vw" />
+    <Image src={before} alt={`${alt} — before`} class="absolute inset-0 size-full object-cover" widths={[640, 1024, 1600]} quality={88} sizes="(min-width:768px) 720px, 100vw" />
   </div>
   <span aria-hidden="true" class="absolute top-3 left-3 text-[11px] font-bold tracking-wider uppercase bg-black/55 text-white px-2.5 py-1 rounded-full backdrop-blur">Before</span>
   <span aria-hidden="true" class="absolute top-3 right-3 text-[11px] font-bold tracking-wider uppercase bg-lime text-ink px-2.5 py-1 rounded-full">After</span>

@@ -23,22 +23,24 @@ const addons = [...subAddons(d, s)].sort((a, b) => Number(!junk && !!ADDON_IMAGE
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
 const $ = (n: number) => '$' + n.toLocaleString('en-CA');
-const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}${$(from)}${tax}` : 'Free quote';
+const priceNote = s.minOrder != null ? `${$(s.tiers[0].price ?? 0)} visit fee + items · ${$(s.minOrder)} minimum` : s.unit;
+const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice != null ? 'From ' : ''}${$(from)}${tax}` : 'Free quote';
 ---
 <Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO in Coquitlam, Port Coquitlam and Port Moody. ${s.short} ${quote ? (from ? `From $${from}, final price after photos.` : 'Free quote, usually the same day.') : `Instant price from $${from}.`} Pay after the job.`} tabBar={false}>
 
   <!-- HERO -->
   <section class="px-3 md:px-6 pt-1 md:pt-6">
     <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
-      <Image src={s.image} alt={`${s.name} by LIVO`} class="kenburns absolute inset-0 size-full object-cover" widths={[480, 900, 1400]} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      <Image src={s.image} alt={`${s.name} by LIVO`} class={`absolute inset-0 size-full object-cover ${s.pos ?? ''}`} widths={[640, 1024, 1600, 2400]} quality={90} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
-      <a href={d.subs.length > 1 ? `/services#${d.id}` : '/services'} class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
+      <a href="/services" class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
         <div class="rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold" style="--i:2">
           {from ? <>From {$(from)}{tax} <span class="font-medium">· {s.unit}</span></> : 'Free quote'}
         </div>
+        {s.minOrder != null && <p class="mt-2 text-[12px] text-white/85">{priceNote}</p>}
       </div>
     </div>
   </section>
@@ -47,6 +49,20 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
     <div>
       <!-- INTRO -->
       <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{s.desc}</p>
+
+      {s.itemGallery?.length && (
+        <section class="mt-8">
+          <h2 class="text-xl font-extrabold">Before & after</h2>
+          <div class="mt-4 grid md:grid-cols-2 gap-5">
+            {s.itemGallery.map((item) => (
+              <div>
+                <h3 class="text-sm font-semibold mb-2">{item.label}</h3>
+                <BeforeAfter before={item.before} after={item.after} alt={item.label} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {s.before && s.after && (
         <section class="mt-8">
@@ -101,9 +117,9 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
     <!-- DESKTOP BOOKING CARD -->
     <aside class="hidden md:block">
       <div class="sticky top-24 mt-8 card p-6">
-        <div class="text-sm text-muted">{quote ? (from ? 'Estimate' : 'Price') : 'Price'}</div>
-        <div class="font-heading font-extrabold text-4xl mt-1">{priceText}</div>
-        <div class="text-sm text-muted">{s.unit}</div>
+        <div class="text-sm text-muted">{priceText === 'Free quote' ? 'Quote' : 'Price'}</div>
+        <div class="font-heading font-extrabold text-4xl mt-1">{priceText === 'Free quote' ? 'Free' : priceText.replace(' + tax', '')}</div>
+        <div class="text-sm text-muted">{priceNote}</div>
         <a href={bookUrl} class="sheen btn-lime w-full mt-5">{cta}</a>
         <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
         <ul class="mt-5 space-y-2 text-[13px] text-muted">
@@ -120,8 +136,9 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 ? 'from ' : ''}$
   <div slot="after" style="view-transition-name: tab-bar" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
     <div class="flex items-center gap-3 px-4 h-[76px]">
       <div class="flex-1 min-w-0">
-        <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText}</div>
-        <div class="text-[12px] text-muted truncate mt-1">{s.unit}</div>
+        {priceText === 'Free quote' && <div class="text-[12px] text-muted mb-1">Quote</div>}
+        <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText === 'Free quote' ? 'Free' : priceText}</div>
+        <div class={s.minOrder != null ? "text-[10.5px] text-muted leading-tight mt-1" : "text-[12px] text-muted truncate mt-1"}>{priceNote}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
       <a href={bookUrl} class="sheen btn-lime px-7">{quote ? 'Get quote' : 'Book now'}</a>

@@ -5,14 +5,14 @@ import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs,
 
 // small photos for the add-on cards (junk 'fridge' = disposal, so no cleaning photo there)
 const ADDON_SRC: Record<string, string> = {};
-for (const [id, img] of Object.entries(ADDON_IMAGES)) ADDON_SRC[id] = (await getImage({ src: img, width: 480, format: 'webp' })).src;
+for (const [id, img] of Object.entries(ADDON_IMAGES)) ADDON_SRC[id] = (await getImage({ src: img, width: 544, quality: 85, format: 'webp' })).src;
 const DIV_SRC: Record<string, string> = {};
-for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width: 480, format: 'webp' })).src;
+for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width: 1088, quality: 85, format: 'webp' })).src;
 
 // send only plain data to the browser (no images)
 const data = DIVISIONS.map((d) => ({
   id: d.id, name: d.name, short: d.short, icon: d.icon, segment: d.segment, img: DIV_SRC[d.id], prep: PREP[d.id] ?? [],
-  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
+  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', fromPrice: s.fromPrice, minOrder: s.minOrder, itemsRequired: !!s.itemsRequired, pos: s.pos ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
   times: d.times,
 }));
 // divisions businesses can ask about (quote-type services only)
@@ -59,6 +59,26 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
 <style is:global>
   /* every step fits the screen: if it would scroll, the page script adds .bk-tight, then .bk-tighter */
+  /* Full-width sub-service rows on phones; card interiors on desktop. */
+  @media (max-width: 767px) {
+    .bk-subservices { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (min-width: 768px) {
+    .bk-services [data-sub] { flex-wrap: wrap; gap: .5rem; align-content: start; }
+    .bk-services [data-sub] > .flex-1 { flex-basis: calc(100% - 2rem); }
+    .bk-services [data-sub] > .text-right { width: 100%; text-align: left; padding-left: 1.75rem; }
+  }
+  .bk-items .bk-itemprice { flex-wrap: wrap; }
+  .bk-items .bk-itemprice > span:first-child { width: 100%; }
+  @media (min-width: 768px) {
+    .bk-items .bk-addimg { aspect-ratio: 16 / 9; }
+  }
+  @media (max-height: 720px) {
+    #bk-view .bk-review { padding: .75rem; margin-top: .5rem; }
+    #bk-view .bk-review .mt-4 { margin-top: .5rem; }
+    #bk-view .bk-review .pt-4 { padding-top: .5rem; }
+  }
+  html.bk-fitting #bk-view * { transition: none !important; }
   html.bk-tight #bk-view h1 { font-size: 1.35rem; }
   html.bk-tight #bk-view h1 + p { font-size: 13px; }
   html.bk-tight #bk-view .mt-5 { margin-top: .75rem; }
@@ -78,6 +98,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tightest #bk-view .bk-x, html.bk-tightest #bk-testbar { display: none !important; }
   html.bk-tightest #bk-view .mt-5, html.bk-tightest #bk-view .mt-4 { margin-top: .5rem; }
   html.bk-tightest #bk-view .p-5, html.bk-tightest #bk-view .p-4 { padding: .75rem; }
+  html.bk-tightest #bk-view .pt-4 { padding-top: .5rem; }
   html.bk-tightest #bk-view .bk-addimg { display: none; }
   html.bk-tighter #bk-view .mt-3 { margin-top: .4rem; }
   html.bk-tighter #bk-view textarea { height: 3rem; }
@@ -94,7 +115,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
   type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
   type Freq = { id: string; name: string; sub: string; discount: number };
-  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
+  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; minOrder?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
   type Seg = 'residential' | 'commercial';
   type Div = { id: string; name: string; short: string; icon: string; segment: Seg; subs: SubD[]; times: { id: string; sub: string }[] };
 
@@ -203,7 +224,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (pickedDiv && subsFor(d).length > 1) {
       return `<button data-alldivs class="press -mt-1 mb-3 inline-flex items-center gap-1.5 rounded-full bg-cloud px-3.5 h-10 text-[13px] font-semibold">${ic('<path d="M19 12H5M11 6l-6 6 6 6"/>', 'size-4')}All services</button>
         ${h1(d.name, 'Which one do you need?')}
-        <div class="mt-5 grid gap-2.5">
+        <div class="mt-5 service-card-grid bk-services bk-subservices gap-2.5" data-count="${subsFor(d).length}">
           ${subsFor(d).map((s) => {
             const p = s.tiers.map((t) => t.price).filter((x) => x != null) as number[];
             return `<button data-sub="${s.slug}" class="${optCls(st.sub === s.slug)}">${radio(st.sub === s.slug)}
@@ -214,12 +235,12 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     }
     return `${h1(st.seg === 'residential' ? 'What do you need?' : 'What does your business need?', st.seg === 'residential' ? 'Pick a service.' : 'Pick a service. Free quote, usually the same day.')}
       <div class="mt-4">${segTabs(st.seg, 'data-seg', ['Home', 'Business'])}</div>
-      <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2.5" role="group" aria-label="Services">
+      <div class="mt-4 service-card-grid bk-services gap-2.5" data-count="${divsFor(st.seg).length}" role="group" aria-label="Services">
         ${divsFor(st.seg).map((x) => {
-          const ps = subsFor(x).flatMap((s) => s.tiers.map((t) => t.price)).filter((v) => v != null) as number[];
+          const ps = subsFor(x).flatMap((s) => s.fromPrice != null ? [s.fromPrice] : s.tiers.map((t) => t.price)).filter((v) => v != null) as number[];
           const name = x.id === 'junk-removal' && st.seg === 'commercial' ? 'Junk & Debris' : x.name.replace(' Cleaning', '');
           return `<button data-div="${x.id}" class="press relative overflow-hidden rounded-[18px] bg-cloud text-left border-2 border-transparent hover:border-line">
-            <img src="${x.img}" alt="" class="bk-addimg w-full aspect-[16/10] object-cover bg-line" />
+            <img src="${x.img}" alt="" class="bk-addimg w-full aspect-[16/10] object-cover bg-line ${subsFor(x).find((s) => s.pos)?.pos ?? ''}" />
             <span class="block px-3 py-2"><span class="block font-semibold text-[13.5px] leading-tight">${name}</span><span class="block text-[12px] text-muted">${ps.length ? `from ${money(Math.min(...ps))}${x.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span></span>
           </button>`;
         }).join('')}
@@ -238,8 +259,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   function vAddons() {
-    return `${h1('Add anything else?', 'Optional. Tap to add.')}
-      <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2">
+    return `${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? 'Choose at least one. One visit fee per order.' : 'Optional. Tap to add.')}
+      <div class="mt-5 grid grid-cols-2 md:grid-cols-3 gap-2 ${sub()?.itemsRequired ? 'bk-items' : ''}">
         ${addons().map((a) => {
           const n = st.addons[a.id] ?? 0; const on = n > 0;
           if (a.img) return `<div class="press relative h-full flex flex-col overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
@@ -263,7 +284,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
               <span class="font-semibold text-[13.5px] leading-tight">${a.name}</span>
               <span aria-hidden="true" class="size-6 shrink-0 rounded-full grid place-items-center transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-cloud text-muted'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-3.5')}</span>
             </div>
-            <div class="mt-1 flex items-center justify-between gap-1">
+            <div class="bk-itemprice mt-1 flex items-center justify-between gap-1">
               <span class="text-[12.5px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
               ${a.qty && on ? `<span class="relative flex items-center gap-1">
                 <button data-dec="${a.id}" class="press size-9 rounded-full bg-white border border-line grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
@@ -272,7 +293,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
             </div>
           </div>`;
         }).join('')}
-      </div>`;
+      </div>
+      <p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p>`;
   }
 
   const needPhotos = () => isQuote() && st.tier !== 'visit';
@@ -297,7 +319,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       </div>
       ${needBusiness() ? fld('business', 'Business name', 'text', 'organization', '', true) : ''}
       <div class="mt-4"><label for="c-description" class="text-[13px] font-semibold text-ink/80">Tell us about the job <span class="font-normal text-muted">(optional)</span></label>
-        <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div>`;
+        <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div>`;
   }
 
   function vFreq() {
@@ -400,7 +422,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         ${fld('address', biz() ? 'Business address' : 'Service address', 'text', 'street-address')}
         ${fld('access', biz() ? 'Access and hours' : 'Parking, entry and pets', 'text', 'off', '', false)}
         <div class="mt-3"><label for="c-notes" class="text-[13px] font-semibold text-ink/80">Notes <span class="font-normal text-muted">(optional)</span></label>
-          <textarea id="c-notes" rows="2" class="mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.notes)}</textarea></div>
+          <textarea id="c-notes" rows="2" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.notes)}</textarea></div>
       </div>
       ${st.profile ? `<p class="mt-4 text-[12.5px] text-muted">Saved to your LIVO account for next time.</p>` : `<button id="sv" role="checkbox" aria-checked="${st.save}" class="press mt-4 w-full flex items-start gap-3 p-3 min-h-12 rounded-[12px] bg-cloud text-left">
           <span aria-hidden="true" class="mt-0.5 size-5 shrink-0 rounded-[6px] grid place-items-center ${st.save ? 'bg-purple text-white' : 'border-2 border-gray bg-white'}">${st.save ? ic(CHECK, 'size-3.5') : ''}</span>
@@ -417,7 +439,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     ];
     const when = st.date ? new Date(st.date + 'T12:00').toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
     return `${h1(quote ? 'Check and send' : 'Check and confirm', 'Nothing is charged now.')}
-      <div class="mt-5 card p-5">
+      <div class="mt-5 card p-5 bk-review">
         <div class="space-y-2 text-[14px]">
           ${lines.map(([a, b]) => `<div class="flex justify-between gap-4"><span class="text-ink/80">${a}</span><span class="font-semibold">${b}</span></div>`).join('')}
           ${!quote && f.id !== 'onetime' ? `<div class="flex justify-between"><span class="text-ink/80">${f.name}${f.discount ? `, −${Math.round(f.discount * 100)}% from 2nd visit` : ''}</span><span class="font-semibold">${money(t.repeat)}/visit</span></div>` : ''}
@@ -492,8 +514,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
     v.innerHTML = ({ service: vService, size: vSize, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
     const t = totals(); const tr = tier();
-    const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total);
-    $('#bk-totlabel').textContent = isQuote() ? 'Price' : 'Total';
+    const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
+    $('#bk-totlabel').textContent = isQuote() ? (tr?.price == null ? 'Quote' : 'Price') : 'Total';
     $('#bk-bottom').style.display = st.step === 'service' ? 'none' : ''; // tapping a card moves on; no empty Total / Continue
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
@@ -564,9 +586,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function fit() {
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
+    if (st.step === 'done') { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
+    // Measure final field heights; height transitions otherwise report the previous step's compact size.
+    root.classList.add('bk-fitting');
     root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
-    if (st.step === 'done') return; // the thank-you page may scroll; keep it complete
     for (const c of ['bk-tight', 'bk-tighter', 'bk-tightest']) { if (!over()) break; root.classList.add(c); }
+    void root.offsetHeight;
+    root.classList.remove('bk-fitting');
   }
   new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
   addEventListener('resize', () => requestAnimationFrame(fit));
@@ -576,10 +602,27 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   $('#bk-next').addEventListener('click', () => {
     if (!canNext()) return;
     if (st.step === 'photos' && !checkPhotos()) return;
+    if (st.step === 'addons' && !checkItems()) return;
     const i = steps().indexOf(st.step as Step);
     if ((st.step === 'contact' || st.step === 'address') && !checkFields(st.step === 'contact' ? ['name', 'phone', 'email'] : ['address'])) return;
     if (st.step === 'review') submit(); else go(steps()[i + 1]);
   });
+
+  function itemError() {
+    if (sub()?.itemsRequired && !addons().some((a) => (st.addons[a.id] ?? 0) > 0)) return 'Pick at least one item to continue.';
+    const minimum = sub()?.minOrder;
+    if (minimum != null && totals().total < minimum) return `Minimum order is ${money(minimum)}. Add another item.`;
+    return '';
+  }
+
+  function checkItems() {
+    const message = itemError();
+    if (!message) return true;
+    const error = document.getElementById('e-items');
+    if (error) { error.textContent = message; error.focus({ preventScroll: true }); }
+    fit();
+    return false;
+  }
 
   function checkPhotos() {
     const ep = document.getElementById('e-photos'); const eb = document.getElementById('e-business');
@@ -603,6 +646,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   async function submit() {
+    if (itemError()) { go('addons'); checkItems(); return; }
     const err = $('#bk-err'); const c = st.c;
     const phone = normPhone(c.phone);
     // fields live on earlier screens: send the customer back to the first one that needs fixing
