@@ -62,9 +62,11 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
               return <article class:list={["detail-row", hasPhoto && "has-photo", reverse && "reverse"]} data-item-row data-detail-item={item.id}>
                 <div class="detail-copy">
                   <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
-                  <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
+                  <div class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h3 class="font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
+                    <p class="font-heading font-bold text-purple text-[13px] md:text-base whitespace-nowrap" data-item-price>{$(item.price)} {item.unit.split(' (')[0]}</p>
+                  </div>
                   <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{item.line ?? item.sub}</p>
-                  <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{$(item.price)} {item.unit.split(' (')[0]}</p>
                   <DetailSelection item={item} />
                 </div>
                 {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} aspect="aspect-[16/10]" class="detail-slider mt-4 md:mt-0 w-full" />}
