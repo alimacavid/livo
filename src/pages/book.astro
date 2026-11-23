@@ -143,6 +143,21 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   @media (max-width: 767px) and (max-height: 720px) {
     html.bk-tightest #bk-view .bk-addcopy { padding-block: 2px; row-gap: 0; }
   }
+  html.bk-tightest #bk-view .bk-junk-photos .bk-photo-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  html.bk-tightest #bk-view .bk-junk-photos textarea { height: 2.5rem; }
+  html.bk-tightest #bk-view .bk-junk-photos .bk-for-label { display: none; }
+  @media (max-height: 720px) {
+    #bk-view .bk-junk-review { padding: .5rem; }
+    #bk-view .bk-junk-review .space-y-2 { display: grid; gap: 4px; }
+    #bk-view .bk-junk-review .space-y-2 > * { margin-block: 0; }
+    #bk-view .bk-junk-review .mt-4 { margin-top: .25rem; }
+  }
+  .bk-junk-quote #bk-total { font-size: 1.25rem; white-space: nowrap; }
+  .bk-junk-quote #bk-next { padding-inline: 1rem; font-size: 13px; }
+  @media (max-width: 767px) and (max-height: 720px) {
+    html.bk-tightest #bk-view .bk-junk-photos .bk-photo-many { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    html.bk-tightest #bk-view .bk-junk-photos .bk-photo-many .bk-photo-add-label { display: none; }
+  }
 </style>
 
 <script>
@@ -158,6 +173,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const D = JSON.parse(document.getElementById('livo-data')!.textContent!) as { divisions: Div[]; commercialDivs: string[]; firstTime: number; phone: string; tel: string };
   const FT = Math.round(D.firstTime * 100);
   const MAX_PHOTOS = 10;
+  const JUNK_LOCATIONS = ['Curbside / driveway', 'Garage or ground floor', 'Upstairs or basement (stairs)', 'Apartment / condo (elevator)'];
 
   const ALL_STEPS = ['service', 'size', 'addons', 'photos', 'freq', 'date', 'time', 'contact', 'address', 'review'] as const;
   type Step = (typeof ALL_STEPS)[number];
@@ -175,6 +191,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     freq: 'onetime',
     date: '',
     time: '',
+    junkLocation: '',
     month: (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })(),
     firstTime: true,
     photos: [] as { file: File; url: string }[],
@@ -196,6 +213,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const freqs = (): Freq[] => sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }];
   const freq = () => freqs().find((f) => f.id === st.freq) ?? freqs()[0];
   const isQuote = () => !!sub()?.quote || (tier() != null && tier()!.price == null);
+  const junkQuote = () => div().id === 'junk-removal' && isQuote();
+  const validJunkLocation = () => JUNK_LOCATIONS.includes(st.junkLocation);
+  const junkLocationNote = () => junkQuote() && validJunkLocation() ? `Location: ${st.junkLocation}` : '';
   const segment = (): Seg => (div().segment === 'commercial' || st.seg === 'commercial' || st.forBusiness ? 'commercial' : 'residential');
   const discountOK = () => D.firstTime > 0 && !isQuote() && segment() === 'residential';
   const steps = () => ALL_STEPS.filter((x) =>
@@ -222,7 +242,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     try {
       const saved = JSON.parse(sessionStorage.getItem(RESUME) ?? 'null');
       if (saved) {
-        for (const k of ['seg', 'forBusiness', 'div', 'sub', 'tier', 'addons', 'freq', 'date', 'time', 'month', 'firstTime', 'save', 'placeId']) if (k in saved) (st as any)[k] = saved[k];
+        for (const k of ['seg', 'forBusiness', 'div', 'sub', 'tier', 'addons', 'freq', 'date', 'time', 'month', 'firstTime', 'save', 'placeId', 'junkLocation']) if (k in saved) (st as any)[k] = saved[k];
         Object.assign(st.c, saved.c ?? {});
         st.step = 'contact'; resumed = true;
       }
@@ -341,29 +361,36 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p>`;
   }
 
-  const needPhotos = () => isQuote() && st.tier !== 'visit';
+  const needPhotos = () => isQuote() && (junkQuote() || st.tier !== 'visit');
   const needBusiness = () => segment() === 'commercial';
   function vPhotos() {
     const canBeHome = div().segment === 'residential';
-    return `${h1('Show us the job', needPhotos() ? 'Add at least 1 photo. More photos, more accurate quote.' : 'Photos are optional for a site visit, but they help.')}
-      ${canBeHome ? `<div class="mt-5"><div class="text-[13px] font-semibold text-ink/80 mb-1.5">This is for a</div>${segTabs(st.forBusiness ? 'commercial' : 'residential', 'data-for', ['Home', 'Business'])}</div>` : ''}
+    return `<div class="${junkQuote() ? 'bk-junk-photos' : ''}">${h1('Show us the job', needPhotos() ? 'Add at least 1 photo. More photos, more accurate quote.' : 'Photos are optional for a site visit, but they help.')}
+      ${canBeHome ? `<div class="mt-5"><div class="bk-for-label text-[13px] font-semibold text-ink/80 mb-1.5">This is for a</div>${segTabs(st.forBusiness ? 'commercial' : 'residential', 'data-for', ['Home', 'Business'])}</div>` : ''}
+      ${junkQuote() ? `<fieldset class="mt-4" id="junk-location" aria-describedby="e-location">
+        <legend class="text-[13px] font-semibold text-ink/80">Where is it? <span class="font-normal text-muted">(required)</span></legend>
+        <div class="mt-1.5 grid grid-cols-2 gap-2">
+          ${JUNK_LOCATIONS.map((choice, i) => `<button type="button" data-location="${i}" aria-pressed="${st.junkLocation === choice}" class="press text-left min-h-11 px-3 py-2 rounded-[12px] border-2 text-[13px] font-semibold leading-tight ${st.junkLocation === choice ? 'border-purple bg-purple-soft' : 'border-line bg-white hover:border-gray'}">${choice}</button>`).join('')}
+        </div>
+        <p id="e-location" role="alert" tabindex="-1" class="mt-1 text-[13px] text-red-700 empty:hidden outline-none"></p>
+      </fieldset>` : ''}
       <div class="mt-5">
         <div class="flex items-baseline justify-between"><span id="ph-label" class="text-[13px] font-semibold text-ink/80">Photos ${needPhotos() ? '' : '<span class="font-normal text-muted">(optional)</span>'}</span><span class="text-[12px] text-muted">${st.photos.length} / ${MAX_PHOTOS}</span></div>
-        <div class="mt-2 grid grid-cols-4 md:grid-cols-5 gap-2" role="list" aria-labelledby="ph-label">
+        <div class="bk-photo-grid ${junkQuote() && st.photos.length > 5 ? 'bk-photo-many' : ''} mt-2 grid grid-cols-4 md:grid-cols-5 gap-2" role="list" aria-labelledby="ph-label">
           ${st.photos.map((p, i) => `<div role="listitem" class="relative aspect-square rounded-[12px] overflow-hidden bg-cloud">
               <img src="${p.url}" alt="Photo ${i + 1}" class="size-full object-cover" />
               <button data-rmphoto="${i}" class="press absolute top-1 right-1 size-9 rounded-full bg-white/90 grid place-items-center" aria-label="Remove photo ${i + 1}">${ic('<path d="M6 6l12 12M18 6 6 18"/>', 'size-4')}</button>
             </div>`).join('')}
           ${st.photos.length < MAX_PHOTOS ? `<div role="listitem"><label class="press size-full aspect-square rounded-[12px] border-2 border-dashed border-gray hover:border-purple grid place-items-center text-center cursor-pointer transition-colors">
-              <input id="ph-input" type="file" accept="image/*" multiple class="sr-only" aria-describedby="e-photos" />
-              <span class="text-purple">${ic('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>', 'size-6 mx-auto')}<span class="block mt-1 text-[12px] font-semibold">Add photos</span></span>
+              <input id="ph-input" aria-label="Add photos" type="file" accept="image/*" multiple class="sr-only" aria-describedby="e-photos" />
+              <span class="text-purple">${ic('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>', 'size-6 mx-auto')}<span class="bk-photo-add-label block mt-1 text-[12px] font-semibold">Add photos</span></span>
             </label></div>` : ''}
         </div>
         <p id="e-photos" class="mt-1 text-[13px] text-red-700 empty:hidden"></p>
       </div>
-      ${needBusiness() ? fld('business', 'Business name', 'text', 'organization', '', true) : ''}
+      ${needBusiness() && !junkQuote() ? fld('business', 'Business name', 'text', 'organization', '', true) : ''}
       <div class="mt-4"><label for="c-description" class="text-[13px] font-semibold text-ink/80">Tell us about the job <span class="font-normal text-muted">(optional)</span></label>
-        <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div>`;
+        <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div></div>`;
   }
 
   function vFreq() {
@@ -448,6 +475,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           </a>
           <div class="bk-x mt-4 flex items-center gap-3 text-[12px] text-muted" aria-hidden="true"><span class="h-px flex-1 bg-line"></span>or enter your details<span class="h-px flex-1 bg-line"></span></div>`}
       <div class="mt-2">
+        ${junkQuote() && needBusiness() ? fld('business', 'Business name', 'text', 'organization') : ''}
         ${fld('name', biz() ? 'Contact name' : 'Full name', 'text', 'name')}
         ${fld('phone', 'Mobile number', 'tel', 'tel', 'tel')}
         ${fld('email', 'Email', 'email', 'email', 'email')}
@@ -479,11 +507,12 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const lines = [
       [`${s.name} · ${tr.name}`, tr.price != null ? `${quote ? 'from ' : ''}${money(tr.price)}` : 'Free quote'],
       ...(quote ? [] : addons().filter((a) => st.addons[a.id]).map((a) => [`${a.name}${st.addons[a.id] > 1 ? ' × ' + st.addons[a.id] : ''}`, money(a.price * st.addons[a.id])])),
+      ...(junkLocationNote() ? [[esc(junkLocationNote()), '']] : []),
       ...(quote && st.photos.length ? [[`${st.photos.length} photo${st.photos.length > 1 ? 's' : ''} attached`, '']] : []),
     ];
     const when = st.date ? new Date(st.date + 'T12:00').toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
     return `${h1(quote ? 'Check and send' : 'Check and confirm', 'Nothing is charged now.')}
-      <div class="mt-5 card p-5 bk-review">
+      <div class="mt-5 card p-5 bk-review ${junkQuote() ? 'bk-junk-review' : ''}">
         <div class="space-y-2 text-[14px]">
           ${lines.map(([a, b]) => `<div class="flex justify-between gap-4"><span class="text-ink/80">${a}</span><span class="font-semibold">${b}</span></div>`).join('')}
           ${!quote && f.id !== 'onetime' ? `<div class="flex justify-between"><span class="text-ink/80">${f.name}${f.discount ? `, −${Math.round(f.discount * 100)}% from 2nd visit` : ''}</span><span class="font-semibold">${money(t.repeat)}/visit</span></div>` : ''}
@@ -561,6 +590,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
     $('#bk-totlabel').textContent = isQuote() ? (tr?.price == null ? 'Quote' : 'Price') : 'Total';
     $('#bk-bottom').style.display = st.step === 'service' ? 'none' : ''; // tapping a card moves on; no empty Total / Continue
+    $('#bk-bottom').classList.toggle('bk-junk-quote', junkQuote());
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
     $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
@@ -588,14 +618,15 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   $('#bk-view').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button') as HTMLButtonElement | null; if (!b || b.disabled) return;
     const ds = b.dataset;
-    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = ''; }
+    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
     else if (ds.div) {
-      st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.freq = 'onetime'; st.time = '';
+      st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
       const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.freq = freqs()[0].id; go('size'); return; }
       pickedDiv = true;
     }
     else if (ds.alldivs !== undefined) { pickedDiv = false; }
-    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.addons = {}; st.freq = freqs()[0].id; render(); setTimeout(() => go('size'), 160); return; }
+    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go('size'), 160); return; }
+    else if (ds.location !== undefined) { st.junkLocation = JUNK_LOCATIONS[Number(ds.location)] ?? ''; }
     else if (ds.tier) { st.tier = ds.tier; }
     else if (ds.add) { const a = addons().find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
     else if (ds.inc) { st.addons[ds.inc] = (st.addons[ds.inc] ?? 0) + 1; }
@@ -648,7 +679,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (st.step === 'photos' && !checkPhotos()) return;
     if (st.step === 'addons' && !checkItems()) return;
     const i = steps().indexOf(st.step as Step);
-    if ((st.step === 'contact' || st.step === 'address') && !checkFields(st.step === 'contact' ? ['name', 'phone', 'email'] : ['address'])) return;
+    if ((st.step === 'contact' || st.step === 'address') && !checkFields(st.step === 'contact' ? contactKeys() : ['address'])) return;
     if (st.step === 'review') submit(); else go(steps()[i + 1]);
   });
 
@@ -671,14 +702,25 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function checkPhotos() {
     const ep = document.getElementById('e-photos'); const eb = document.getElementById('e-business');
     let ok = true;
-    if (needPhotos() && !st.photos.length) { if (ep) ep.textContent = 'Add at least 1 photo, or go back and choose a free site visit.'; ok = false; } else if (ep) ep.textContent = '';
-    if (needBusiness() && !st.c.business.trim()) { if (eb) eb.textContent = 'Enter the business name.'; document.getElementById('c-business')?.setAttribute('aria-invalid', 'true'); ok = false; }
-    if (!ok) (document.querySelector<HTMLElement>('#e-photos:not(:empty)') ? document.getElementById('ph-input') : document.getElementById('c-business'))?.focus();
+    if (needPhotos() && !st.photos.length) { if (ep) ep.textContent = junkQuote() ? 'Add at least 1 photo.' : 'Add at least 1 photo, or go back and choose a free site visit.'; ok = false; } else if (ep) ep.textContent = '';
+    const locationError = document.getElementById('e-location');
+    if (junkQuote()) {
+      const missing = !validJunkLocation();
+      if (locationError) locationError.textContent = missing ? 'Choose where the junk is.' : '';
+      document.getElementById('junk-location')?.setAttribute('aria-invalid', String(missing));
+      if (missing) ok = false;
+    }
+    if (needBusiness() && !junkQuote() && !st.c.business.trim()) { if (eb) eb.textContent = 'Enter the business name.'; document.getElementById('c-business')?.setAttribute('aria-invalid', 'true'); ok = false; }
+    if (!ok) {
+      (locationError?.textContent ? locationError : document.querySelector<HTMLElement>('#e-photos:not(:empty)') ? document.getElementById('ph-input') : document.getElementById('c-business'))?.focus({ preventScroll: true });
+      fit();
+    }
     return ok;
   }
 
-  const MSG: Record<string, string> = { name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', address: 'Enter the address where we should come.' };
-  const badFields = (keys: string[]) => keys.filter((k) => k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
+  const contactKeys = () => junkQuote() && needBusiness() ? ['business', 'name', 'phone', 'email'] : ['name', 'phone', 'email'];
+  const MSG: Record<string, string> = { business: 'Enter the business name.', name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', address: 'Enter the address where we should come.' };
+  const badFields = (keys: string[]) => keys.filter((k) => k === 'business' ? !st.c.business.trim() : k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
   function checkFields(keys: string[]) {
     const bad = badFields(keys);
     keys.forEach((k) => {
@@ -690,11 +732,12 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   async function submit() {
+    if (junkQuote() && (!validJunkLocation() || !st.photos.length)) { go('photos'); checkPhotos(); return; }
     if (itemError()) { go('addons'); checkItems(); return; }
     const err = $('#bk-err'); const c = st.c;
     const phone = normPhone(c.phone);
     // fields live on earlier screens: send the customer back to the first one that needs fixing
-    if (badFields(['name', 'phone', 'email']).length) { go('contact'); checkFields(['name', 'phone', 'email']); return; }
+    if (badFields(contactKeys()).length) { go('contact'); checkFields(contactKeys()); return; }
     if (badFields(['address']).length) { go('address'); checkFields(['address']); return; }
 
     const d = div(), s = sub()!, tr = tier()!, f = freq(), t = totals(), quote = isQuote();
@@ -713,7 +756,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         div: d.id, sub: s.slug, tier: tr.id, service: s.name,
         items, total: quote ? 0 : t.total, firstTime: discountOK() && st.firstTime,
         description: c.description.trim() || undefined,
-        notes: [c.notes.trim(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
+        notes: [c.notes.trim(), junkLocationNote(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
         prep: quote ? [] : (div() as any).prep ?? [],
       }, st.photos.map((p) => p.file), (n, all) => { st.progress = `Uploading photo ${n} of ${all}…`; render(); });

@@ -151,7 +151,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
         <div class={s.minOrder != null ? "text-[10.5px] text-muted leading-tight mt-1" : "text-[12px] text-muted truncate mt-1"}>{priceNote}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
-      <a href={bookUrl} class="sheen btn-lime px-7">{quote ? 'Get quote' : 'Book now'}</a>
+      <a href={bookUrl} class={quote ? "sheen btn-lime px-4 text-[13px] shrink-0" : "sheen btn-lime px-7"}>{cta}</a>
     </div>
   </div>
   {hasItems && <DetailSelection items={itemRows} visitFee={s.tiers[0].price ?? 0} minOrder={s.minOrder ?? 0} bookUrl={bookUrl} />}
