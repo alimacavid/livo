@@ -4,7 +4,7 @@
 2026-11-20 23:40 — **LIVE on livoland.com.** `v1.0` merged into `main` (PR #14, commit 1fc81a6) after Ali said "go live". `main` = `v1.0` content. Old live site backed up on branch `backup/pre-v1.0-2026-11-20`.
 
 ## ⚙ HOW WE WORK (Ali, 2026-11-21) — same as VORX
-2026-11-23 — Codex: house add-ons = all detail items, Detail page Add buttons + bottom bar into booking, hero pill 'From $99', move crew photo — PR #19
+2026-11-23 — Codex: house add-ons = all detail items, Detail page Add buttons + bottom bar into booking, hero pill 'From $99', move crew photo + short units — PR #19
 2026-11-23 — Codex: Detail page item rows redesign, carpet stain removal $59/room (deodorize removed from Detail), blinds/grout/carpet photos, menu with category photos only + stovetop + strata photos, footer bottom cleaned, new card order, cabinets removed from house add-ons, centred last add-on row + move-in/out photos — PR #18
 2026-11-23 — Codex: no card icons, Detail page item rows, footer 4 service columns + Greater Vancouver areas, Services click opens menu, new mega menu — PR #17
 2026-11-22 — Codex: 6 UI fixes (quote wording, tax, textarea, 4/5-card layout, photo quality, restaurant crop) + review fixes + Appliance & Detail Cleaning (replaces Deep Reset; visit $59 + items: oven $49, stove $35, fridge & freezer $65, cabinets $39, blinds $12/blind, grout $79/area, deodorize $85), same 8 cards on home and /services, chooser for multi-service cards, restaurant crop on stove + $99 minimum order, From $99, stove slider removed — PR #16
