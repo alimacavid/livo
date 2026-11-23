@@ -22,6 +22,8 @@ import airbnbAfter from '../assets/photos/airbnb-after.jpg';
 import junkTruck from '../assets/photos/junk-truck.jpg';
 import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
+import junkRenoBefore from '../assets/photos/junk-reno-before.jpg';
+import junkRenoAfter from '../assets/photos/junk-reno-after.jpg';
 import teamVan from '../assets/photos/team-van.jpg';
 import houseToilet from '../assets/photos/house-toilet-cleaning.jpg';
 import toiletBefore from '../assets/photos/toilet-before.jpg';
@@ -489,6 +491,7 @@ export const DIVISIONS: Division[] = [
         unit: 'per load',
         tierLabel: 'Load size',
         tiers: [
+          { id: 'small', name: 'Small Load', sub: 'About 1.25 cu yd · 2–3 items', price: 139 },
           { id: 'quarter', name: 'Quarter Truck', sub: 'About 2.5 cu yd · a few big items', price: 185 },
           { id: 'half', name: 'Half Truck', sub: 'About 5 cu yd · a small room', price: 299, popular: true },
           { id: 'three-quarter', name: 'Three-Quarter Truck', sub: 'About 7.5 cu yd · a garage', price: 439 },
@@ -497,6 +500,36 @@ export const DIVISIONS: Division[] = [
         priceNote: 'We confirm the load size on site before we start. Dense loads like drywall, concrete or soil are quoted.',
         included: ['All lifting and loading', 'Area swept after', 'Donation and recycling where possible', 'Disposal fees included'],
         goodFor: ['Garage and basement clear-outs', 'Old furniture', 'Moving day'],
+      },
+      {
+        slug: 'renovation-debris',
+        name: 'Renovation Waste',
+        short: 'Loose wood, cabinets, flooring and carpet.',
+        desc: 'Renovation waste removal: loose wood, old cabinets, flooring, carpet and fixtures. Send photos and a short list of materials for a quote. We do not do demolition.',
+        image: junkTruck,
+        before: junkRenoBefore,
+        after: junkRenoAfter,
+        unit: 'custom quote',
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: 'Priced like our loads, plus any extra disposal fees for heavy materials. Send photos and a material list.',
+        included: ['Loading and hauling', 'Sorting for recycling', 'Site swept after', 'Disposal fees included in the quote'],
+        goodFor: ['Homeowners after a reno', 'Contractors', 'Kitchen and flooring jobs'],
+      },
+      {
+        slug: 'hot-tub-removal',
+        name: 'Hot Tub Removal',
+        short: 'Hot tubs and jacuzzis, cut up and hauled away.',
+        desc: 'We cut up your old hot tub and haul it away. Power must be disconnected by an electrician before we arrive. Send photos and tell us about access for a quote.',
+        image: junkTruck,
+        unit: 'custom quote',
+        tierLabel: 'How to quote',
+        quote: true,
+        tiers: QUOTE_TIERS,
+        quoteNote: QUOTE_NOTE,
+        included: ['Cutting and loading', 'Hauling and disposal', 'Area swept after'],
+        goodFor: ['Old hot tubs', 'Backyard makeovers', 'Moving out'],
       },
       {
         slug: 'office-clearouts',
@@ -512,22 +545,6 @@ export const DIVISIONS: Division[] = [
         included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
         goodFor: ['Office moves', 'End of lease', 'Property managers'],
       },
-      {
-        slug: 'renovation-debris',
-        name: 'Renovation Waste',
-        short: 'Loose wood, cabinets, flooring and carpet.',
-        desc: 'Renovation waste removal: loose wood, old cabinets, flooring, carpet and fixtures. Send photos and a short list of materials for a quote. We do not do demolition.',
-        image: junkTruck,
-        before: junkBefore,
-        after: junkAfter,
-        unit: 'custom quote',
-        tierLabel: 'How to quote',
-        quote: true,
-        tiers: QUOTE_TIERS,
-        quoteNote: 'Priced like our loads, plus any extra disposal fees for heavy materials. Send photos and a material list.',
-        included: ['Loading and hauling', 'Sorting for recycling', 'Site swept after', 'Disposal fees included in the quote'],
-        goodFor: ['Homeowners after a reno', 'Contractors', 'Kitchen and flooring jobs'],
-      },
     ],
     addons: [
       { id: 'heavy', name: 'Heavy / Bulky Item', sub: 'Over 150 lb', price: 45, unit: 'per item', qty: true },
@@ -541,10 +558,10 @@ export const DIVISIONS: Division[] = [
     faqs: [
       { q: 'Do I need to carry things outside?', a: 'No. For loads and the "inside" item price, we remove items from anywhere on the property.' },
       { q: 'What if I have more than I thought?', a: 'We confirm the load size on site before we start. No surprises.' },
-      { q: 'What do you take?', a: 'Furniture, mattresses, appliances, electronics, wood and flooring. Ask first about fridges, drywall, concrete, soil, yard waste, pianos and hot tubs.' },
+      { q: 'What do you take?', a: 'Furniture, mattresses, appliances, electronics, yard waste, hot tubs and renovation waste. Ask first about pianos, drywall, concrete and soil.' },
       { q: 'Do you take business junk?', a: 'Yes. For offices, stores and job sites, send photos for a quote.' },
     ],
-    notIncluded: ['Asbestos, paint and chemicals', 'Propane tanks or unknown hazardous waste', 'Demolition'],
+    notIncluded: ['Asbestos, paint and chemicals', 'Propane tanks or unknown hazardous waste', 'Demolition', 'Disconnecting hot tub power (needs an electrician)'],
     crossSell: { div: 'construction-cleaning', sub: 'post-construction-cleaning', title: 'After a renovation?', line: 'Add a post-construction clean from the same company.' },
   },
 
@@ -717,8 +734,8 @@ export const subMin = (s: Sub) => {
   return p.length ? Math.min(...p) : null;
 };
 // one-service divisions open straight to that service (one less tap)
-// One page per service (Ali, 2026-11-20). A division with several services has no page of its own: it points at its cards on /services.
-export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services#${d.id}`);
+// Junk has its own overview; other multi-service divisions point at their cards on /services.
+export const divHref = (d: Division) => (d.id === 'junk-removal' ? '/services/junk-removal' : d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services#${d.id}`);
 
 // The 4 main categories under Services (Ali's 17 Nov 2026 sitemap). Used by /services, the menu and the footer.
 export type Category = { id: string; label: string; line: string; divs: Division[] };
@@ -729,6 +746,18 @@ export const CATEGORIES: Category[] = [
   { id: 'junk', label: 'Junk Removal', line: 'One item to full clear-outs.', divs: [getDivision('junk-removal')] },
 ];
 export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;
+
+// Display categories on the Junk overview share the existing booking services.
+export const JUNK_CATEGORIES = [
+  { id: 'furniture', name: 'Furniture & Mattresses', text: 'Sofas, beds, dressers and mattresses. We carry it out.', sub: 'single-item-pickup', image: junkTruck },
+  { id: 'appliances', name: 'Appliances & Electronics', text: 'Fridges, washers, stoves, TVs and computers. Recycled properly.', sub: 'single-item-pickup', image: teamVan },
+  { id: 'home', name: 'Home & Basement Clear-Outs', text: 'Mixed junk from any room. Pay by how much of the truck you fill.', sub: 'junk-removal-by-load', image: junkTruck, before: junkBefore, after: junkAfter },
+  { id: 'garage', name: 'Garage & Storage Unit Clear-Outs', text: 'Garages, sheds and storage lockers, emptied in one visit.', sub: 'junk-removal-by-load', image: junkTruck },
+  { id: 'yard', name: 'Yard & Garden Waste', text: 'Branches, bagged leaves and old patio furniture. Soil, rock and sod are quoted.', sub: 'junk-removal-by-load', image: teamVan },
+  { id: 'renovation', name: 'Kitchen & Renovation Waste', text: 'Old cabinets, counters, flooring and wood after a reno.', sub: 'renovation-debris', image: junkTruck, before: junkRenoBefore, after: junkRenoAfter },
+  { id: 'hot-tub', name: 'Hot Tub Removal', text: 'We cut it up and haul it away. Power must be disconnected by an electrician first.', sub: 'hot-tub-removal', image: junkTruck },
+  { id: 'office', name: 'Office & Building Clear-Outs', text: 'Desks, chairs, shelving and filing cabinets.', sub: 'office-clearouts', image: teamVan },
+];
 
 // Homepage "What do you need?" — the 8 cards from the sitemap. Cards are shortcuts, not new categories.
 export type Card = { divisionId: string; name: string; line: string; href: string; price: number | null; tax: boolean; image: ImageMetadata; icon: string; pos?: string };
@@ -745,7 +774,7 @@ export const HOME_CARDS: Card[] = [
   card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
   card('detail-cleaning'),
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
-  card('junk-removal', { line: 'One item to full clear-outs' }),
+  card('junk-removal', { href: '/services/junk-removal', line: 'One item to full clear-outs' }),
 ];
 
 export const AREAS = [
