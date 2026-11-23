@@ -76,9 +76,9 @@ const tabs = [
       </a>
       <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium">
         <div data-dd>
-          <button type="button" id="services-toggle" aria-expanded="false" aria-controls="services-dropdown" class="px-3 min-h-11 rounded-full hover:bg-cloud inline-flex items-center gap-1" data-service-toggle>
+          <a href="/services" id="services-toggle" aria-expanded="false" aria-controls="services-dropdown" class="px-3 min-h-11 rounded-full hover:bg-cloud inline-flex items-center gap-1" data-service-toggle>
             Services <Icon name="down" class="size-4 transition-transform duration-150" />
-          </button>
+          </a>
           <div id="services-dropdown" hidden class="absolute inset-x-4 md:inset-x-6 top-full pt-2" data-service-dropdown>
             <div class="card overflow-hidden bg-white text-ink shadow-lift">
               <div class="grid grid-cols-4 gap-2 p-3" data-menu-categories>
@@ -86,15 +86,16 @@ const tabs = [
                   const feature = HOME_CARDS.find((card) => card.divisionId === list[0].id)!;
                   const first = list[0].subs[0];
                   return <div class="min-w-0">
-                    <a href={`/services/${list[0].id}/${first.slug}`} class="relative block h-[120px] overflow-hidden rounded-xl mb-3" data-category-photo>
+                    <a href={list[0].id === 'junk-removal' ? '/services/junk-removal' : `/services/${list[0].id}/${first.slug}`} class="relative block h-[120px] overflow-hidden rounded-xl mb-3" data-category-photo>
                       <Image src={feature.image} alt="" class={`absolute inset-0 size-full object-cover ${feature.pos ?? ''}`} widths={[400, 700, 1000]} sizes="(min-width:1152px) 280px, 25vw" quality={85} />
                       <span class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></span>
                       <span class="absolute inset-x-0 bottom-0 p-3 text-white font-heading font-extrabold text-sm leading-tight">{label}</span>
                     </a>
                     {list.flatMap((d) => d.subs.map((s) => {
                       const price = subMin(s);
-                      return <a href={`/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="mega-service relative flex items-center justify-between gap-2 px-2.5 py-3 rounded-xl min-h-14">
-                        <span class="mega-name min-w-0 font-semibold text-[13px] leading-snug">{s.name}</span>
+                      return <a href={d.id === 'junk-removal' ? '/services/junk-removal' : `/services/${d.id}/${s.slug}`} aria-current={path === `/services/${d.id}/${s.slug}` ? 'page' : undefined} class="mega-service relative flex items-center justify-between gap-2 px-2.5 py-3 rounded-xl min-h-14">
+                        <Image src={s.image} alt="" class={`size-10 shrink-0 rounded-lg object-cover ${s.pos ?? ''}`} widths={[80, 160]} sizes="40px" quality={85} />
+                        <span class="mega-name flex-1 min-w-0 font-semibold text-[13px] leading-snug">{s.name}</span>
                         <span class="shrink-0 text-right text-[11.5px] text-muted">{price != null ? `from $${price.toLocaleString('en-CA')}${d.segment === 'commercial' ? ' + tax' : ''}` : 'Free quote'}</span>
                       </a>;
                     }))}
@@ -134,7 +135,7 @@ const tabs = [
       {CATEGORIES.map(({ label, divs: list }) => (
         <div>
           <div class="text-white font-semibold text-sm mb-3">{label}</div>
-          <ul class="space-y-2 text-sm">{list.flatMap((d) => d.subs.map((s) => <li><a class="hover:text-lime inline-block py-1" href={`/services/${d.id}/${s.slug}`}>{s.name}</a></li>))}</ul>
+          <ul class="space-y-2 text-sm">{list.flatMap((d) => d.subs.map((s) => <li><a class="hover:text-lime inline-block py-1" href={d.id === 'junk-removal' ? '/services/junk-removal' : `/services/${d.id}/${s.slug}`}>{s.name}</a></li>))}</ul>
         </div>
       ))}
       <div>
@@ -196,29 +197,28 @@ const tabs = [
       if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', String([...(el.parentElement?.children ?? [])].indexOf(el) % 6));
       io.observe(el);
     });
-    // Disclosure navigation: pointer hover previews, click pins, native button keys toggle.
+    // Services remains a normal link; hover and focus preview its menu.
     const dd = document.querySelector<HTMLElement>('[data-dd]')!;
-    const toggle = document.querySelector<HTMLButtonElement>('[data-service-toggle]')!;
+    const toggle = document.querySelector<HTMLAnchorElement>('[data-service-toggle]')!;
     const menu = document.querySelector<HTMLElement>('[data-service-dropdown]')!;
-    let pinned = false;
     const setOpen = (open: boolean) => {
       menu.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
     };
     dd.addEventListener('mouseenter', () => setOpen(true));
-    dd.addEventListener('mouseleave', () => { if (!pinned && !dd.contains(document.activeElement)) setOpen(false); });
-    toggle.addEventListener('click', () => { pinned = !pinned; setOpen(pinned); });
+    dd.addEventListener('mouseleave', () => { if (!dd.contains(document.activeElement)) setOpen(false); });
+    dd.addEventListener('focusin', () => setOpen(true));
     dd.addEventListener('focusout', (event) => {
-      if (!dd.contains(event.relatedTarget as Node)) { pinned = false; setOpen(false); }
+      if (!dd.contains(event.relatedTarget as Node)) setOpen(false);
     });
     document.addEventListener('pointerdown', (event) => {
-      if (!dd.contains(event.target as Node)) { pinned = false; setOpen(false); }
+      if (!dd.contains(event.target as Node)) setOpen(false);
     });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !menu.hidden) { pinned = false; setOpen(false); toggle.focus(); }
+      if (event.key === 'Escape' && !menu.hidden) { toggle.focus(); setOpen(false); }
     });
     menu.addEventListener('click', (event) => {
-      if ((event.target as HTMLElement).closest('a')) { pinned = false; setOpen(false); }
+      if ((event.target as HTMLElement).closest('a')) setOpen(false);
     });
     // Booking keeps one screen per step; its Areas link opens the shared footer on demand.
     const onDemandFooter = document.querySelector<HTMLElement>('[data-footer-on-demand]');

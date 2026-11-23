@@ -1,0 +1,76 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import BeforeAfter from '../../components/BeforeAfter.astro';
+import { Image } from 'astro:assets';
+import { getDivision, subMin, isQuoteSub, PHONE, PHONE_TEL } from '../../data/services';
+const d = getDivision('junk-removal');
+const rows = ['single-item-pickup', 'junk-removal-by-load', 'renovation-debris', 'office-clearouts'].map(slug => d.subs.find(s => s.slug === slug)!);
+const money = (n: number | null) => n == null ? 'Free quote' : '$' + n.toLocaleString('en-CA');
+const price = (s: typeof rows[number]) => s.slug === 'single-item-pickup'
+  ? `${money(s.tiers.find(t => t.id === 'curb')!.price)} curb · ${money(s.tiers.find(t => t.id === 'inside')!.price)} inside`
+  : isQuoteSub(s) ? 'Free quote' : `From ${money(subMin(s))} · priced by truck load`;
+const included = rows[1].included;
+---
+<Base title={d.seoTitle} description={d.intro}>
+  <section class="px-3 md:px-6 pt-1 md:pt-6">
+    <div class="on-dark relative mx-auto max-w-6xl overflow-hidden rounded-[28px] h-72 md:h-[420px] bg-purple-ink">
+      <Image src={d.image} alt="LIVO junk removal truck" class="absolute inset-0 size-full object-cover" widths={[640, 1024, 1600, 2400]} quality={90} sizes="(min-width:1152px) 1152px, 100vw" loading="eager" />
+      <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
+      <a href="/services" class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink"><Icon name="back" class="size-4" />Services</a>
+      <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
+        <h1 class="text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight">{d.name}</h1>
+        <p class="mt-1.5 text-white/85 text-[15px]">{d.tagline}</p>
+      </div>
+    </div>
+  </section>
+  <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{d.intro}</p>
+    <section class="mt-8" aria-labelledby="junk-services-title">
+      <h2 id="junk-services-title" class="text-xl font-extrabold">What do you need removed?</h2>
+      <div class="mt-4 divide-y divide-line border-y border-line">
+        {rows.map((s, index) => <article id={s.slug} class:list={['junk-row', index % 2 === 1 && 'reverse']} data-junk-row>
+          <div class="junk-copy">
+            <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
+            <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{s.name}</h3>
+            <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{s.desc}</p>
+            <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{price(s)}</p>
+            <div class="mt-3"><a href={`/book?d=${d.id}&s=${s.slug}`} class="btn-lime px-6">{isQuoteSub(s) ? 'Get a quote' : 'Book'}</a></div>
+          </div>
+          {s.before && s.after ? <BeforeAfter before={s.before} after={s.after} alt={s.name} aspect="aspect-[16/10]" class="junk-media mt-4 md:mt-0 w-full" /> :
+            <Image src={s.image} alt={s.name} class={`junk-media mt-4 md:mt-0 w-full aspect-[16/10] rounded-panel object-cover ${s.pos ?? ''}`} widths={[640, 1024, 1600]} quality={88} sizes="(min-width:768px) 460px, 100vw" />}
+        </article>)}
+      </div>
+    </section>
+    <section class="mt-10 grid md:grid-cols-[1.35fr_1fr] gap-3" aria-label="What is and is not included">
+      <div class="on-dark relative overflow-hidden rounded-[24px] bg-purple-ink text-white p-6 md:p-7">
+        <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-purple/40 blur-2xl"></div>
+        <div class="relative">
+          <div class="text-[11px] font-bold uppercase tracking-[0.18em] text-lime">In every job</div>
+          <h2 class="mt-1 text-2xl font-extrabold text-white">What's included</h2>
+          <ul class="mt-5 space-y-3">{included.map(i => <li class="flex gap-3 text-[14.5px] text-white/90"><span class="shrink-0 size-6 rounded-full bg-lime text-ink grid place-items-center" aria-hidden="true"><Icon name="check" class="size-3.5" stroke={3} /></span>{i}</li>)}</ul>
+        </div>
+      </div>
+      <div class="rounded-[24px] bg-cloud p-6 md:p-7">
+        <div class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted">Good to know</div>
+        <h2 class="mt-1 text-2xl font-extrabold">Not included</h2>
+        <ul class="mt-5 space-y-3">{d.notIncluded.map(i => <li class="flex gap-3 text-[14.5px] text-ink/80"><span class="shrink-0 size-6 rounded-full bg-white border border-line text-muted grid place-items-center" aria-hidden="true"><Icon name="x" class="size-3.5" stroke={2.6} /></span>{i}</li>)}</ul>
+        <p class="mt-5 text-[13px] text-muted">Not sure? Call <a href={`tel:${PHONE_TEL}`} class="font-semibold text-ink underline">{PHONE}</a>.</p>
+      </div>
+    </section>
+    <section class="mt-10">
+      <h2 class="text-xl font-extrabold">Questions</h2>
+      <div class="mt-2 divide-y divide-line border-y border-line">{d.faqs.map(f => <details class="group py-4"><summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary><p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p></details>)}</div>
+    </section>
+  </div>
+</Base>
+<style>
+  .junk-row { padding-block: 16px; scroll-margin-top: 80px; }
+  @media (min-width: 768px) {
+    .junk-row { display: grid; grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); gap: 32px; align-items: center; padding-block: 8px; }
+    .junk-row.reverse { grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); }
+    .junk-row.reverse .junk-copy { order: 2; }
+    .junk-row :global(.junk-media) { width: min(100%, 400px); max-width: 460px; justify-self: end; }
+    .junk-row.reverse :global(.junk-media) { order: 1; justify-self: start; }
+  }
+</style>

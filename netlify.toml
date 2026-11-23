@@ -248,12 +248,6 @@
   force = true
 
 [[redirects]]
-  from = "/services/junk-removal"
-  to = "/services"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "/services/commercial-cleaning"
   to = "/services"
   status = 301

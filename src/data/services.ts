@@ -22,6 +22,8 @@ import airbnbAfter from '../assets/photos/airbnb-after.jpg';
 import junkTruck from '../assets/photos/junk-truck.jpg';
 import junkBefore from '../assets/photos/junk-before.png';
 import junkAfter from '../assets/photos/junk-after.png';
+import junkRenoBefore from '../assets/photos/junk-reno-before.jpg';
+import junkRenoAfter from '../assets/photos/junk-reno-after.jpg';
 import teamVan from '../assets/photos/team-van.jpg';
 import houseToilet from '../assets/photos/house-toilet-cleaning.jpg';
 import toiletBefore from '../assets/photos/toilet-before.jpg';
@@ -518,8 +520,8 @@ export const DIVISIONS: Division[] = [
         short: 'Loose wood, cabinets, flooring and carpet.',
         desc: 'Renovation waste removal: loose wood, old cabinets, flooring, carpet and fixtures. Send photos and a short list of materials for a quote. We do not do demolition.',
         image: junkTruck,
-        before: junkBefore,
-        after: junkAfter,
+        before: junkRenoBefore,
+        after: junkRenoAfter,
         unit: 'custom quote',
         tierLabel: 'How to quote',
         quote: true,
@@ -717,8 +719,8 @@ export const subMin = (s: Sub) => {
   return p.length ? Math.min(...p) : null;
 };
 // one-service divisions open straight to that service (one less tap)
-// One page per service (Ali, 2026-11-20). A division with several services has no page of its own: it points at its cards on /services.
-export const divHref = (d: Division) => (d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services#${d.id}`);
+// Junk has its own overview; other multi-service divisions point at their cards on /services.
+export const divHref = (d: Division) => (d.id === 'junk-removal' ? '/services/junk-removal' : d.subs.length === 1 ? `/services/${d.id}/${d.subs[0].slug}` : `/services#${d.id}`);
 
 // The 4 main categories under Services (Ali's 17 Nov 2026 sitemap). Used by /services, the menu and the footer.
 export type Category = { id: string; label: string; line: string; divs: Division[] };
@@ -745,7 +747,7 @@ export const HOME_CARDS: Card[] = [
   card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
   card('detail-cleaning'),
   card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
-  card('junk-removal', { line: 'One item to full clear-outs' }),
+  card('junk-removal', { href: '/services/junk-removal', line: 'One item to full clear-outs' }),
 ];
 
 export const AREAS = [

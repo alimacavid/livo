@@ -8,7 +8,7 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
 ---
 <div class={`grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 ${cls}`} data-service-cards>
   {cards.map((c) => (
-    <a href={c.href} data-chooser={c.division.subs.length > 1 ? `choose-${c.divisionId}` : undefined} aria-haspopup={c.division.subs.length > 1 ? 'dialog' : undefined}
+    <a href={c.href} data-chooser={c.divisionId !== 'junk-removal' && c.division.subs.length > 1 ? `choose-${c.divisionId}` : undefined} aria-haspopup={c.divisionId !== 'junk-removal' && c.division.subs.length > 1 ? 'dialog' : undefined}
       class="press group relative overflow-hidden rounded-panel bg-cloud aspect-[4/5] md:aspect-auto md:h-[340px]" data-reveal>
       <Image src={c.image} alt="" class={`absolute inset-0 size-full object-cover ${c.pos ?? ''} transition duration-700 group-hover:scale-105`}
         widths={[400, 700, 1000]} quality={85} sizes="(min-width:768px) 800px, 100vw" />
@@ -20,7 +20,7 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
     </a>
   ))}
 </div>
-{cards.filter((c) => c.division.subs.length > 1).map((c) => (
+{cards.filter((c) => c.divisionId !== 'junk-removal' && c.division.subs.length > 1).map((c) => (
   <dialog id={`choose-${c.divisionId}`} aria-labelledby={`title-${c.divisionId}`} class="service-chooser bg-white text-ink rounded-t-[24px] md:rounded-[24px] p-4 md:p-5 shadow-lift">
     <div class="flex items-center justify-between gap-3 mb-3">
       <h2 id={`title-${c.divisionId}`} class="text-xl font-extrabold">{c.name}</h2>
@@ -30,7 +30,7 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
       {c.division.subs.map((s) => {
         const price = subMin(s);
         return <a href={`/services/${c.divisionId}/${s.slug}`} class="press flex items-center gap-3 rounded-[16px] border border-line p-2.5 hover:bg-cloud min-h-20">
-          <Image src={s.image} alt="" class={`size-14 shrink-0 rounded-[10px] object-cover ${s.pos ?? ''}`} widths={[112, 224]} sizes="56px" quality={85} />
+          <Image src={s.image} alt="" class={`size-10 shrink-0 rounded-[10px] object-cover ${s.pos ?? ''}`} widths={[80, 160]} sizes="40px" quality={85} />
           <span class="flex-1 min-w-0"><span class="block text-sm font-semibold leading-snug">{s.name}</span><span class="block text-[12px] text-muted mt-1">{price != null ? `from $${price.toLocaleString('en-CA')}${c.tax ? ' + tax' : ''}` : 'Free quote'}</span></span>
           <Icon name="chevron" class="size-4 shrink-0 text-purple" />
         </a>;
