@@ -47,6 +47,10 @@ import groutBefore from '../assets/photos/grout-before.jpg';
 import groutAfter from '../assets/photos/grout-after.jpg';
 import carpetBefore from '../assets/photos/carpet-before.jpg';
 import carpetAfter from '../assets/photos/carpet-after.jpg';
+import stovetopBefore from '../assets/photos/stovetop-before.jpg';
+import stovetopAfter from '../assets/photos/stovetop-after.jpg';
+import strataBefore from '../assets/photos/strata-before.jpg';
+import strataAfter from '../assets/photos/strata-after.jpg';
 
 // Photos shown on add-on cards (service pages). Add more here as they arrive.
 export const ADDON_IMAGES: Record<string, ImageMetadata> = {
@@ -147,7 +151,6 @@ const RECURRING: Freq[] = [
 const HOUSE_ADDONS: Addon[] = [
   { id: 'fridge', name: 'Fridge & Freezer', sub: 'Whole fridge and freezer, emptied by you', price: 65, unit: 'each', qty: true },
   { id: 'oven', name: 'Oven', sub: 'Whole oven: racks, walls, door glass', price: 49, unit: 'each', qty: true },
-  { id: 'cabinets', name: 'Inside Cabinets', sub: 'Kitchen cabinets, emptied by you', price: 39, unit: 'each' },
   { id: 'bath', name: 'Extra Bathroom', sub: 'Beyond your home size', price: 39, unit: 'per bathroom', qty: true },
   { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
 ];
@@ -172,7 +175,7 @@ export const DIVISIONS: Division[] = [
         slug: 'regular-cleaning',
         name: 'Standard House Cleaning',
         short: 'Everyday upkeep: kitchen, bathrooms and floors.',
-        desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or weekly, every 2 weeks or monthly. Need more detail? Add the oven, fridge and freezer, cabinets or windows when you book.',
+        desc: 'Our standard clean keeps your home fresh: kitchen, bathrooms, floors and dusting, done by a uniformed LIVO crew. Book it once, or weekly, every 2 weeks or monthly. Need more detail? Add the oven, fridge and freezer, or windows when you book.',
         image: houseToilet,
         before: toiletBefore,
         after: toiletAfter,
@@ -351,7 +354,7 @@ export const DIVISIONS: Division[] = [
     }],
     addons: [
       { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
-      { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
+      { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
       { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
       { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
       { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
@@ -584,7 +587,9 @@ export const DIVISIONS: Division[] = [
         name: 'Strata Common-Area Cleaning',
         short: 'Lobbies, halls, stairs, elevators and amenities.',
         desc: 'Strata cleaning for the shared spaces in strata and rental buildings: lobbies, hallways, elevators, stairwells and amenity rooms. Shared areas only; we agree the visit schedule with your council or manager.',
-        image: teamVan,
+        image: strataAfter,
+        before: strataBefore,
+        after: strataAfter,
         unit: 'per visit',
         tierLabel: 'Building size',
         quote: true,
@@ -730,12 +735,12 @@ const card = (id: string, o: Partial<Card> = {}): Card => {
 const std = getSub('house-cleaning', 'regular-cleaning');
 export const HOME_CARDS: Card[] = [
   card('house-cleaning', { name: 'Standard House Cleaning', line: 'Standard & recurring', price: subMin(std) }),
-  card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
   card('airbnb-cleaning', { name: 'Airbnb Turnover Cleaning', line: 'Reset between guests', href: '/services/airbnb-cleaning/turnover-cleaning', price: subMin(getSub('airbnb-cleaning', 'turnover-cleaning')) }),
-  card('detail-cleaning'),
-  card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
   card('restaurant-kitchen-cleaning', { name: 'Restaurant & Kitchen', line: 'Steam-cleaned kitchens', pos: 'object-[85%_40%]' }),
+  card('commercial-cleaning', { name: 'Office & Strata', line: 'Offices and common areas' }),
   card('construction-cleaning', { name: 'Post-Construction', line: 'Homes & commercial sites', price: subMin(getSub('construction-cleaning', 'post-construction-cleaning')) }),
+  card('detail-cleaning'),
+  card('move-cleaning', { name: 'Move-In / Move-Out', line: 'One page for both' }),
   card('junk-removal', { line: 'One item to full clear-outs' }),
 ];
 
