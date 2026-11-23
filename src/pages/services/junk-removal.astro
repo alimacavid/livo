@@ -3,13 +3,10 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import BeforeAfter from '../../components/BeforeAfter.astro';
 import { Image } from 'astro:assets';
-import { getDivision, JUNK_CATEGORIES, subMin, minPrice, PHONE, PHONE_TEL } from '../../data/services';
+import { getDivision, JUNK_CATEGORIES, minPrice, PHONE, PHONE_TEL } from '../../data/services';
 const d = getDivision('junk-removal');
 const rows = JUNK_CATEGORIES.map(row => ({ ...row, service: d.subs.find(s => s.slug === row.sub)! }));
 const money = (n: number | null) => n == null ? 'Free quote' : '$' + n.toLocaleString('en-CA');
-const price = (s: typeof rows[number]['service']) => s.slug === 'single-item-pickup'
-  ? `${money(s.tiers.find(t => t.id === 'curb')!.price)} curb · ${money(s.tiers.find(t => t.id === 'inside')!.price)} inside`
-  : subMin(s) == null ? 'Free quote' : `From ${money(subMin(s))}`;
 const quoteUrl = '/book?d=junk-removal';
 const startingPrice = minPrice(d);
 const included = d.subs.find(s => s.slug === 'junk-removal-by-load')!.included;
@@ -39,7 +36,6 @@ const included = d.subs.find(s => s.slug === 'junk-removal-by-load')!.included;
             <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
             <h3 class="mt-2 font-heading font-extrabold text-xl md:text-2xl">{row.name}</h3>
             <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{row.text}</p>
-            <p class="mt-4 inline-flex rounded-full bg-lime text-ink px-3.5 py-1.5 text-sm font-bold">{price(row.service)}</p>
             <div class="mt-3"><a href={`/book?d=${d.id}&s=${row.service.slug}`} class="btn-lime px-6">Get a free quote</a></div>
           </div>
           {row.before && row.after ? <BeforeAfter before={row.before} after={row.after} alt={row.name} aspect="aspect-[16/10]" class="junk-media mt-4 md:mt-0 w-full" /> :
