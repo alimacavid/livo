@@ -71,6 +71,7 @@ export type Sub = {
   pos?: string;           // Tailwind object-position class
   fromPrice?: number;     // Advertised starting combination, including the visit fee
   itemsRequired?: boolean;
+  minOrder?: number;
   itemGallery?: { label: string; before: ImageMetadata; after: ImageMetadata }[];
   before?: ImageMetadata;
   after?: ImageMetadata;
@@ -337,13 +338,13 @@ export const DIVISIONS: Division[] = [
       unit: 'visit fee + items',
       tierLabel: 'One visit fee',
       tiers: [{ id: 'visit', name: 'Visit fee', sub: 'Travel and setup, once per order', price: 59 }],
-      fromPrice: 108,
+      fromPrice: 99,
+      minOrder: 99,
       itemsRequired: true,
       included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One travel and setup fee per order'],
       goodFor: ['Homes and rentals', 'Airbnb hosts', 'Single-item deep cleaning'],
       itemGallery: [
         { label: 'Oven', before: ovenBefore, after: ovenAfter },
-        { label: 'Stove', before: stoveBefore, after: stoveAfter },
         { label: 'Fridge & Freezer', before: fridgeBefore, after: fridgeAfter },
         { label: 'Cabinets', before: cabinetBefore, after: cabinetAfter },
       ],
@@ -360,7 +361,7 @@ export const DIVISIONS: Division[] = [
     freqs: ONE_TIME,
     times: DAY_TIMES,
     faqs: [
-      { q: 'Can I book just one item?', a: 'Yes. Pick at least one item. The visit fee covers travel and setup once per order, then we add the selected items.' },
+      { q: 'Can I book just one item?', a: 'Yes, as long as your order reaches the $99 minimum. The $59 visit fee covers travel and setup once per order, then we add the selected items. Add another item if the total is below $99.' },
       { q: 'What should I empty first?', a: 'Empty any fridge, freezer or cabinets you book. Clear counters and leave access to the items.' },
       { q: 'Do you repair appliances or grout?', a: 'No. This is cleaning only. We do not move heavy appliances, repair faults, remove mould, seal grout or re-grout.' },
     ],

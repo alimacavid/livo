@@ -12,7 +12,7 @@ for (const d of DIVISIONS) DIV_SRC[d.id] = (await getImage({ src: d.image, width
 // send only plain data to the browser (no images)
 const data = DIVISIONS.map((d) => ({
   id: d.id, name: d.name, short: d.short, icon: d.icon, segment: d.segment, img: DIV_SRC[d.id], prep: PREP[d.id] ?? [],
-  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', fromPrice: s.fromPrice, itemsRequired: !!s.itemsRequired, pos: s.pos ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
+  subs: d.subs.map((s) => ({ slug: s.slug, name: s.name, short: s.short, unit: s.unit, tierLabel: s.tierLabel, tiers: s.tiers, quoteNote: s.quoteNote ?? '', fromPrice: s.fromPrice, minOrder: s.minOrder, itemsRequired: !!s.itemsRequired, pos: s.pos ?? '', quote: isQuoteSub(s), freqs: subFreqs(d, s), addons: subAddons(d, s).map((a) => ({ ...a, img: d.id !== 'junk-removal' ? ADDON_SRC[a.id] ?? '' : '' })) })),
   times: d.times,
 }));
 // divisions businesses can ask about (quote-type services only)
@@ -115,7 +115,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
   type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
   type Freq = { id: string; name: string; sub: string; discount: number };
-  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
+  type SubD = { slug: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; minOrder?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
   type Seg = 'residential' | 'commercial';
   type Div = { id: string; name: string; short: string; icon: string; segment: Seg; subs: SubD[]; times: { id: string; sub: string }[] };
 
@@ -608,10 +608,18 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (st.step === 'review') submit(); else go(steps()[i + 1]);
   });
 
+  function itemError() {
+    if (sub()?.itemsRequired && !addons().some((a) => (st.addons[a.id] ?? 0) > 0)) return 'Pick at least one item to continue.';
+    const minimum = sub()?.minOrder;
+    if (minimum != null && totals().total < minimum) return `Minimum order is ${money(minimum)}. Add another item.`;
+    return '';
+  }
+
   function checkItems() {
-    if (!sub()?.itemsRequired || addons().some((a) => (st.addons[a.id] ?? 0) > 0)) return true;
+    const message = itemError();
+    if (!message) return true;
     const error = document.getElementById('e-items');
-    if (error) { error.textContent = 'Pick at least one item to continue.'; error.focus({ preventScroll: true }); }
+    if (error) { error.textContent = message; error.focus({ preventScroll: true }); }
     fit();
     return false;
   }
@@ -638,7 +646,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   async function submit() {
-    if (sub()?.itemsRequired && !addons().some((a) => (st.addons[a.id] ?? 0) > 0)) { go('addons'); checkItems(); return; }
+    if (itemError()) { go('addons'); checkItems(); return; }
     const err = $('#bk-err'); const c = st.c;
     const phone = normPhone(c.phone);
     // fields live on earlier screens: send the customer back to the first one that needs fixing

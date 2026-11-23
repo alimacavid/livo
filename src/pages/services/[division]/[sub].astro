@@ -23,6 +23,7 @@ const addons = [...subAddons(d, s)].sort((a, b) => Number(!junk && !!ADDON_IMAGE
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
 const $ = (n: number) => '$' + n.toLocaleString('en-CA');
+const priceNote = s.minOrder != null ? `${$(s.tiers[0].price ?? 0)} visit fee + items · ${$(s.minOrder)} minimum` : s.unit;
 const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice != null ? 'From ' : ''}${$(from)}${tax}` : 'Free quote';
 ---
 <Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO in Coquitlam, Port Coquitlam and Port Moody. ${s.short} ${quote ? (from ? `From $${from}, final price after photos.` : 'Free quote, usually the same day.') : `Instant price from $${from}.`} Pay after the job.`} tabBar={false}>
@@ -39,6 +40,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
         <div class="rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold" style="--i:2">
           {from ? <>From {$(from)}{tax} <span class="font-medium">· {s.unit}</span></> : 'Free quote'}
         </div>
+        {s.minOrder != null && <p class="mt-2 text-[12px] text-white/85">{priceNote}</p>}
       </div>
     </div>
   </section>
@@ -117,7 +119,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <div class="sticky top-24 mt-8 card p-6">
         <div class="text-sm text-muted">{priceText === 'Free quote' ? 'Quote' : 'Price'}</div>
         <div class="font-heading font-extrabold text-4xl mt-1">{priceText === 'Free quote' ? 'Free' : priceText.replace(' + tax', '')}</div>
-        <div class="text-sm text-muted">{s.unit}</div>
+        <div class="text-sm text-muted">{priceNote}</div>
         <a href={bookUrl} class="sheen btn-lime w-full mt-5">{cta}</a>
         <a href={`tel:${PHONE_TEL}`} class="btn-ghost w-full mt-2 text-ink"><Icon name="phone" class="size-4" />{PHONE}</a>
         <ul class="mt-5 space-y-2 text-[13px] text-muted">
@@ -136,7 +138,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <div class="flex-1 min-w-0">
         {priceText === 'Free quote' && <div class="text-[12px] text-muted mb-1">Quote</div>}
         <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText === 'Free quote' ? 'Free' : priceText}</div>
-        <div class="text-[12px] text-muted truncate mt-1">{s.unit}</div>
+        <div class={s.minOrder != null ? "text-[10.5px] text-muted leading-tight mt-1" : "text-[12px] text-muted truncate mt-1"}>{priceNote}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
       <a href={bookUrl} class="sheen btn-lime px-7">{quote ? 'Get quote' : 'Book now'}</a>
