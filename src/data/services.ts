@@ -41,6 +41,12 @@ import stoveBefore from '../assets/photos/stove-before.jpg';
 import stoveAfter from '../assets/photos/stove-after.jpg';
 import postRenovation from '../assets/photos/post-renovation.jpg';
 import officeCleaning from '../assets/photos/office-cleaning.jpg';
+import blindsBefore from '../assets/photos/blinds-before.jpg';
+import blindsAfter from '../assets/photos/blinds-after.jpg';
+import groutBefore from '../assets/photos/grout-before.jpg';
+import groutAfter from '../assets/photos/grout-after.jpg';
+import carpetBefore from '../assets/photos/carpet-before.jpg';
+import carpetAfter from '../assets/photos/carpet-after.jpg';
 
 // Photos shown on add-on cards (service pages). Add more here as they arrive.
 export const ADDON_IMAGES: Record<string, ImageMetadata> = {
@@ -331,7 +337,7 @@ export const DIVISIONS: Division[] = [
     subs: [{
       slug: 'appliance-detail-cleaning',
       name: 'Appliance & Detail Cleaning',
-      short: 'Oven, stove, fridge, cabinets, blinds and grout — item by item.',
+      short: 'Oven, stove, fridge, cabinets, blinds, grout and carpet stains — item by item.',
       desc: 'Choose the items you need cleaned.\nOne visit fee. Pay after the job.',
       image: ovenCleaning,
       unit: 'visit fee + items',
@@ -344,13 +350,13 @@ export const DIVISIONS: Division[] = [
       goodFor: ['Homes and rentals', 'Airbnb hosts', 'Single-item deep cleaning'],
     }],
     addons: [
-      { line: 'Clean racks, oven walls and door glass.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
-      { line: 'Clean accessible stove surfaces and knobs.', id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
-      { line: 'Clean inside the fridge and freezer.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
-      { line: 'Clean inside your emptied kitchen cabinets.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
-      { line: 'Clean accessible blinds in place.', id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
-      { line: 'Clean grout in an area up to 50 sq ft.', id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area (up to 50 sq ft)', qty: true },
-      { line: 'Sanitize accessible surfaces; odour removal is not guaranteed.', id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Accessible surfaces; odour removal is not guaranteed', price: 85, unit: 'whole home' },
+      { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
+      { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
+      { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
+      { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
+      { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
+      { line: 'We scrub dark grout lines back to their clean colour with steam and a brush. Price is per area up to 50 sq ft, about one bathroom floor.', before: groutBefore, after: groutAfter, id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area (up to 50 sq ft)', qty: true },
+      { line: 'We treat stains and traffic marks and lift them with a hot-water carpet machine. Price is per room up to 200 sq ft. Some old stains may not come out fully.', before: carpetBefore, after: carpetAfter, id: 'carpet', name: 'Carpet Stain Removal', sub: 'Stains and traffic marks, up to 200 sq ft per room', price: 59, unit: 'per room (up to 200 sq ft)', qty: true },
     ],
     freqs: ONE_TIME,
     times: DAY_TIMES,
@@ -359,7 +365,7 @@ export const DIVISIONS: Division[] = [
       { q: 'What should I empty first?', a: 'Empty any fridge, freezer or cabinets you book. Clear counters and leave access to the items.' },
       { q: 'Do you repair appliances or grout?', a: 'No. This is cleaning only. We do not move heavy appliances, repair faults, remove mould, seal grout or re-grout.' },
     ],
-    notIncluded: ['Moving heavy appliances', 'Repairs', 'Mould remediation', 'Grout sealing or re-grouting'],
+    notIncluded: ['Moving heavy appliances', 'Repairs', 'Mould remediation', 'Grout sealing or re-grouting', 'Full carpet or upholstery cleaning'],
   },
 
   // ───────────────────────── POST-CONSTRUCTION ─────────────────────────
