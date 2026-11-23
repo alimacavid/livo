@@ -59,7 +59,7 @@ export const HERO_VIDEO: string | null = null;        // e.g. '/videos/hero.mp4'
 
 export type Segment = 'residential' | 'commercial';
 export type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
-export type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
+export type Addon = { line?: string; before?: ImageMetadata; after?: ImageMetadata; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
 export type Freq = { id: string; name: string; sub: string; discount: number };
 export type Faq = { q: string; a: string };
 export type Sub = {
@@ -72,7 +72,6 @@ export type Sub = {
   fromPrice?: number;     // Advertised starting combination, including the visit fee
   itemsRequired?: boolean;
   minOrder?: number;
-  itemGallery?: { label: string; before: ImageMetadata; after: ImageMetadata }[];
   before?: ImageMetadata;
   after?: ImageMetadata;
   realPhotos?: boolean;   // true only when before/after are real LIVO jobs
@@ -333,7 +332,7 @@ export const DIVISIONS: Division[] = [
       slug: 'appliance-detail-cleaning',
       name: 'Appliance & Detail Cleaning',
       short: 'Oven, stove, fridge, cabinets, blinds and grout — item by item.',
-      desc: 'We deep clean single items in homes, rentals and Airbnbs. Pick only what you need: each item has its own price, plus one visit fee per order. Pay after the job.',
+      desc: 'Choose the items you need cleaned.\nOne visit fee. Pay after the job.',
       image: ovenCleaning,
       unit: 'visit fee + items',
       tierLabel: 'One visit fee',
@@ -343,20 +342,15 @@ export const DIVISIONS: Division[] = [
       itemsRequired: true,
       included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One travel and setup fee per order'],
       goodFor: ['Homes and rentals', 'Airbnb hosts', 'Single-item deep cleaning'],
-      itemGallery: [
-        { label: 'Oven', before: ovenBefore, after: ovenAfter },
-        { label: 'Fridge & Freezer', before: fridgeBefore, after: fridgeAfter },
-        { label: 'Cabinets', before: cabinetBefore, after: cabinetAfter },
-      ],
     }],
     addons: [
-      { id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
-      { id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
-      { id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
-      { id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
-      { id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
-      { id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area (up to 50 sq ft)', qty: true },
-      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Accessible surfaces; odour removal is not guaranteed', price: 85, unit: 'whole home' },
+      { line: 'Clean racks, oven walls and door glass.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
+      { line: 'Clean accessible stove surfaces and knobs.', id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
+      { line: 'Clean inside the fridge and freezer.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
+      { line: 'Clean inside your emptied kitchen cabinets.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
+      { line: 'Clean accessible blinds in place.', id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
+      { line: 'Clean grout in an area up to 50 sq ft.', id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area (up to 50 sq ft)', qty: true },
+      { line: 'Sanitize accessible surfaces; odour removal is not guaranteed.', id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Accessible surfaces; odour removal is not guaranteed', price: 85, unit: 'whole home' },
     ],
     freqs: ONE_TIME,
     times: DAY_TIMES,
@@ -716,7 +710,7 @@ export type Category = { id: string; label: string; line: string; divs: Division
 export const CATEGORIES: Category[] = [
   { id: 'residential', label: 'Residential Cleaning', line: 'Homes, condos and rentals. Prices show right away.', divs: ['house-cleaning', 'move-cleaning', 'airbnb-cleaning', 'detail-cleaning'].map(getDivision) },
   { id: 'commercial', label: 'Commercial Cleaning', line: 'Offices, strata and restaurants. Starting prices plus tax; free quote, usually the same day.', divs: ['commercial-cleaning', 'restaurant-kitchen-cleaning'].map(getDivision) },
-  { id: 'construction', label: 'Post-Construction Cleaning', line: 'Homes and commercial sites, after the trades.', divs: [getDivision('construction-cleaning')] },
+  { id: 'construction', label: 'Post-Construction', line: 'Homes and commercial sites, after the trades.', divs: [getDivision('construction-cleaning')] },
   { id: 'junk', label: 'Junk Removal', line: 'One item to full clear-outs.', divs: [getDivision('junk-removal')] },
 ];
 export const categoryOf = (d: Division) => CATEGORIES.find((c) => c.divs.includes(d))!;

@@ -13,7 +13,8 @@ const from = subMin(s);
 const quote = isQuoteSub(s);
 const firstOff = !quote && d.segment === 'residential' ? Math.round(FIRST_TIME_DISCOUNT * 100) : 0;
 const cta = quote ? 'Get a free quote' : 'Book now';
-const others = d.subs.filter((x) => x.slug !== s.slug);
+const itemRows = s.itemsRequired ? subAddons(d, s) : [];
+const hasItems = itemRows.length > 0;
 // choices (size, add-ons, how often) are made in booking, one step at a time — this page only informs
 const bookUrl = `/book?d=${d.id}&s=${s.slug}`;
 const recurringFreqs = subFreqs(d, s).filter((f) => f.id !== 'onetime' && f.discount > 0);
@@ -37,28 +38,32 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
-        <div class="rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold" style="--i:2">
-          {from ? <>From {$(from)}{tax} <span class="font-medium">· {s.unit}</span></> : 'Free quote'}
+        <div class={hasItems ? "rise mt-3 inline-block max-w-full rounded-full bg-lime text-ink px-3.5 py-1.5 text-[12px] md:text-[13px] font-bold" : "rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold"} style="--i:2">
+          {from ? <>From {$(from)}{tax} <span class="font-medium">· {hasItems ? priceNote : s.unit}</span></> : 'Free quote'}
         </div>
-        {s.minOrder != null && <p class="mt-2 text-[12px] text-white/85">{priceNote}</p>}
+        {s.minOrder != null && !hasItems && <p class="mt-2 text-[12px] text-white/85">{priceNote}</p>}
       </div>
     </div>
   </section>
 
-  <div class="mx-auto max-w-6xl px-4 md:px-6 md:grid md:grid-cols-[1fr_360px] md:gap-12">
+  <div class:list={["mx-auto max-w-6xl px-4 md:px-6", !hasItems && "md:grid md:grid-cols-[1fr_360px] md:gap-12"]}>
     <div>
       <!-- INTRO -->
-      <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{s.desc}</p>
+      <p class:list={["mt-7 text-[15.5px] leading-relaxed text-ink/85", hasItems && "whitespace-pre-line"]}>{s.desc}</p>
 
-      {s.itemGallery?.length && (
-        <section class="mt-8">
-          <h2 class="text-xl font-extrabold">Before & after</h2>
-          <div class="mt-4 grid md:grid-cols-2 gap-5">
-            {s.itemGallery.map((item) => (
-              <div>
-                <h3 class="text-sm font-semibold mb-2">{item.label}</h3>
-                <BeforeAfter before={item.before} after={item.after} alt={item.label} />
-              </div>
+      {hasItems && (
+        <section class="mt-8" aria-labelledby="items-title">
+          <h2 id="items-title" class="text-xl font-extrabold">What we clean</h2>
+          <div class="mt-4 divide-y divide-line border-y border-line">
+            {itemRows.map((item) => (
+              <article class:list={["py-6 md:py-8", item.before && item.after && "md:grid md:grid-cols-[2fr_3fr] md:gap-8 md:items-center"]} data-item-row>
+                <div>
+                  <h3 class="text-lg font-extrabold">{item.name}</h3>
+                  <p class="mt-1 text-sm text-muted">{item.line ?? item.sub}</p>
+                  <p class="mt-3 text-sm font-semibold">{$(item.price)} {item.unit}</p>
+                </div>
+                {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} class="mt-4 md:mt-0" />}
+              </article>
             ))}
           </div>
         </section>
@@ -115,7 +120,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
     </div>
 
     <!-- DESKTOP BOOKING CARD -->
-    <aside class="hidden md:block">
+    {!hasItems && <aside class="hidden md:block">
       <div class="sticky top-24 mt-8 card p-6">
         <div class="text-sm text-muted">{priceText === 'Free quote' ? 'Quote' : 'Price'}</div>
         <div class="font-heading font-extrabold text-4xl mt-1">{priceText === 'Free quote' ? 'Free' : priceText.replace(' + tax', '')}</div>
@@ -129,7 +134,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
           <li class="flex gap-2"><Icon name="check" class="size-4 text-lime-ink" stroke={2.5} />Uniformed LIVO crew</li>
         </ul>
       </div>
-    </aside>
+    </aside>}
   </div>
 
   <!-- MOBILE STICKY BOOK BAR -->

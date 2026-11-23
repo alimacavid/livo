@@ -13,7 +13,6 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
       <Image src={c.image} alt="" class={`absolute inset-0 size-full object-cover ${c.pos ?? ''} transition duration-700 group-hover:scale-105`}
         widths={[400, 700, 1000]} quality={85} sizes="(min-width:768px) 800px, 100vw" />
       <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
-      <span class="absolute top-3 left-3 size-9 rounded-full bg-white/90 backdrop-blur grid place-items-center text-purple" aria-hidden="true"><Icon name={c.icon} class="size-[18px]" /></span>
       <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">
         <div class="font-heading font-bold text-[15px] md:text-lg leading-tight">{c.name}</div>
         <div class="mt-1 text-[12px] md:text-sm text-white/85">{c.price != null ? <>From <b class="text-lime">${c.price.toLocaleString('en-CA')}</b>{c.tax && <span class="text-white/75"> + tax</span>}</> : <b class="text-lime font-semibold">Free quote</b>}</div>
