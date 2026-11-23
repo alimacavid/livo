@@ -500,7 +500,7 @@ export const DIVISIONS: Division[] = [
         quoteNote: JUNK_QUOTE_NOTE,
         tiers: [{ id: 'item', name: 'One item', sub: 'Sofa, mattress, dresser, appliance…', price: 119 }],
         priceNote: 'Mattresses, box springs and fridges have a small disposal add-on.',
-        included: ['Pickup and loading', 'Carry-out from inside (inside option)', 'Proper disposal or recycling'],
+        included: ['Pickup and loading', 'Carry-out from anywhere on the property', 'Proper disposal or recycling'],
         goodFor: ['Old mattress', 'Sofa or recliner', 'TV or appliance'],
       },
       {

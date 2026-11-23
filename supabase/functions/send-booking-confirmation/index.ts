@@ -34,6 +34,7 @@ interface Payload {
 const prepOf = (p: Payload) => (Array.isArray(p.prep) ? p.prep : []).map((x) => clip(x, 140)).filter(Boolean).slice(0, 6);
 
 const estimateOf = (p: Payload): number | null => typeof p.estimate === "number" && Number.isFinite(p.estimate) && p.estimate >= 0 ? Math.round(p.estimate) : null;
+const estimateText = (p: Payload, estimate: number) => money(estimate) + (p.segment === "commercial" ? " + tax" : "");
 const locationOf = (p: Payload) => clip(p.location, 160);
 const serviceOf = (p: Payload) => clip(p.service, 120) || clip(p.items[0]?.group, 120);
 
@@ -41,7 +42,7 @@ function customerSms(kind: string, ref: string, when: string, p: Payload) {
   const service = serviceOf(p), estimate = estimateOf(p);
   if (kind === "quote") return [
     `LIVO: quote request received #${ref} for ${service}.`,
-    estimate != null ? `Rough price from ${money(estimate)}. Final price confirmed on site.` : "",
+    estimate != null ? `Rough price from ${estimateText(p, estimate)}. Final price confirmed on site.` : "",
     "We'll text your quote, usually the same day. Questions? 888-802-LIVO",
   ].filter(Boolean).join("\n");
   return [
@@ -62,7 +63,7 @@ function alertSms(kind: string, ref: string, when: string, p: Payload, photoCoun
     `${clip(p.business, 60) || p.name} · ${p.phone}`,
     when,
     locationOf(p) ? `Location: ${locationOf(p)}` : "",
-    kind === "quote" && estimate != null ? `Rough price from ${money(estimate)}` : "",
+    kind === "quote" && estimate != null ? `Rough price from ${estimateText(p, estimate)}` : "",
     photoCount ? `${photoCount} photos — see email` : "",
   ].filter(Boolean).join("\n");
 }
@@ -208,12 +209,12 @@ function prepHtml(p: Payload) {
 
 function customerHtml(kind: string, ref: string, when: string, p: Payload) {
   const details = requestDetails(kind, when, p);
-  const footer = `<p style="color:#666;font-size:13px">We text you to confirm your crew. Questions? Call <b>888-802-LIVO</b>.</p>`;
+  const footer = `<p style="color:#666;font-size:13px">${kind === "quote" ? "We text you your quote, usually the same day." : "We text you to confirm your crew."} Questions? Call <b>888-802-LIVO</b>.</p>`;
   if (kind === "quote") {
     const estimate = estimateOf(p);
     return frame("Quote request received", `Reference #${esc(ref)}`, `<p>Hi ${esc(p.name)}, thanks for asking LIVO for a quote.</p>
       ${details}
-      <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px">${estimate != null ? `<b>Rough price from ${money(estimate)}</b> (final price confirmed on site)` : "<b>Price:</b> in your quote"}</p>
+      <p style="background:#F3EEFA;border-radius:10px;padding:12px 14px">${estimate != null ? `<b>Rough price from ${estimateText(p, estimate)}</b> (final price confirmed on site)` : "<b>Price:</b> in your quote"}</p>
       <p style="background:#F6F9D9;border-radius:10px;padding:12px 14px"><b>What happens next</b><br>1. We look at your photos and details.<br>2. You get your quote by text and email, usually the same day.<br>3. Say yes and we lock in your date.</p>
       ${prepHtml(p)}${footer}`);
   }
@@ -231,6 +232,6 @@ function customerHtml(kind: string, ref: string, when: string, p: Payload) {
 function alertHtml(kind: string, ref: string, when: string, p: Payload, links: string[]) {
   const estimate = estimateOf(p);
   return frame(`New ${esc(kind)} #${esc(ref)}`, `${esc(p.segment ?? "")} · ${esc(serviceOf(p))}`, `
-    <table style="font-size:14px">${emailLine("Name", p.name)}${emailLine("Business", p.business)}${emailLine("Phone", p.phone)}${emailLine("Email", p.email)}${emailLine("Address", p.address)}${emailLine("Access", p.access)}${emailLine("Location", locationOf(p))}${emailLine("When", when)}${emailLine("Size / quote", p.items[0].size)}${emailLine("How often", p.items[0].freq)}${kind === "booking" ? emailLine("Total", money(p.total)) : ""}${kind === "quote" && estimate != null ? emailLine("Rough price", `from ${money(estimate)} (final price confirmed on site)`) : ""}${emailLine("Photos sent", String(Array.isArray(p.photos) ? p.photos.length : 0))}${emailLine("Description", p.description)}${emailLine("Notes", p.notes)}</table>
+    <table style="font-size:14px">${emailLine("Name", p.name)}${emailLine("Business", p.business)}${emailLine("Phone", p.phone)}${emailLine("Email", p.email)}${emailLine("Address", p.address)}${emailLine("Access", p.access)}${emailLine("Location", locationOf(p))}${emailLine("When", when)}${emailLine("Size / quote", p.items[0].size)}${emailLine("How often", p.items[0].freq)}${kind === "booking" ? emailLine("Total", money(p.total)) : ""}${kind === "quote" && estimate != null ? emailLine("Rough price", `from ${estimateText(p, estimate)} (final price confirmed on site)`) : ""}${emailLine("Photos sent", String(Array.isArray(p.photos) ? p.photos.length : 0))}${emailLine("Description", p.description)}${emailLine("Notes", p.notes)}</table>
     ${links.length ? `<p style="margin-top:16px;font-weight:700">Photos (links work for 7 days)</p>${links.map((u, i) => `<a href="${esc(u)}" style="display:inline-block;margin:0 8px 8px 0">Photo ${i + 1}</a>`).join("")}` : ""}`);
 }
