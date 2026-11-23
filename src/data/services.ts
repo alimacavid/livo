@@ -51,6 +51,8 @@ import stovetopBefore from '../assets/photos/stovetop-before.jpg';
 import stovetopAfter from '../assets/photos/stovetop-after.jpg';
 import strataBefore from '../assets/photos/strata-before.jpg';
 import strataAfter from '../assets/photos/strata-after.jpg';
+import moveBefore from '../assets/photos/move-before.jpg';
+import moveAfter from '../assets/photos/move-after.jpg';
 
 // Photos shown on add-on cards (service pages). Add more here as they arrive.
 export const ADDON_IMAGES: Record<string, ImageMetadata> = {
@@ -219,16 +221,16 @@ export const DIVISIONS: Division[] = [
     keyword: 'move out cleaning Coquitlam',
     segment: 'residential',
     icon: 'box',
-    image: cabinetCleaning,
+    image: moveAfter,
     subs: [
       {
         slug: 'move-in-move-out-cleaning',
         name: 'Move-In / Move-Out Cleaning',
         short: 'Empty home, ready for handover. Appliances included.',
         desc: 'An empty-home clean built for handover. Inside every cabinet, closet and appliance is included, so the home is ready for inspection or for the next people to move in.',
-        image: cabinetCleaning,
-        before: cabinetBefore,
-        after: cabinetAfter,
+        image: moveAfter,
+        before: moveBefore,
+        after: moveAfter,
         unit: 'flat rate',
         tierLabel: 'Home size',
         tiers: [
