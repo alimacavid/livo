@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getImage } from 'astro:assets';
-import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, PREP } from '../data/services';
+import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, PREP, JUNK_LOCATIONS } from '../data/services';
 
 // small photos for the add-on cards (junk 'fridge' = disposal, so no cleaning photo there)
 const ADDON_SRC: Record<string, string> = {};
@@ -23,7 +23,7 @@ const data = DIVISIONS.map((d) => ({
 const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', 'construction-cleaning', 'junk-removal'];
 ---
 <Base title="Book a Service or Get a Quote" description="Book house cleaning, move out cleaning, Airbnb cleaning or junk removal online, or send photos for a free commercial cleaning quote. LIVO Property Services, Coquitlam." tabBar={false} footer={false}>
-  <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, commercialDivs: COMMERCIAL_DIVS, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
+  <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, junkLocations: JUNK_LOCATIONS, commercialDivs: COMMERCIAL_DIVS, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
 
   <div id="bk-wrap" class="mx-auto max-w-xl px-4 pt-2 md:pt-6 flex flex-col min-h-[calc(100dvh-66px)]">
     <!-- progress -->
@@ -158,6 +158,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     html.bk-tightest #bk-view .bk-junk-photos .bk-photo-many { grid-template-columns: repeat(6, minmax(0, 1fr)); }
     html.bk-tightest #bk-view .bk-junk-photos .bk-photo-many .bk-photo-add-label { display: none; }
   }
+  @media (min-width: 768px) {
+    #bk-view .bk-junk-photos textarea { height: 3rem; }
+    #bk-view .bk-junk-photos .bk-photo-grid > [role="listitem"] { max-width: 72px; }
+  }
+  html #bk-view .bk-junk-photos h1 + p { display: block; font-size: 13px; line-height: 1.4; }
+  #bk-view .bk-junk-photos .bk-photo-grid label > span { width: 100%; }
+  html.bk-tightest #bk-view .bk-junk-photos .bk-photo-add-label { font-size: 11px; line-height: 12px; }
 </style>
 
 <script>
@@ -170,10 +177,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   type Seg = 'residential' | 'commercial';
   type Div = { id: string; name: string; short: string; icon: string; segment: Seg; subs: SubD[]; times: { id: string; sub: string }[] };
 
-  const D = JSON.parse(document.getElementById('livo-data')!.textContent!) as { divisions: Div[]; commercialDivs: string[]; firstTime: number; phone: string; tel: string };
+  const D = JSON.parse(document.getElementById('livo-data')!.textContent!) as { divisions: Div[]; junkLocations: { id: string; name: string; fee: number }[]; commercialDivs: string[]; firstTime: number; phone: string; tel: string };
   const FT = Math.round(D.firstTime * 100);
   const MAX_PHOTOS = 10;
-  const JUNK_LOCATIONS = ['Curbside / driveway', 'Garage or ground floor', 'Upstairs or basement (stairs)', 'Apartment / condo (elevator)'];
+  const JUNK_LOCATIONS = D.junkLocations;
 
   const ALL_STEPS = ['service', 'size', 'addons', 'photos', 'freq', 'date', 'time', 'contact', 'address', 'review'] as const;
   type Step = (typeof ALL_STEPS)[number];
@@ -214,11 +221,17 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const freq = () => freqs().find((f) => f.id === st.freq) ?? freqs()[0];
   const isQuote = () => !!sub()?.quote || (tier() != null && tier()!.price == null);
   const junkQuote = () => div().id === 'junk-removal' && isQuote();
-  const validJunkLocation = () => JUNK_LOCATIONS.includes(st.junkLocation);
-  const junkLocationNote = () => junkQuote() && validJunkLocation() ? `Location: ${st.junkLocation}` : '';
-  const segment = (): Seg => (div().segment === 'commercial' || st.seg === 'commercial' || st.forBusiness ? 'commercial' : 'residential');
+  const selectedJunkLocation = () => JUNK_LOCATIONS.find((choice) => choice.id === st.junkLocation || choice.name === st.junkLocation);
+  const validJunkLocation = () => !!selectedJunkLocation();
+  const junkEstimate = () => tier()?.price == null ? null : tier()!.price! + (selectedJunkLocation()?.fee ?? 0);
+  const junkLocationNote = () => junkQuote() && selectedJunkLocation() ? `Location: ${selectedJunkLocation()!.name} (+${money(selectedJunkLocation()!.fee)})` : '';
+  const junkRoughPriceNote = () => junkQuote() && junkEstimate() != null ? `Rough price from ${money(junkEstimate()!)}` : '';
+  const segment = (): Seg => junkQuote() ? 'residential' : (div().segment === 'commercial' || st.seg === 'commercial' || st.forBusiness ? 'commercial' : 'residential');
+  const skipJunkSize = () => junkQuote() && sub()?.tiers.length === 1;
+  const serviceStart = (): Step => skipJunkSize() ? 'photos' : 'size';
   const discountOK = () => D.firstTime > 0 && !isQuote() && segment() === 'residential';
   const steps = () => ALL_STEPS.filter((x) =>
+    (x !== 'size' || !skipJunkSize()) &&
     (x !== 'addons' || (!isQuote() && addons().length > 0)) &&
     (x !== 'photos' || isQuote()) &&
     (x !== 'freq' || freqs().length > 1));
@@ -235,7 +248,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   });
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (sub()) st.freq = freq().id;
-  if (st.sub) st.step = sub()?.itemsRequired && Object.keys(st.addons).length ? 'addons' : 'size'; // Item links keep selections and open the items step; other links start at size.
+  if (st.sub) st.step = sub()?.itemsRequired && Object.keys(st.addons).length ? 'addons' : serviceStart(); // Item links keep selections and open the items step; other links start at size.
   // back from sign-in: restore everything the customer already picked and continue at "Your details"
   const RESUME = 'livo-book-resume'; let resumed = false;
   if (q.get('resume')) {
@@ -247,6 +260,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         st.step = 'contact'; resumed = true;
       }
     } catch { /* storage blocked: start normally */ }
+    if (junkQuote() && sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
     sessionStorage.removeItem(RESUME);
     history.replaceState(null, '', st.sub ? `/book?d=${st.div}&s=${st.sub}` : '/book');
   }
@@ -362,15 +376,15 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   const needPhotos = () => isQuote() && (junkQuote() || st.tier !== 'visit');
-  const needBusiness = () => segment() === 'commercial';
+  const needBusiness = () => !junkQuote() && segment() === 'commercial';
   function vPhotos() {
-    const canBeHome = div().segment === 'residential';
-    return `<div class="${junkQuote() ? 'bk-junk-photos' : ''}">${h1('Show us the job', needPhotos() ? 'Add at least 1 photo. More photos, more accurate quote.' : 'Photos are optional for a site visit, but they help.')}
+    const canBeHome = !junkQuote() && div().segment === 'residential';
+    return `<div class="${junkQuote() ? 'bk-junk-photos' : ''}">${h1('Show us the job', junkQuote() ? 'Take a photo or choose from your gallery for a rough price. Final price confirmed on site.' : needPhotos() ? 'Add at least 1 photo. More photos, more accurate quote.' : 'Photos are optional for a site visit, but they help.')}
       ${canBeHome ? `<div class="mt-5"><div class="bk-for-label text-[13px] font-semibold text-ink/80 mb-1.5">This is for a</div>${segTabs(st.forBusiness ? 'commercial' : 'residential', 'data-for', ['Home', 'Business'])}</div>` : ''}
       ${junkQuote() ? `<fieldset class="mt-4" id="junk-location" aria-describedby="e-location">
         <legend class="text-[13px] font-semibold text-ink/80">Where is it? <span class="font-normal text-muted">(required)</span></legend>
         <div class="mt-1.5 grid grid-cols-2 gap-2">
-          ${JUNK_LOCATIONS.map((choice, i) => `<button type="button" data-location="${i}" aria-pressed="${st.junkLocation === choice}" class="press text-left min-h-11 px-3 py-2 rounded-[12px] border-2 text-[13px] font-semibold leading-tight ${st.junkLocation === choice ? 'border-purple bg-purple-soft' : 'border-line bg-white hover:border-gray'}">${choice}</button>`).join('')}
+          ${JUNK_LOCATIONS.map((choice) => `<button type="button" data-location="${choice.id}" aria-pressed="${selectedJunkLocation()?.id === choice.id}" class="press text-left min-h-11 px-3 py-2 rounded-[12px] border-2 text-[13px] font-semibold leading-tight flex items-center justify-between gap-2 ${selectedJunkLocation()?.id === choice.id ? 'border-purple bg-purple-soft' : 'border-line bg-white hover:border-gray'}"><span>${choice.name}</span><span class="shrink-0 text-[12px]">${choice.fee === 0 ? 'No extra' : '+' + money(choice.fee)}</span></button>`).join('')}
         </div>
         <p id="e-location" role="alert" tabindex="-1" class="mt-1 text-[13px] text-red-700 empty:hidden outline-none"></p>
       </fieldset>` : ''}
@@ -382,8 +396,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
               <button data-rmphoto="${i}" class="press absolute top-1 right-1 size-9 rounded-full bg-white/90 grid place-items-center" aria-label="Remove photo ${i + 1}">${ic('<path d="M6 6l12 12M18 6 6 18"/>', 'size-4')}</button>
             </div>`).join('')}
           ${st.photos.length < MAX_PHOTOS ? `<div role="listitem"><label class="press size-full aspect-square rounded-[12px] border-2 border-dashed border-gray hover:border-purple grid place-items-center text-center cursor-pointer transition-colors">
-              <input id="ph-input" aria-label="Add photos" type="file" accept="image/*" multiple class="sr-only" aria-describedby="e-photos" />
-              <span class="text-purple">${ic('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>', 'size-6 mx-auto')}<span class="bk-photo-add-label block mt-1 text-[12px] font-semibold">Add photos</span></span>
+              <input id="ph-input" aria-label="${junkQuote() ? 'Take or add photos' : 'Add photos'}" type="file" accept="image/*" multiple class="sr-only" aria-describedby="e-photos" />
+              <span class="text-purple">${ic('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>', 'size-6 mx-auto')}<span class="bk-photo-add-label block mt-1 text-[12px] font-semibold">${junkQuote() ? 'Take or add photos' : 'Add photos'}</span></span>
             </label></div>` : ''}
         </div>
         <p id="e-photos" class="mt-1 text-[13px] text-red-700 empty:hidden"></p>
@@ -475,7 +489,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           </a>
           <div class="bk-x mt-4 flex items-center gap-3 text-[12px] text-muted" aria-hidden="true"><span class="h-px flex-1 bg-line"></span>or enter your details<span class="h-px flex-1 bg-line"></span></div>`}
       <div class="mt-2">
-        ${junkQuote() && needBusiness() ? fld('business', 'Business name', 'text', 'organization') : ''}
         ${fld('name', biz() ? 'Contact name' : 'Full name', 'text', 'name')}
         ${fld('phone', 'Mobile number', 'tel', 'tel', 'tel')}
         ${fld('email', 'Email', 'email', 'email', 'email')}
@@ -505,9 +518,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function vReview() {
     const t = totals(); const s = sub()!; const tr = tier()!; const f = freq(); const quote = isQuote();
     const lines = [
-      [`${s.name} · ${tr.name}`, tr.price != null ? `${quote ? 'from ' : ''}${money(tr.price)}` : 'Free quote'],
+      [`${s.name} · ${tr.name}`, junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr.price != null ? `${quote ? 'from ' : ''}${money(tr.price)}` : 'Free quote'],
       ...(quote ? [] : addons().filter((a) => st.addons[a.id]).map((a) => [`${a.name}${st.addons[a.id] > 1 ? ' × ' + st.addons[a.id] : ''}`, money(a.price * st.addons[a.id])])),
       ...(junkLocationNote() ? [[esc(junkLocationNote()), '']] : []),
+      ...(junkRoughPriceNote() ? [[esc(junkRoughPriceNote()), '']] : []),
       ...(quote && st.photos.length ? [[`${st.photos.length} photo${st.photos.length > 1 ? 's' : ''} attached`, '']] : []),
     ];
     const when = st.date ? new Date(st.date + 'T12:00').toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
@@ -529,7 +543,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         </button>` : ''}
         <div class="mt-4 pt-4 border-t border-line flex justify-between items-baseline">
           <span class="font-semibold">${quote ? 'Price' : f.id !== 'onetime' ? 'First visit' : 'Total'}</span>
-          <span class="font-heading font-extrabold text-2xl">${quote ? (tr.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total)}</span>
+          <span class="font-heading font-extrabold text-2xl">${quote ? (junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total)}</span>
         </div>
         <p class="mt-1 text-[12px] text-muted">${quote ? `Final price confirmed after we review your photos or visit${needBusiness() ? ', plus tax' : ''}. No obligation.` : f.id !== 'onetime' ? 'Your first visit is the regular price. You pay after each visit; skip or cancel anytime.' : 'You pay after the job.'}</p>
       </div>
@@ -587,7 +601,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
     v.innerHTML = ({ service: vService, size: vSize, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
     const t = totals(); const tr = tier();
-    const tot = !sub() ? '—' : isQuote() ? (tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
+    const tot = !sub() ? '—' : isQuote() ? (junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
     $('#bk-totlabel').textContent = isQuote() ? (tr?.price == null ? 'Quote' : 'Price') : 'Total';
     $('#bk-bottom').style.display = st.step === 'service' ? 'none' : ''; // tapping a card moves on; no empty Total / Continue
     $('#bk-bottom').classList.toggle('bk-junk-quote', junkQuote());
@@ -621,12 +635,12 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
     else if (ds.div) {
       st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
-      const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.freq = freqs()[0].id; go('size'); return; }
+      const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.freq = freqs()[0].id; go(serviceStart()); return; }
       pickedDiv = true;
     }
     else if (ds.alldivs !== undefined) { pickedDiv = false; }
-    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go('size'), 160); return; }
-    else if (ds.location !== undefined) { st.junkLocation = JUNK_LOCATIONS[Number(ds.location)] ?? ''; }
+    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
+    else if (ds.location !== undefined) { st.junkLocation = JUNK_LOCATIONS.find((choice) => choice.id === ds.location)?.id ?? ''; }
     else if (ds.tier) { st.tier = ds.tier; }
     else if (ds.add) { const a = addons().find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
     else if (ds.inc) { st.addons[ds.inc] = (st.addons[ds.inc] ?? 0) + 1; }
@@ -718,7 +732,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     return ok;
   }
 
-  const contactKeys = () => junkQuote() && needBusiness() ? ['business', 'name', 'phone', 'email'] : ['name', 'phone', 'email'];
+  const contactKeys = () => ['name', 'phone', 'email'];
   const MSG: Record<string, string> = { business: 'Enter the business name.', name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', address: 'Enter the address where we should come.' };
   const badFields = (keys: string[]) => keys.filter((k) => k === 'business' ? !st.c.business.trim() : k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
   function checkFields(keys: string[]) {
@@ -756,7 +770,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         div: d.id, sub: s.slug, tier: tr.id, service: s.name,
         items, total: quote ? 0 : t.total, firstTime: discountOK() && st.firstTime,
         description: c.description.trim() || undefined,
-        notes: [c.notes.trim(), junkLocationNote(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
+        notes: [c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
         prep: quote ? [] : (div() as any).prep ?? [],
       }, st.photos.map((p) => p.file), (n, all) => { st.progress = `Uploading photo ${n} of ${all}…`; render(); });
