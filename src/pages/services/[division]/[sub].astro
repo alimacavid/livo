@@ -25,10 +25,10 @@ const addons = [...subAddons(d, s)].sort((a, b) => Number(!junk && !!ADDON_IMAGE
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
 const $ = (n: number) => '$' + n.toLocaleString('en-CA');
-const priceNote = s.minOrder != null ? `${$(s.tiers[0].price ?? 0)} visit fee + items · ${$(s.minOrder)} minimum` : s.unit;
-const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice != null ? 'From ' : ''}${$(from)}${tax}` : 'Free quote';
+const priceNote = quote ? 'No obligation' : 'Choose your options in booking';
+const priceText = quote ? 'Free quote' : 'Price in booking';
 ---
-<Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO in Coquitlam, Port Coquitlam and Port Moody. ${s.short} ${quote ? (from ? `From $${from}, final price after photos.` : 'Free quote, usually the same day.') : `Instant price from $${from}.`} Pay after the job.`} tabBar={false}>
+<Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO. ${s.short} Choose your options in booking or request a free quote.`} tabBar={false}>
 
   <!-- HERO -->
   <section class="px-3 md:px-6 pt-1 md:pt-6">
@@ -40,7 +40,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
         <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
         <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
         <div class={hasItems ? "rise mt-3 inline-block max-w-full rounded-full bg-lime text-ink px-3.5 py-1.5 text-[12px] md:text-[13px] font-bold" : "rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold"} style="--i:2">
-          {from ? <>From {$(from)}{tax} {!hasItems && <span class="font-medium">· {s.unit}</span>}</> : 'Free quote'}
+          {quote ? 'Free quote' : 'Price in booking'}
         </div>
         {s.minOrder != null && <p class="mt-2 text-[12px] text-white/80">{priceNote}</p>}
       </div>
@@ -64,10 +64,10 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
                   <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
                   <div class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <h3 class="font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
-                    <p class="font-heading font-bold text-purple text-[13px] md:text-base whitespace-nowrap" data-item-price>{$(item.price)} {item.unit.split(' (')[0]}</p>
+                    <p class="font-heading font-bold text-purple text-[13px] md:text-base whitespace-nowrap" data-item-price>Price in booking</p>
                   </div>
                   <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{item.line ?? item.sub}</p>
-                  <DetailSelection item={item} />
+                  <a href={`${bookUrl}&a=${item.id}:1`} class="btn-ghost mt-3">Select in booking</a>
                 </div>
                 {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} aspect="aspect-[16/10]" class="detail-slider mt-4 md:mt-0 w-full" />}
               </article>;
@@ -156,7 +156,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <a href={bookUrl} class={quote ? "sheen btn-lime px-4 text-[13px] shrink-0" : "sheen btn-lime px-7"}>{cta}</a>
     </div>
   </div>
-  {hasItems && <DetailSelection items={itemRows} visitFee={s.tiers[0].price ?? 0} minOrder={s.minOrder ?? 0} bookUrl={bookUrl} />}
+
   <div class={hasItems ? "h-24" : "md:hidden h-24"}></div>
 </Base>
 

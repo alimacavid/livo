@@ -73,7 +73,7 @@ import moveCrew from '../assets/photos/move-crew.jpg';
 
 // Photos shown on add-on cards (service pages). Add more here as they arrive.
 export const ADDON_IMAGES: Record<string, ImageMetadata> = {
-  fridge: fridgeCleaning, oven: ovenCleaning, cabinets: cabinetCleaning, windows: windowCleaning, bath: houseToilet, stove: stovetopAfter, blinds: blindsAfter, grout: groutAfter, carpet: carpetAfter,
+  fridge: fridgeAfter, oven: ovenAfter, cabinets: cabinetAfter, stove: stovetopAfter, blinds: blindsAfter, grout: groutAfter, carpet: carpetAfter,
 };
 
 export const JUNK_LOCATIONS = [
@@ -89,6 +89,9 @@ export const PHONE_TEL = '+18888025486';
 // 2026-11-17 (Ali): first-booking discount removed — at the new prices it would
 // drop most home jobs under the 30% margin floor. 0 = off everywhere.
 export const FIRST_TIME_DISCOUNT = 0;
+export const NO_FEE_CITIES = ['Port Coquitlam', 'Coquitlam', 'Port Moody', 'Burnaby', 'New Westminster', 'Maple Ridge', 'Pitt Meadows'];
+export const OTHER_CITIES = ['Vancouver', 'North Vancouver', 'West Vancouver', 'Richmond', 'Surrey', 'Delta', 'Langley', 'White Rock', 'Bowen Island', 'Lions Bay', 'Anmore', 'Belcarra'];
+export const TRAVEL_FEE = 35;
 
 // Short muted video loops. Put the file in /public/videos/ and set the path here.
 // null = no video yet → the photo is shown.
@@ -176,13 +179,13 @@ const RECURRING: Freq[] = [
 ];
 
 const DETAIL_ITEMS: Addon[] = [
-  { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
-  { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
-  { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
-  { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
-  { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
-  { line: 'We scrub dark grout lines back to their clean colour with steam and a brush. Price is per area up to 50 sq ft, about one bathroom floor.', before: groutBefore, after: groutAfter, id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area', qty: true },
-  { line: 'We treat stains and traffic marks and lift them with a hot-water carpet machine. Price is per room up to 200 sq ft. Some old stains may not come out fully.', before: carpetBefore, after: carpetAfter, id: 'carpet', name: 'Carpet Stain Removal', sub: 'Stains and traffic marks, up to 200 sq ft per room', price: 59, unit: 'per room', qty: true },
+  { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 45, unit: 'each', qty: true },
+  { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 20, unit: 'each', qty: true },
+  { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 35, unit: 'each unit', qty: true },
+  { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 40, unit: 'whole kitchen' },
+  { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 8, unit: 'per blind', qty: true },
+  { line: 'We scrub dark grout lines back to their clean colour with steam and a brush. Price is per area up to 40 sq ft, about one bathroom floor.', before: groutBefore, after: groutAfter, id: 'grout', name: 'Grout', sub: 'One area up to 40 sq ft', price: 45, unit: 'per area', qty: true },
+  { line: 'We treat stains and traffic marks and lift them with a hot-water carpet machine. Price is per room up to 200 sq ft. Some old stains may not come out fully.', before: carpetBefore, after: carpetAfter, id: 'carpet', name: 'Carpet Stain Removal', sub: 'Stains and traffic marks, up to 200 sq ft per room', price: 60, unit: 'per room', qty: true },
 ];
 
 const HOUSE_ADDONS: Addon[] = [
@@ -337,7 +340,6 @@ export const DIVISIONS: Division[] = [
     ],
     addons: [
       { id: 'sheets', name: 'Change Bed Sheets', sub: 'Your clean sheets, beds made', price: 25, unit: 'per bed', qty: true },
-      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole unit', price: 85, unit: 'each' },
       { id: 'laundry', name: 'Laundry', sub: 'Your washer + dryer', price: 25, unit: 'per load', qty: true },
       { id: 'restock', name: 'Guest Essentials Restock', sub: 'You supply the items', price: 15, unit: 'per visit' },
       { id: 'rush', name: 'Same-Day Turnaround', sub: 'Priority slot', price: 35, unit: 'each' },
@@ -381,18 +383,18 @@ export const DIVISIONS: Division[] = [
       image: ovenCleaning,
       unit: 'visit fee + items',
       tierLabel: 'One visit fee',
-      tiers: [{ id: 'visit', name: 'Visit fee', sub: 'Travel and setup, once per order', price: 59 }],
-      fromPrice: 99,
-      minOrder: 99,
+      tiers: [{ id: 'visit', name: 'Visit fee', sub: 'Setup, once per order', price: 60 }],
+      fromPrice: 100,
+      minOrder: 100,
       itemsRequired: true,
-      included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One travel and setup fee per order'],
+      included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One visit and setup fee per order'],
       goodFor: ['Homes and rentals', 'Airbnb hosts', 'Single-item deep cleaning'],
     }],
     addons: DETAIL_ITEMS,
     freqs: ONE_TIME,
     times: DAY_TIMES,
     faqs: [
-      { q: 'Can I book just one item?', a: 'Yes, as long as your order reaches the $99 minimum. The $59 visit fee covers travel and setup once per order, then we add the selected items. Add another item if the total is below $99.' },
+      { q: 'Can I book just one item?', a: 'Yes. Choose items in booking to see the visit fee and minimum. Added to a cleaning, you pay only the item prices with no visit fee.' },
       { q: 'What should I empty first?', a: 'Empty any fridge, freezer or cabinets you book. Clear counters and leave access to the items.' },
       { q: 'Do you repair appliances or grout?', a: 'No. This is cleaning only. We do not move heavy appliances, repair faults, remove mould, seal grout or re-grout.' },
     ],
@@ -673,7 +675,7 @@ export const DIVISIONS: Division[] = [
     ],
     faqs: [
       { q: 'Can you clean after hours?', a: 'Yes. Most commercial cleaning happens before opening or after closing so your business is not disturbed.' },
-      { q: 'How do you price commercial work?', a: 'Offices up to 1,500 sq ft start at $165 per visit and small strata buildings at $200 per visit, plus tax. Send photos and we confirm the price, usually the same day. If photos are not enough, we book a free site visit.' },
+      { q: 'How do you price commercial work?', a: 'Send photos for a free quote and we confirm the price, usually the same day. If photos are not enough, we book a free site visit.' },
       { q: 'Is the date I pick confirmed?', a: 'It is your preferred date. We confirm the date and the scope with you when we send the quote.' },
     ],
     notIncluded: ['Carpet extraction', 'Outside window washing', 'Construction debris (see Renovation Waste)'],
@@ -705,13 +707,8 @@ export const DIVISIONS: Division[] = [
         unit: 'per visit',
         tierLabel: 'Type of clean',
         quote: true,
-        tiers: [
-          { id: 'regular', name: 'Regular kitchen clean', sub: 'Up to 500 sq ft · weekly or monthly, plus tax', price: 650, popular: true },
-          { id: 'deep', name: 'Kitchen deep clean', sub: 'Up to 500 sq ft · one-time, plus tax', price: 1050 },
-          { id: 'larger', name: 'Larger kitchen or dining room only', sub: 'Quoted after a walkthrough', price: null },
-          SITE_VISIT,
-        ],
-        quoteNote: 'Final price after a walkthrough. Larger kitchens from $1.30 per sq ft (regular) or $2.10 per sq ft (deep). Hoods, exhaust ducts and grease traps are not included.',
+        tiers: QUOTE_TIERS,
+        quoteNote: 'Free quote after a walkthrough. Hoods, exhaust ducts and grease traps are not included.',
         included: [
           'Industrial steam cleaning',
           'Cooking line, fryers and grills (exterior)',
@@ -737,7 +734,7 @@ export const DIVISIONS: Division[] = [
     ],
     faqs: [
       { q: 'Do you clean hoods and exhaust ducts?', a: 'No. Hood, duct and grease trap cleaning is a specialist fire-safety service. We clean the kitchen, equipment exteriors, walls and floors.' },
-      { q: 'How much does it cost?', a: 'A deep clean of a kitchen up to 500 sq ft starts at $1,050, and regular cleaning at $650 per visit, plus tax. We confirm the price after a walkthrough.' },
+      { q: 'How much does it cost?', a: 'Request a free quote. We confirm the scope and price after a walkthrough.' },
       { q: 'Will you work around our hours?', a: 'Yes. We clean before opening, after closing or on your closed day.' },
       { q: 'What equipment do you use?', a: 'Industrial steam cleaners and commercial degreasers. Our crew arrives with everything in a branded LIVO van.' },
     ],
