@@ -11,7 +11,7 @@ export function getStaticPaths() {
 }
 const { d, s } = Astro.props as { d: Division; s: Sub };
 const audience = AUDIENCE_COPY[s.slug] ?? AUDIENCE_COPY[d.id];
-const faqs = [...d.faqs, ...(audience?.faqs ?? [])];
+const faqs = s.slug === 'strata-cleaning' ? audience?.faqs ?? [] : [...d.faqs, ...(audience?.faqs ?? [])];
 const from = subMin(s);
 const quote = isQuoteSub(s);
 const firstOff = !quote && d.segment === 'residential' ? Math.round(FIRST_TIME_DISCOUNT * 100) : 0;

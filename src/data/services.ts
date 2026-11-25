@@ -878,6 +878,8 @@ export const AUDIENCE_COPY: Record<string, AudienceCopy> = {
     benefits: [{ text: 'Same checklist every visit' }, { text: 'Photo report you can forward to council' }, { text: 'One contact for your building' }],
     faqs: [
       { q: 'Can you work around residents?', a: 'Yes. We set visit times that suit your building.' },
+      { q: 'How do you price strata common-area cleaning?', a: 'Send photos of your shared areas for a free quote. We confirm the scope and visit schedule with your council or manager. If photos are not enough, we arrange a free site visit.' },
+      { q: 'Is the date I pick confirmed?', a: 'It is your preferred date. We confirm the date and the scope with you when we send the quote.' },
       { q: 'How do you get building access?', a: 'Tell us the fob or key arrangement when you request a quote.' },
       { q: 'Can you quote several buildings?', a: 'Yes. Send the list and we quote each one.' },
     ],
