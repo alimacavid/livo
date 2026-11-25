@@ -92,6 +92,7 @@ export const FIRST_TIME_DISCOUNT = 0;
 export const NO_FEE_CITIES = ['Port Coquitlam', 'Coquitlam', 'Port Moody', 'Burnaby', 'New Westminster', 'Maple Ridge', 'Pitt Meadows'];
 export const OTHER_CITIES = ['Vancouver', 'North Vancouver', 'West Vancouver', 'Richmond', 'Surrey', 'Delta', 'Langley', 'White Rock', 'Bowen Island', 'Lions Bay', 'Anmore', 'Belcarra'];
 export const TRAVEL_FEE = 35;
+export const BATHROOM_PRICING = { included: { studio: 1, '1bed': 1, '2bed': 2, '3bed': 2, '4bed': 3 }, full: 40, half: 20 };
 
 // Short muted video loops. Put the file in /public/videos/ and set the path here.
 // null = no video yet → the photo is shown.
@@ -148,13 +149,13 @@ export type Division = {
   crossSell?: { div: string; sub: string; title: string; line: string };
 };
 
-// Home sizes. Extra bathrooms are an add-on. Prices: [studio, 1 bed, 2 bed, 3 bed, 4+ bed]
+// Home sizes. Choose your full and half bathrooms in booking. Prices: [studio, 1 bed, 2 bed, 3 bed, 4+ bed]
 const HOME_SIZES = (p: [number, number, number, number, number | null], popular = 1): Tier[] => [
   { id: 'studio', name: 'Studio', sub: 'Bachelor · 1 bath', price: p[0] },
   { id: '1bed', name: '1 Bedroom', sub: '1 bed · 1 bath', price: p[1] },
   { id: '2bed', name: '2 Bedroom', sub: 'Up to 2 baths', price: p[2] },
   { id: '3bed', name: '3 Bedroom', sub: 'Up to 2 baths', price: p[3] },
-  { id: '4bed', name: '4+ Bedroom', sub: 'Up to 2,500 sq ft', price: p[4] },
+  { id: '4bed', name: '4+ Bedroom', sub: 'Up to 2,500 sq ft · 3 baths', price: p[4] },
 ].map((t, i) => ({ ...t, popular: i === popular }));
 
 const QUOTE_TIERS: Tier[] = [
@@ -190,11 +191,10 @@ const DETAIL_ITEMS: Addon[] = [
 
 const HOUSE_ADDONS: Addon[] = [
   ...DETAIL_ITEMS,
-  { id: 'bath', name: 'Extra Bathroom', sub: 'Beyond your home size', price: 39, unit: 'per bathroom', qty: true },
   { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
 ];
 // Move-out already includes fridge, freezer, oven and cabinets — don't sell them twice
-const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['bath', 'windows'].includes(a.id));
+const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['windows'].includes(a.id));
 
 export const DIVISIONS: Division[] = [
   // ───────────────────────── HOUSE CLEANING ─────────────────────────
@@ -277,7 +277,7 @@ export const DIVISIONS: Division[] = [
           { id: '3bed', name: '3 Bedroom', sub: 'Up to 2 baths', price: 479 },
           { id: '4bed', name: '4+ Bedroom', sub: 'Send photos for a quote', price: null },
         ],
-        priceNote: 'Home must be empty. Extra bathrooms are an add-on.',
+        priceNote: 'Home must be empty. Choose your full and half bathrooms in booking.',
         included: [
           'Inside all cabinets, drawers and closets',
           'Inside fridge, freezer and oven',
@@ -326,7 +326,7 @@ export const DIVISIONS: Division[] = [
         unit: 'per turnover',
         tierLabel: 'Unit size',
         tiers: HOME_SIZES([129, 149, 189, 235, 315]),
-        priceNote: 'Bed sheets, laundry, deodorizing and restocking are add-ons. Over 3 bathrooms: quote.',
+        priceNote: 'Bed sheets, laundry and restocking are add-ons. Choose your bathrooms in booking.',
         included: [
           'Beds stripped and remade with your clean linens',
           'Bathrooms cleaned and sanitized',

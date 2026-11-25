@@ -66,12 +66,12 @@ Deno.serve(async (req) => {
     if (b.action === "me") {
       const [{ data: c }, { data: places }, { data: jobs }] = await Promise.all([
         db.from("customers").select("name, phone, email, company").eq("id", s.customer_id).single(),
-        db.from("places").select("id, label, address, segment, business, access_notes").eq("customer_id", s.customer_id).order("created_at"),
+        db.from("places").select("id, label, address, segment, business, access_notes, home_details").eq("customer_id", s.customer_id).order("created_at"),
         db.from("bookings").select("id, kind, visit_date, items, total, division, sub_service, tier, place_id").eq("customer_id", s.customer_id).order("created_at", { ascending: false }).limit(20),
       ]);
       return json({
         customer: c,
-        places: (places ?? []).map((p) => ({ id: p.id, label: p.label, address: p.address, segment: p.segment, business: p.business ?? undefined, access: p.access_notes ?? undefined })),
+        places: (places ?? []).map((p) => ({ id: p.id, label: p.label, address: p.address, segment: p.segment, business: p.business ?? undefined, access: p.access_notes ?? undefined, home: p.home_details ?? undefined })),
         history: (jobs ?? []).map((j) => ({ ref: j.id.slice(0, 8).toUpperCase(), date: j.visit_date, service: j.items?.[0]?.group ?? "", div: j.division, sub: j.sub_service, tier: j.tier, total: j.kind === "quote" ? null : j.total, kind: j.kind, placeId: j.place_id ?? undefined })),
       });
     }
