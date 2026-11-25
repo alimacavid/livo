@@ -36,7 +36,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     <p id="bk-testbar" hidden class="mt-2 self-start text-[11.5px] font-semibold rounded-full bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1">Test version: nothing is sent or charged. Try anything.</p>
 
     <div id="bk-live" class="sr-only" aria-live="polite"></div>
-    <!-- each step is centred in the screen; long steps are split so nothing needs scrolling -->
+    <!-- Each step is centred; the complete add-on list can scroll above the fixed Continue bar. -->
     <div id="bk-stage" class="flex-1 flex flex-col justify-center py-4 md:py-5">
       <div id="bk-view"></div>
     </div>
@@ -136,20 +136,17 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     html #bk-view .bk-addons + p { font-size: 11px; line-height: 14px; margin-top: 4px; }
   }
   html.bk-tighter #bk-view .bk-addon-step h1 + p { display: block; font-size: 12px; }
-  .bk-addons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .bk-addon-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; border: 2px solid var(--color-line); border-radius: 16px; background: white; min-width: 0; }
+  .bk-addons { display: grid; gap: 8px; }
+  .bk-addon-card { display: grid; grid-template-columns: 56px minmax(0, 1fr) 112px; align-items: center; gap: 8px; padding: 10px; border: 2px solid var(--color-line); border-radius: 16px; background: white; min-width: 0; }
   .bk-addon-card.is-selected { border-color: var(--color-purple); background: var(--color-purple-soft); }
-  .bk-addon-media { width: 64px; height: 64px; flex: none; border-radius: 12px; object-fit: cover; }
+  .bk-addon-media { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
   .bk-addon-icon { display: grid; place-items: center; background: var(--color-purple-soft); color: var(--color-purple); }
-  .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 16px; min-height: 32px; }
-  .bk-airbnb .bk-addon-name { min-height: 48px; }
-  .bk-addon-price { font-size: 12px; line-height: 15px; min-height: 30px; }
-  .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: auto; }
+  .bk-addon-copy { min-width: 0; }
+  .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 17px; }
+  .bk-addon-price { margin-top: 4px; font-size: 12px; line-height: 16px; }
+  .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 112px; }
   .bk-addon-controls button { width: 44px; height: 44px; flex: none; border-radius: 999px; }
-  .bk-addon-controls output { font-size: 14px; font-weight: 700; }
-  .bk-addon-pages { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
-  .bk-addon-pages button { min-height: 44px; padding-inline: 12px; }
-  html #bk-view .bk-addon-card { padding: 10px; }
+  .bk-addon-controls output { min-width: 16px; text-align: center; font-size: 14px; font-weight: 700; }
 </style>
 
 <script>
@@ -179,7 +176,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     div: qDiv?.id ?? '',
     sub: q.get('s') ?? '',
     tier: q.get('t') ?? '',
-    addonPage: 0,
     fullBathrooms: null as number | null,
     halfBathrooms: 0,
     addons: {} as Record<string, number>,
@@ -361,21 +357,16 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <p class="mt-2 text-sm text-muted">Extra full bathroom: ${money(D.bathroomPricing.full)} · Half bathroom: ${money(D.bathroomPricing.half)}</p>`;
   }
 
-  const addonsPerPage = () => innerWidth < 768 && innerHeight < 800 ? 2 : 4;
   function vAddons() {
-    const pageSize = addonsPerPage();
-    const pages = Math.ceil(addons().length / pageSize);
-    st.addonPage = Math.max(0, Math.min(st.addonPage, pages - 1));
-    const shown = addons().slice(st.addonPage * pageSize, (st.addonPage + 1) * pageSize);
     return `<div class="bk-addon-step ${isAirbnb() ? 'bk-airbnb' : ''}">${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? `${money(tier()?.price ?? 0)} visit fee once per order · ${money(sub()?.minOrder ?? 0)} minimum.` : 'Optional. Use + to add.')}
       ${isAirbnb() ? '<p class="mt-3 text-sm text-muted"><b>Included:</b> Sheets, towels and restocking are already included.</p>' : ''}
       <div class="mt-4 bk-addons">
-        ${shown.map((a) => {
+        ${addons().map((a) => {
           const n = st.addons[a.id] ?? 0;
           return `<article class="bk-addon-card ${n ? 'is-selected' : ''}" data-addon-card="${a.id}" aria-label="${a.name}">
             ${a.img ? `<img src="${a.img}" alt="" class="bk-addon-media" />` : `<div class="bk-addon-media bk-addon-icon" aria-hidden="true">${ic('<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>', 'size-7')}</div>`}
-            <div class="bk-addon-name">${a.name}</div>
-            <div class="bk-addon-price"><b>+${money(a.price)}</b> <span class="text-muted">${a.unit}</span></div>
+            <div class="bk-addon-copy"><div class="bk-addon-name">${a.name}</div>
+            <div class="bk-addon-price"><b>+${money(a.price)}</b> <span class="text-muted">${a.unit}</span></div></div>
             <div class="bk-addon-controls">
               <button data-dec="${a.id}" ${n === 0 ? 'disabled' : ''} class="press bg-cloud border border-line text-xl disabled:opacity-40" aria-label="One less ${a.name}">−</button>
               <output aria-label="${a.name} quantity" aria-live="polite">${n}</output>
@@ -384,7 +375,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           </article>`;
         }).join('')}
       </div>
-      ${pages > 1 ? `<nav class="bk-addon-pages" aria-label="Add-on pages"><button data-addon-page="${st.addonPage - 1}" ${st.addonPage === 0 ? 'disabled' : ''} class="press rounded-full bg-cloud text-sm disabled:opacity-40">Previous</button><span class="text-xs text-muted">${st.addonPage + 1} of ${pages}</span><button data-addon-page="${st.addonPage + 1}" ${st.addonPage === pages - 1 ? 'disabled' : ''} class="press rounded-full bg-purple-soft text-purple text-sm disabled:opacity-40">More add-ons</button></nav>` : ''}
       <p class="mt-2 text-[12px] text-muted">Prices include GST.</p><p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p></div>`;
   }
 
@@ -621,7 +611,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
     $('#bk-travel').textContent = travelFee() ? `Travel fee: +${money(travelFee())}` : '';
-    $('#bk-bathrooms').textContent = hasBathrooms() ? `Bathrooms: +${money(bathroomFee())}${isQuote() ? ' in quote' : ''}` : '';
+    $('#bk-bathrooms').textContent = bathroomFee() > 0 ? `Bathrooms: +${money(bathroomFee())}${isQuote() ? ' in quote' : ''}` : '';
     $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
     const nx = $('#bk-next') as HTMLButtonElement;
     nx.disabled = !canNext();
@@ -653,19 +643,18 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   $('#bk-view').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button') as HTMLButtonElement | null; if (!b || b.disabled) return;
     const ds = b.dataset;
-    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addonPage = 0; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
+    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
     else if (ds.div) {
-      st.fullBathrooms = null; st.halfBathrooms = 0; st.div = ds.div; st.sub = ''; st.tier = ''; st.addonPage = 0; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
+      st.fullBathrooms = null; st.halfBathrooms = 0; st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
       const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.freq = freqs()[0].id; go(serviceStart()); return; }
       pickedDiv = true;
     }
     else if (ds.alldivs !== undefined) { pickedDiv = false; }
-    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.addonPage = 0; st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
+    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
     else if (ds.location !== undefined) { st.junkLocation = JUNK_LOCATIONS.find((choice) => choice.id === ds.location)?.id ?? ''; }
     else if (ds.tier) { if (st.tier !== ds.tier) st.fullBathrooms = null; st.tier = ds.tier; }
     else if (ds.bath) { const next = Math.max(0, Math.min(99, (ds.bath === 'full' ? fullBathrooms() : st.halfBathrooms) + Number(ds.delta))); if (ds.bath === 'full') st.fullBathrooms = next; else st.halfBathrooms = next; }
     else if (ds.add) { const a = addons().find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
-    else if (ds.addonPage !== undefined) { st.addonPage = Number(ds.addonPage); }
     else if (ds.inc) { const a = addons().find((a) => a.id === ds.inc)!; st.addons[ds.inc] = a.qty ? (st.addons[ds.inc] ?? 0) + 1 : 1; }
     else if (ds.dec) { st.addons[ds.dec] = Math.max(0, (st.addons[ds.dec] ?? 0) - 1); }
     else if (ds.freq) { st.freq = ds.freq; }
@@ -699,7 +688,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function fit() {
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
-    if (st.step === 'done') { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
+    if (st.step === 'done' || st.step === 'addons') { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
     // Measure final field heights; height transitions otherwise report the previous step's compact size.
     root.classList.add('bk-fitting');
     root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
@@ -708,7 +697,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     root.classList.remove('bk-fitting');
   }
   new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
-  addEventListener('resize', () => { if (st.step === 'addons') render(); requestAnimationFrame(fit); });
+  addEventListener('resize', () => requestAnimationFrame(fit));
   document.fonts?.ready.then(() => requestAnimationFrame(fit)); // fonts can change heights after first paint
   $('#bk-view').addEventListener('load', () => requestAnimationFrame(fit), true); // add-on photos
   $('#bk-back').addEventListener('click', () => { const i = steps().indexOf(st.step as Step); if (i > 0) go(steps()[i - 1]); });

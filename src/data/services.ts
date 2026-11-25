@@ -176,7 +176,7 @@ const ONE_TIME: Freq[] = [{ id: 'onetime', name: 'One-Time', sub: 'Single visit'
 const RECURRING: Freq[] = [
   { id: 'weekly', name: 'Weekly', sub: 'Every week', discount: 0.15 },
   { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Most popular', discount: 0.1 },
-  { id: 'monthly', name: 'Monthly', sub: 'Regular price', discount: 0 },
+  { id: 'monthly', name: 'Monthly', sub: 'Same crew, booked automatically', discount: 0 },
 ];
 
 const DETAIL_ITEMS: Addon[] = [
