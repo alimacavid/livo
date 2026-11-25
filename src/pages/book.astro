@@ -171,6 +171,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html #bk-view .bk-addcopy > .font-semibold { white-space: normal; }
   html #bk-view .bk-addqty { align-self: flex-end; }
   @media (max-width: 767px) and (max-height: 720px) {
+    html #bk-view .bk-addons { gap: 4px; }
+    html #bk-view .bk-addons + p { font-size: 11px; line-height: 14px; margin-top: 4px; }
     html #bk-view .bk-addcopy, html.bk-tightest #bk-view .bk-addcopy { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 6px; padding: 4px 6px; }
     html #bk-view .bk-addcopy .bk-addthumb { grid-column: 1; grid-row: 1; }
     html #bk-view .bk-addcopy > .font-semibold { grid-column: 2; grid-row: 1; font-size: 12px; line-height: 14px; }
