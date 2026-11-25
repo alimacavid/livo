@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
-import { HOME_CARDS, getDivision, subMin } from '../data/services';
+import { HOME_CARDS, getDivision, subMin, isQuoteSub } from '../data/services';
 interface Props { class?: string }
 const { class: cls = '' } = Astro.props;
 const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId) }));
@@ -28,7 +28,7 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
     </div>
     <div class="grid gap-2">
       {c.division.subs.map((s) => {
-        const price = subMin(s);
+        const price = isQuoteSub(s) ? null : subMin(s);
         return <a href={`/services/${c.divisionId}/${s.slug}`} class="press flex items-center gap-3 rounded-[16px] border border-line p-2.5 hover:bg-cloud min-h-20">
           <Image src={s.image} alt="" class={`size-10 shrink-0 rounded-[10px] object-cover ${s.pos ?? ''}`} widths={[80, 160]} sizes="40px" quality={85} />
           <span class="flex-1 min-w-0"><span class="block text-sm font-semibold leading-snug">{s.name}</span><span class="block text-[12px] text-muted mt-1">{price != null ? 'Price in booking' : 'Free quote'}</span></span>
