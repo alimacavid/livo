@@ -39,7 +39,6 @@ const priceText = quote ? 'Free quote' : 'Price in booking';
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
       <a href="/services" class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
-        {audience && <p class="mb-2 inline-block rounded-[6px] bg-purple-ink/90 px-2 py-1 text-[11px] font-heading font-bold text-lime leading-snug">{audience.label}</p>}
         <h1 class={`rise text-white ${d.id === 'move-cleaning' ? 'text-[1.55rem]' : s.slug === 'commercial-construction-cleaning' ? 'text-[1.65rem]' : 'text-[1.9rem]'} md:text-5xl font-extrabold leading-tight` } style="--i:0">{d.id === 'move-cleaning' ? <><span class="block whitespace-nowrap">Move-In / Move-Out</span>{' '}<span class="block">Cleaning</span></> : s.name}</h1>
         {s.slug !== 'strata-cleaning' && <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{hasItems ? d.tagline : s.short}</p>}
         <div class={hasItems ? "rise mt-3 inline-block max-w-full rounded-full bg-lime text-ink px-3.5 py-1.5 text-[12px] md:text-[13px] font-bold" : "rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold"} style="--i:2">
