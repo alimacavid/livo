@@ -159,7 +159,7 @@ const HOME_SIZES = (p: [number, number, number, number, number | null], popular 
 ].map((t, i) => ({ ...t, popular: i === popular }));
 
 const QUOTE_TIERS: Tier[] = [
-  { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+  { id: 'photos', name: 'Send Photos', sub: 'Quote after photo review', price: null, popular: true },
   { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
 ];
 const SITE_VISIT: Tier = { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null };
@@ -346,11 +346,11 @@ export const DIVISIONS: Division[] = [
     ],
     addons: [
       { id: 'laundry', name: 'Laundry (on-site machines)', sub: 'Your washer + dryer', price: 25, unit: 'per load', qty: true },
-      { id: 'rush', name: 'Same-Day Turnaround', sub: 'Priority slot', price: 35, unit: 'each' },
+      { id: 'rush', name: 'Same-Day Turnaround', sub: 'Subject to availability', helper: 'Subject to availability; confirmed with your booking.', price: 35, unit: 'each' },
     ],
     freqs: [
       { id: 'onetime', name: 'One turnover', sub: 'Just this checkout', discount: 0 },
-      { id: 'every', name: 'Ongoing', sub: 'Every checkout, same crew, synced to your calendar', discount: 0 },
+      { id: 'every', name: 'Ongoing', sub: 'Every checkout, same crew, scheduled around your bookings', discount: 0 },
     ],
     times: [
       { id: 'Early Turnover', sub: '10:00 am – 1:00 pm' },
@@ -358,7 +358,7 @@ export const DIVISIONS: Division[] = [
       { id: 'Late Turnover', sub: '1:00 – 4:00 pm' },
     ],
     faqs: [
-      { q: 'Can you work with my check-in times?', a: 'Yes. We schedule inside your checkout and check-in window, and offer a same-day priority slot for back-to-back bookings.' },
+      { q: 'Can you work with my check-in times?', a: 'Tell us your checkout and next check-in times. We confirm the timing and availability with you.' },
       { q: 'Do you report damage or missing items?', a: 'Yes. You get completion photos and we flag anything broken or missing right away.' },
       { q: 'Do you do the laundry?', a: 'Yes, as an add-on, using the washer and dryer in your unit. Swapping beds with your prepared clean linens, setting out fresh towels and putting out your supplies are included. Washing and drying laundry in your on-site machines is optional.' },
     ],
@@ -576,7 +576,7 @@ export const DIVISIONS: Division[] = [
         quote: true,
         tiers: [{ id: 'photos', name: 'Send photos', price: null }],
         quoteNote: JUNK_QUOTE_NOTE,
-        included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
+        included: ['Loading and hauling', 'Pickup time confirmed with your quote', 'Donation and recycling where possible', 'Area swept after'],
         goodFor: ['Office moves', 'End of lease', 'Property managers'],
       },
     ],
@@ -584,7 +584,7 @@ export const DIVISIONS: Division[] = [
       { id: 'heavy', name: 'Heavy / Bulky Item', sub: 'Over 150 lb', price: 45, unit: 'per item', qty: true },
       { id: 'mattress', name: 'Mattress or Box Spring', sub: 'Recycling fee', price: 25, unit: 'per piece', qty: true },
       { id: 'fridge', name: 'Fridge or Freezer', sub: 'Refrigerant disposal', price: 49, unit: 'each', qty: true },
-      { id: 'rush', name: 'Same-Day Pickup', sub: 'Booked and gone today', price: 89, unit: 'each' },
+      { id: 'rush', name: 'Same-Day Pickup', sub: 'Subject to availability', price: 89, unit: 'each' },
       { id: 'donate', name: 'Donation Drop-Off', sub: 'Usable items donated', price: 35, unit: 'each' },
     ],
     freqs: ONE_TIME,
@@ -605,7 +605,7 @@ export const DIVISIONS: Division[] = [
     name: 'Office & Strata Cleaning',
     short: 'Commercial',
     tagline: 'Offices and strata common areas.',
-    intro: 'Office cleaning, strata cleaning and commercial cleaning in Coquitlam, Port Coquitlam and Port Moody, scheduled before opening or after hours.',
+    intro: 'Office cleaning, strata cleaning and commercial cleaning in Coquitlam, Port Coquitlam and Port Moody, scheduled by agreement with your team.',
     seoTitle: 'Office & Strata Cleaning in Coquitlam',
     keyword: 'office cleaning Coquitlam',
     segment: 'commercial',
@@ -616,7 +616,7 @@ export const DIVISIONS: Division[] = [
         slug: 'office-cleaning',
         name: 'Office Cleaning',
         short: 'Desks, floors, washrooms and break rooms.',
-        desc: 'Desks, meeting rooms, kitchens, washrooms and floors cleaned on a schedule that suits your business, including evenings and weekends. We agree tasks, hours and the visit schedule with you.',
+        desc: 'Desks, meeting rooms, kitchens, washrooms and floors cleaned on a schedule that suits your business. We agree tasks, hours and the visit schedule with you.',
         image: officeCleaning,
         unit: 'per visit',
         tierLabel: 'Office size',
@@ -626,7 +626,7 @@ export const DIVISIONS: Division[] = [
           { id: 'larger', name: 'Larger office', sub: 'From $0.11 per sq ft per visit', price: null },
           SITE_VISIT,
         ],
-        quoteNote: 'After-hours and weekend visits add $30. Final price confirmed after photos or a free site visit.',
+        quoteNote: 'Visit time and final price confirmed after photos or a free site visit.',
         included: [
           'Desks and surfaces wiped and sanitized',
           'Staff kitchen and break room',
@@ -671,13 +671,9 @@ export const DIVISIONS: Division[] = [
       { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Quoted per visit', discount: 0 },
       { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
     ],
-    times: [
-      { id: 'Before Opening', sub: '6:00 – 9:00 am' },
-      { id: 'Daytime', sub: '9:00 am – 5:00 pm' },
-      { id: 'After Hours', sub: '6:00 – 10:00 pm' },
-    ],
+    times: [{ id: 'Agree a visit time', sub: 'We confirm a suitable time with your quote' }],
     faqs: [
-      { q: 'Can you clean after hours?', a: 'Yes. Most commercial cleaning happens before opening or after closing so your business is not disturbed.' },
+      { q: 'Can you work around our team?', a: 'We agree visit times with you when we confirm your quote.' },
       { q: 'How do you price commercial work?', a: 'Send photos for a free quote and we confirm the price, usually the same day. If photos are not enough, we book a free site visit.' },
       { q: 'Is the date I pick confirmed?', a: 'It is your preferred date. We confirm the date and the scope with you when we send the quote.' },
     ],
@@ -691,7 +687,7 @@ export const DIVISIONS: Division[] = [
     name: 'Restaurant & Kitchen Cleaning',
     short: 'Restaurant',
     tagline: 'Industrial steam-cleaned commercial kitchens.',
-    intro: 'Commercial kitchen cleaning and restaurant cleaning in Coquitlam and across Greater Vancouver, done before opening, after close or on your closed day.',
+    intro: 'Commercial kitchen cleaning and restaurant cleaning in Coquitlam and across Greater Vancouver, scheduled around your service hours.',
     seoTitle: 'Commercial Kitchen & Restaurant Cleaning in Coquitlam',
     keyword: 'commercial kitchen cleaning Coquitlam',
     segment: 'commercial',
@@ -730,15 +726,11 @@ export const DIVISIONS: Division[] = [
       { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Quoted per visit', discount: 0 },
       { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
     ],
-    times: [
-      { id: 'Before Opening', sub: '5:00 – 9:00 am' },
-      { id: 'After Closing', sub: '10:00 pm – 2:00 am' },
-      { id: 'Closed Day', sub: 'Full day' },
-    ],
+    times: [{ id: 'Agree a visit time', sub: 'We confirm a suitable time with your quote' }],
     faqs: [
       { q: 'Do you clean hoods and exhaust ducts?', a: 'No. Hood, duct and grease trap cleaning is a specialist fire-safety service. We clean the kitchen, equipment exteriors, walls and floors.' },
       { q: 'How much does it cost?', a: 'Request a free quote. We confirm the scope and price after a walkthrough.' },
-      { q: 'Will you work around our hours?', a: 'Yes. We clean before opening, after closing or on your closed day.' },
+      { q: 'Will you work around our hours?', a: 'We agree the visit time with you around your service hours.' },
       { q: 'What equipment do you use?', a: 'Industrial steam cleaners and commercial degreasers. Our crew arrives with everything in a branded LIVO van.' },
     ],
     notIncluded: ['Hood and exhaust duct cleaning', 'Grease trap pumping', 'Equipment repairs'],
@@ -864,4 +856,57 @@ export const PREP: Record<string, string[]> = {
     'Share keys or alarm code and where we can dump water.',
     'Tell us about equipment we must not move.',
   ],
+};
+
+// Audience copy is shared by service pages; prices remain in booking.
+export type AudienceCopy = { label: string; sub?: string; benefits?: { text: string; href?: string }[]; faqs?: Faq[] };
+export const AUDIENCE_COPY: Record<string, AudienceCopy> = {
+  'house-cleaning': { label: 'For homeowners & families' },
+  'airbnb-cleaning': {
+    label: 'For hosts, co-hosts & STR managers',
+    sub: 'Guest-ready between checkout and check-in, with photos after every turnover.',
+    benefits: [{ text: 'Same crew for each property' }, { text: 'Completion photos plus a damage and left-item report' }, { text: 'Save every property in My LIVO and rebook in one tap' }],
+    faqs: [
+      { q: 'Can you handle several properties?', a: 'Yes. Save each property in My LIVO and book its turnovers. Ongoing properties keep the same crew.' },
+      { q: 'How do you get in?', a: 'Lockbox, smart lock or key pickup. Add entry instructions when you book. We never share your codes.' },
+      { q: 'What if a guest left damage?', a: 'We photograph it and send it with your completion photos, before the next guest arrives.' },
+    ],
+  },
+  'strata-cleaning': {
+    label: 'For strata managers & councils',
+    sub: 'Lobbies, hallways, elevators and amenity rooms on a set schedule, with a photo report after every visit.',
+    benefits: [{ text: 'Same checklist every visit' }, { text: 'Photo report you can forward to council' }, { text: 'One contact for your building' }],
+    faqs: [
+      { q: 'Can you work around residents?', a: 'Yes. We set visit times that suit your building.' },
+      { q: 'How do you get building access?', a: 'Tell us the fob or key arrangement when you request a quote.' },
+      { q: 'Can you quote several buildings?', a: 'Yes. Send the list and we quote each one.' },
+    ],
+  },
+  'move-cleaning': {
+    label: 'For property managers, landlords & tenants',
+    sub: 'Empty units cleaned inspection-ready, with photos for your condition record.',
+    benefits: [{ text: 'Inside oven, fridge and cabinets included' }, { text: 'Photos sent after the clean' }, { text: 'Add junk removal for anything left behind', href: '/services/junk-removal' }],
+  },
+  'junk-removal': {
+    label: 'For homeowners, realtors & property managers',
+    sub: 'Clear a home before listing photos or a new tenant. We load, haul and donate what we can.',
+    benefits: [{ text: 'Loading and hauling handled' }, { text: 'Donation and recycling where possible' }, { text: 'Send photos for a load quote' }],
+    faqs: [{ q: 'Tenant left things behind?', a: 'Send photos and we quote the load.' }, { q: 'Need it gone before listing photos?', a: 'Pick a date before your photo day when you book.' }],
+  },
+  'detail-cleaning': {
+    label: 'For homeowners & realtors', sub: 'Oven, fridge, grout and carpet stains done item by item — ready for a showing.',
+    benefits: [{ text: 'Choose the items you need cleaned' }, { text: 'Cleaning supplies and equipment included' }, { text: 'One visit and setup fee per order' }],
+  },
+  'construction-cleaning': {
+    label: 'For builders, renovators & homeowners', sub: 'Construction dust gone, ready for handover or move-in.',
+    benefits: [{ text: 'Dust and residue removed' }, { text: 'Final clean for handover' }, { text: 'Scope confirmed in your quote' }],
+  },
+  'office-cleaning': {
+    label: 'For office managers', sub: 'A clean office on a schedule that suits your team.',
+    benefits: [{ text: 'Desks and shared surfaces cleaned' }, { text: 'Staff kitchens and washrooms reset' }, { text: 'Floors vacuumed and mopped' }],
+  },
+  'restaurant-kitchen-cleaning': {
+    label: 'For restaurant owners & kitchen managers', sub: 'Kitchen deep cleaning by quote, scheduled around your service hours.',
+    benefits: [{ text: 'Industrial steam cleaning' }, { text: 'Cooking equipment exteriors degreased' }, { text: 'Scope confirmed after a walkthrough' }],
+  },
 };

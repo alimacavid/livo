@@ -22,7 +22,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 interface Item { svcName: string; group: string; size: string; freq: string; price: number }
 interface Payload {
   kind?: "booking" | "quote"; segment?: "residential" | "commercial";
-  name: string; email: string; phone: string; business?: string;
+  name: string; email: string; phone: string; business?: string; propertyNickname?: string;
   address?: string; access?: string; date: string; time: string;
   div?: string; sub?: string; tier?: string; service?: string;
   items: Item[]; total: number; firstTime: boolean;
@@ -100,6 +100,7 @@ Deno.serve(async (req) => {
       const { data: s } = await db.from("customer_sessions").select("customer_id").eq("token_hash", await sha256(body.session)).gt("expires_at", new Date().toISOString()).maybeSingle();
       customerId = s?.customer_id ?? null;
     }
+    const authenticatedCustomerId = customerId;
     if (body.save || customerId) {
       if (!customerId) {
         const { data: existing } = await db.from("customers").select("id").eq("phone", body.phone).maybeSingle();
@@ -115,10 +116,10 @@ Deno.serve(async (req) => {
         const addr = clip(body.address, 300);
         const { data: own } = body.placeId ? await db.from("places").select("id").eq("id", body.placeId).eq("customer_id", customerId).maybeSingle() : { data: null };
         const { data: same } = own ? { data: own } : await db.from("places").select("id").eq("customer_id", customerId).ilike("address", addr).maybeSingle();
-        if (same) { placeId = same.id; if (body.session && (body.access || homeOf(body))) await db.from("places").update({ ...(body.access ? { access_notes: clip(body.access, 300) } : {}), ...(homeOf(body) ? { home_details: homeOf(body) } : {}) }).eq("id", placeId).eq("customer_id", customerId); }
+        if (same) { placeId = same.id; if (authenticatedCustomerId && (body.access || homeOf(body) || body.propertyNickname)) await db.from("places").update({ ...(body.propertyNickname ? { label: clip(body.propertyNickname, 60) } : {}), ...(body.access ? { access_notes: clip(body.access, 300) } : {}), ...(homeOf(body) ? { home_details: homeOf(body) } : {}) }).eq("id", placeId).eq("customer_id", customerId); }
         else if (addr) {
           const { count } = await db.from("places").select("id", { count: "exact", head: true }).eq("customer_id", customerId);
-          const label = clip(body.business, 60) || (segment === "commercial" ? "Business" : (count ?? 0) ? `Home ${(count ?? 0) + 1}` : "Home");
+          const label = clip(body.propertyNickname, 60) || clip(body.business, 60) || (segment === "commercial" ? "Business" : (count ?? 0) ? `Home ${(count ?? 0) + 1}` : "Home");
           const { data: p } = await db.from("places").insert({ customer_id: customerId, label, address: addr, segment, business: clip(body.business, 120) || null, access_notes: clip(body.access, 300) || null, home_details: homeOf(body) }).select("id").single();
           placeId = p?.id ?? null;
         }

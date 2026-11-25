@@ -30,6 +30,7 @@ export type RequestPayload = {
   segment: 'residential' | 'commercial';
   name: string; email: string; phone: string;
   business?: string;
+  propertyNickname?: string;
   address: string; access?: string;
   date: string; time: string;
   div: string; sub: string; tier: string; service: string;
@@ -117,9 +118,10 @@ function saveDemo(p: RequestPayload, ref: string) {
   acc.customer = { name: p.name, phone: p.phone, email: p.email, company: p.business || acc.customer.company };
   let place = acc.places.find((x) => x.id === p.placeId) ?? acc.places.find((x) => x.address.toLowerCase() === p.address.toLowerCase());
   if (!place) {
-    place = { id: rid().slice(0, 10), label: p.business || (p.segment === 'commercial' ? 'Business' : acc.places.length ? `Home ${acc.places.length + 1}` : 'Home'), address: p.address, segment: p.segment, business: p.business, access: p.access };
+    place = { id: rid().slice(0, 10), label: p.propertyNickname?.trim().slice(0, 60) || p.business || (p.segment === 'commercial' ? 'Business' : acc.places.length ? `Home ${acc.places.length + 1}` : 'Home'), address: p.address, segment: p.segment, business: p.business, access: p.access };
     acc.places.push(place);
   } else if (p.access) place.access = p.access;
+  if (p.propertyNickname) place.label = p.propertyNickname.trim().slice(0, 60);
   if (p.home) place.home = p.home;
   acc.history.unshift({ ref, date: p.date, service: p.service, div: p.div, sub: p.sub, tier: p.tier, total: p.kind === 'quote' ? null : p.total, kind: p.kind, placeId: place.id });
   store.set(DEMO_KEY, acc);

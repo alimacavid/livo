@@ -143,7 +143,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   .bk-addon-icon { display: grid; place-items: center; background: var(--color-purple-soft); color: var(--color-purple); }
   .bk-addon-copy { min-width: 0; }
   .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 17px; }
-  .bk-addon-helper { margin-top: 3px; color: var(--color-muted); font-size: 11px; line-height: 14px; }
+  .bk-addon-helper { margin-top: 3px; color: var(--color-muted); font-size: 12px; line-height: 16px; }
   .bk-addon-price { margin-top: 4px; font-size: 12px; line-height: 16px; }
   .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 112px; }
   .bk-addon-controls button { width: 44px; height: 44px; flex: none; border-radius: 999px; }
@@ -187,7 +187,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     month: (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })(),
     firstTime: true,
     photos: [] as { file: File; url: string }[],
-    c: { name: '', phone: '', email: '', business: '', city: '', address: '', access: '', description: '', notes: '' },
+    c: { name: '', phone: '', email: '', propertyNickname: '', checkoutTime: '', checkinTime: '', entryMethod: '', entryInstructions: '', strataPlan: '', floors: '', siteContact: '', sitePhone: '', moveRole: '', business: '', city: '', address: '', access: '', description: '', notes: '' },
     save: true,
     placeId: q.get('place') ?? '',
     profile: null as Profile | null,
@@ -207,6 +207,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const bathroomFee = () => hasBathrooms() ? Math.max(0, fullBathrooms() - includedBathrooms()) * D.bathroomPricing.full + st.halfBathrooms * D.bathroomPricing.half : 0;
   const bathroomSummary = () => `${fullBathrooms()} full, ${st.halfBathrooms} half`;
   const addons = (): Addon[] => sub()?.addons ?? [];
+  const isStrata = () => st.sub === 'strata-cleaning';
+  const isMove = () => st.div === 'move-cleaning';
   const isAirbnb = () => st.div === 'airbnb-cleaning';
   const outsideRecurringZone = () => st.div === 'house-cleaning' && !!st.c.city && !D.noFeeCities.includes(st.c.city);
   const freqs = (): Freq[] => (sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }]).filter((f) => !outsideRecurringZone() || !['weekly', 'biweekly'].includes(f.id));
@@ -407,7 +409,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         </div>
         <p id="e-photos" class="mt-1 text-[13px] text-red-700 empty:hidden"></p>
       </div>
-      ${needBusiness() && !junkQuote() ? fld('business', 'Business name', 'text', 'organization', '', true) : ''}
+      ${needBusiness() && !junkQuote() ? fld('business', isStrata() ? 'Building name' : 'Business name', 'text', 'organization', '', true) : ''}
       <div class="mt-4"><label for="c-description" class="text-[13px] font-semibold text-ink/80">Tell us about the job <span class="font-normal text-muted">(optional)</span></label>
         <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div></div>`;
   }
@@ -484,9 +486,38 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         <p id="e-${id}" class="mt-1 text-[13px] text-red-700 empty:hidden"></p></div>`;
   }
 
+  const ENTRY_METHODS = ['Lockbox', 'Smart lock', 'Key pickup', 'Someone on site'];
+  const MOVE_ROLES = ['Tenant', 'Landlord or property manager', 'Realtor'];
+  function choiceField(id: string, label: string, options: string[], required = true) {
+    return `<div class="mt-3"><label for="c-${id}" class="text-[13px] font-semibold text-ink/80">${label}${required ? '' : ' <span class="font-normal text-muted">(optional)</span>'}</label>
+      <select id="c-${id}" ${required ? 'required aria-required="true"' : ''} aria-describedby="e-${id}" class="mt-1 w-full h-12 px-4 rounded-[8px] border border-line bg-white text-[16px]"><option value="">Choose an option</option>${options.map(value => `<option ${value === (st.c as any)[id] ? 'selected' : ''}>${esc(value)}</option>`).join('')}</select><p id="e-${id}" class="mt-1 text-[13px] text-red-700 empty:hidden"></p></div>`;
+  }
+  function serviceFields() {
+    if (isAirbnb()) return `<section aria-label="Property details" class="mt-4">
+      ${fld('propertyNickname', 'Property nickname', 'text', 'off', '', true, 'For example: Main St 2B')}
+      ${fld('checkoutTime', 'Guest checkout time', 'time')}
+      ${fld('checkinTime', 'Next check-in time', 'time', '', '', false)}
+      ${choiceField('entryMethod', 'Entry method', ENTRY_METHODS)}
+      ${fld('entryInstructions', 'Entry instructions', 'text', 'off')}
+    </section>`;
+    if (isStrata()) return `<section aria-label="Building details" class="mt-4">
+      ${fld('strataPlan', 'Strata plan number', 'text', 'off', '', false)}
+      ${fld('floors', 'Number of floors', 'number', 'off', 'numeric')}
+      ${fld('siteContact', 'On-site contact name', 'text', 'off', '', false)}
+      ${fld('sitePhone', 'On-site contact phone', 'tel', 'off', 'tel', false)}
+    </section>`;
+    return isMove() ? choiceField('moveRole', 'I am a', MOVE_ROLES, false) : '';
+  }
+  function serviceNotes() {
+    if (isAirbnb()) return [['Property nickname', st.c.propertyNickname], ['Guest checkout time', st.c.checkoutTime], ['Next check-in time', st.c.checkinTime], ['Entry method', st.c.entryMethod], ['Entry instructions', st.c.entryInstructions]];
+    if (isStrata()) return [['Building name', st.c.business], ['Strata plan number', st.c.strataPlan], ['Number of floors', st.c.floors], ['On-site contact name', st.c.siteContact], ['On-site contact phone', st.c.sitePhone]];
+    return isMove() && st.c.moveRole ? [['I am a', st.c.moveRole]] : [];
+  }
+
   const biz = () => needBusiness();
   function vContact() {
     return `${h1('Your details', 'So we can confirm your ' + (isQuote() ? 'quote.' : 'booking.'))}
+      ${serviceFields()}
       ${st.profile ? `<div class="mt-5 rounded-[16px] bg-purple-soft/70 p-3.5 text-[13px] font-semibold text-purple">Signed in · ${esc(st.profile.customer.phone)}</div>`
         : `<a data-signin href="/my-livo?next=${encodeURIComponent('/book?resume=1')}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
             <span class="size-11 shrink-0 rounded-full bg-lime text-ink grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-5')}</span>
@@ -505,7 +536,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     return `${h1(biz() ? 'Where is the business?' : 'Where should we come?', 'Only your crew sees the access notes.')}
       <div class="mt-5">
         ${fld('address', biz() ? 'Business address' : 'Service address', 'text', 'street-address')}
-        ${fld('access', biz() ? 'Access and hours' : 'Parking, entry and pets', 'text', 'off', '', false)}
+        ${isAirbnb() ? '' : fld('access', biz() ? 'Access notes' : 'Parking, entry and pets', 'text', 'off', '', false)}
         <div class="mt-3"><label for="c-notes" class="text-[13px] font-semibold text-ink/80">Notes <span class="font-normal text-muted">(optional)</span></label>
           <textarea id="c-notes" rows="2" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.notes)}</textarea></div>
       </div>
@@ -522,6 +553,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       ...(hasBathrooms() ? [[`Bathrooms · ${bathroomSummary()}`, money(bathroomFee()) + (quote ? ' in quote' : '')]] : []),
       ...(travelFee() ? [['Travel fee · ' + esc(st.c.city), money(travelFee()) + (quote ? ' in quote' : '')]] : []),
       ...(quote ? [] : addons().filter((a) => st.addons[a.id]).map((a) => [`${a.name}${st.addons[a.id] > 1 ? ' × ' + st.addons[a.id] : ''}`, money(a.price * st.addons[a.id])])),
+      ...serviceNotes().filter(([, value]) => value.trim()).map(([label, value]) => [label, esc(value)]),
       ...(junkLocationNote() ? [[esc(junkLocationNote()), '']] : []),
       ...(junkRoughPriceNote() ? [[esc(junkRoughPriceNote()), '']] : []),
       ...(quote && st.photos.length ? [[`${st.photos.length} photo${st.photos.length > 1 ? 's' : ''} attached`, '']] : []),
@@ -636,6 +668,11 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const address = p?.address ?? '';
     st.c.address = st.c.city && address.endsWith(', ' + st.c.city) ? address.slice(0, -(st.c.city.length + 2)) : address; st.c.access = p?.access ?? '';
     if (p?.business) st.c.business = p.business;
+    if (p && isAirbnb()) {
+      st.c.propertyNickname = p.label;
+      const method = ENTRY_METHODS.find((value) => p.access?.startsWith(value + ': '));
+      if (method) { st.c.entryMethod = method; st.c.entryInstructions = p.access!.slice(method.length + 2); }
+    }
     if (p?.home) {
       if (sub()?.tiers.some((t) => t.id === p.home!.tier) && !q.get('t')) st.tier = p.home.tier;
       if (st.tier === p.home.tier) { st.fullBathrooms = p.home.fullBathrooms; st.halfBathrooms = p.home.halfBathrooms; }
@@ -690,7 +727,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function fit() {
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
-    if (st.step === 'done' || st.step === 'addons') { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
+    if (st.step === 'done' || st.step === 'addons' || (st.step === 'contact' && (isAirbnb() || isStrata()))) { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
     // Measure final field heights; height transitions otherwise report the previous step's compact size.
     root.classList.add('bk-fitting');
     root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
@@ -741,7 +778,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       document.getElementById('junk-location')?.setAttribute('aria-invalid', String(missing));
       if (missing) ok = false;
     }
-    if (needBusiness() && !junkQuote() && !st.c.business.trim()) { if (eb) eb.textContent = 'Enter the business name.'; document.getElementById('c-business')?.setAttribute('aria-invalid', 'true'); ok = false; }
+    if (needBusiness() && !junkQuote() && !st.c.business.trim()) { if (eb) eb.textContent = isStrata() ? 'Enter the building name.' : 'Enter the business name.'; document.getElementById('c-business')?.setAttribute('aria-invalid', 'true'); ok = false; }
     if (!ok) {
       (locationError?.textContent ? locationError : document.querySelector<HTMLElement>('#e-photos:not(:empty)') ? document.getElementById('ph-input') : document.getElementById('c-business'))?.focus({ preventScroll: true });
       fit();
@@ -749,9 +786,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     return ok;
   }
 
-  const contactKeys = () => ['name', 'phone', 'email'];
-  const MSG: Record<string, string> = { business: 'Enter the business name.', name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', city: 'Choose your city.', address: 'Enter the address where we should come.' };
-  const badFields = (keys: string[]) => keys.filter((k) => k === 'city' ? ![...D.noFeeCities, ...D.otherCities].includes(st.c.city) : k === 'business' ? !st.c.business.trim() : k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
+  const contactKeys = () => ['name', 'phone', 'email', ...(isAirbnb() ? ['propertyNickname', 'checkoutTime', 'checkinTime', 'entryMethod', 'entryInstructions'] : []), ...(isStrata() ? ['floors', 'sitePhone'] : [])];
+  const MSG: Record<string, string> = { business: 'Enter the business name.', name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', propertyNickname: 'Enter a property nickname.', checkoutTime: 'Enter the guest checkout time.', checkinTime: 'Enter a valid check-in time.', entryMethod: 'Choose an entry method.', entryInstructions: 'Enter entry instructions.', floors: 'Enter a whole number of floors above zero.', sitePhone: 'Enter a 10-digit on-site contact phone.', city: 'Choose your city.', address: 'Enter the address where we should come.' };
+  const badFields = (keys: string[]) => keys.filter((k) => k === 'propertyNickname' || k === 'entryInstructions' ? !(st.c as any)[k].trim() : k === 'checkoutTime' ? !/^([01]\d|2[0-3]):[0-5]\d$/.test(st.c.checkoutTime) : k === 'checkinTime' ? !!st.c.checkinTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(st.c.checkinTime) : k === 'entryMethod' ? !ENTRY_METHODS.includes(st.c.entryMethod) : k === 'floors' ? !/^\d+$/.test(st.c.floors) || Number(st.c.floors) < 1 : k === 'sitePhone' ? !!st.c.sitePhone.trim() && !normPhone(st.c.sitePhone) : k === 'city' ? ![...D.noFeeCities, ...D.otherCities].includes(st.c.city) : k === 'business' ? !st.c.business.trim() : k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
   function checkFields(keys: string[]) {
     const bad = badFields(keys);
     keys.forEach((k) => {
@@ -785,13 +822,14 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         kind: quote ? 'quote' : 'booking', segment: segment(),
         name: c.name.trim(), email: c.email.trim(), phone,
         business: needBusiness() ? c.business.trim() : undefined,
-        address: c.address.trim() + ', ' + c.city, access: c.access.trim() || undefined,
+        address: c.address.trim() + ', ' + c.city, access: isAirbnb() ? `${c.entryMethod}: ${c.entryInstructions.trim()}` : c.access.trim() || undefined,
+        propertyNickname: isAirbnb() ? c.propertyNickname.trim() : undefined,
         date: st.date, time: st.time,
         div: d.id, sub: s.slug, tier: tr.id, service: s.name,
         home: hasBathrooms() ? { tier: st.tier, fullBathrooms: fullBathrooms(), halfBathrooms: st.halfBathrooms, city: c.city } : undefined,
         items: [...items, ...(!quote && travelFee() ? [{ svcName: 'Travel fee', group: c.city, size: '', freq: f.name, price: travelFee() }] : [])], total: quote ? 0 : t.total, firstTime: discountOK() && st.firstTime,
         description: c.description.trim() || undefined,
-        notes: [travelFee() ? `Travel fee for ${c.city}: ${money(travelFee())}${quote ? ' to be included in quote' : ''}` : '', c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), isAirbnb() ? `Turnover plan: ${f.name}` : !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
+        notes: [...serviceNotes().filter(([, value]) => value.trim()).map(([label, value]) => `${label}: ${value.trim()}`), travelFee() ? `Travel fee for ${c.city}: ${money(travelFee())}${quote ? ' to be included in quote' : ''}` : '', c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), isAirbnb() ? `Turnover plan: ${f.name}` : !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
         prep: (div() as any).prep ?? [],
         estimate: quote ? (junkQuote() ? junkEstimate() : tr.price) : null,
