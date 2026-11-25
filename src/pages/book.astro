@@ -142,6 +142,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   .bk-addon-media { width: 64px; height: 64px; flex: none; border-radius: 12px; object-fit: cover; }
   .bk-addon-icon { display: grid; place-items: center; background: var(--color-purple-soft); color: var(--color-purple); }
   .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 16px; min-height: 32px; }
+  .bk-airbnb .bk-addon-name { min-height: 48px; }
   .bk-addon-price { font-size: 12px; line-height: 15px; min-height: 30px; }
   .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: auto; }
   .bk-addon-controls button { width: 44px; height: 44px; flex: none; border-radius: 999px; }
@@ -209,6 +210,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const bathroomFee = () => hasBathrooms() ? Math.max(0, fullBathrooms() - includedBathrooms()) * D.bathroomPricing.full + st.halfBathrooms * D.bathroomPricing.half : 0;
   const bathroomSummary = () => `${fullBathrooms()} full, ${st.halfBathrooms} half`;
   const addons = (): Addon[] => sub()?.addons ?? [];
+  const isAirbnb = () => st.div === 'airbnb-cleaning';
   const outsideRecurringZone = () => st.div === 'house-cleaning' && !!st.c.city && !D.noFeeCities.includes(st.c.city);
   const freqs = (): Freq[] => (sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }]).filter((f) => !outsideRecurringZone() || !['weekly', 'biweekly'].includes(f.id));
   const freq = () => freqs().find((f) => f.id === st.freq) ?? freqs()[0];
@@ -231,7 +233,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     (x !== 'photos' || isQuote()) &&
     (x !== 'freq' || freqs().length > 1));
   const NAMES: Record<string, string> = { service: 'Service', city: 'City', size: 'Bedrooms', bathrooms: 'Bathrooms', addons: 'Add-ons', photos: 'Photos & details', freq: 'How often', date: 'Date', time: 'Time', contact: 'Your details', address: 'Address', review: 'Review' };
-  const stepName = (x: Step) => x === 'size' && isQuote() && sub()?.tiers.every((t) => t.price == null) ? 'How to quote' : x === 'date' && isQuote() ? 'Preferred date' : NAMES[x];
+  const stepName = (x: Step) => x === 'freq' && isAirbnb() ? 'Turnover plan' : x === 'size' && isQuote() && sub()?.tiers.every((t) => t.price == null) ? 'How to quote' : x === 'date' && isQuote() ? 'Preferred date' : NAMES[x];
 
   if (!sub()) st.sub = '';
   if (st.seg === 'commercial') st.forBusiness = true;
@@ -365,7 +367,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const pages = Math.ceil(addons().length / pageSize);
     st.addonPage = Math.max(0, Math.min(st.addonPage, pages - 1));
     const shown = addons().slice(st.addonPage * pageSize, (st.addonPage + 1) * pageSize);
-    return `<div class="bk-addon-step">${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? `${money(tier()?.price ?? 0)} visit fee once per order · ${money(sub()?.minOrder ?? 0)} minimum.` : 'Optional. Use + to add.')}
+    return `<div class="bk-addon-step ${isAirbnb() ? 'bk-airbnb' : ''}">${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? `${money(tier()?.price ?? 0)} visit fee once per order · ${money(sub()?.minOrder ?? 0)} minimum.` : 'Optional. Use + to add.')}
+      ${isAirbnb() ? '<p class="mt-3 text-sm text-muted"><b>Included:</b> Sheets, towels and restocking are already included.</p>' : ''}
       <div class="mt-4 bk-addons">
         ${shown.map((a) => {
           const n = st.addons[a.id] ?? 0;
@@ -419,7 +422,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   function vFreq() {
     const t = totals();
-    return `${h1('How often?', isQuote() ? 'We include it in your quote.' : outsideRecurringZone() ? 'Choose monthly or one-time cleaning.' : 'Regular clients save on every visit.')}
+    return `${h1(isAirbnb() ? 'One turnover or ongoing?' : 'How often?', isAirbnb() ? 'The price is the same for both.' : isQuote() ? 'We include it in your quote.' : outsideRecurringZone() ? 'Choose monthly or one-time cleaning.' : 'Regular clients save on every visit.')}
       ${outsideRecurringZone() ? '<p class="mt-3 text-sm text-purple">Recurring cleaning not available in your area yet.</p>' : ''}
       <div class="mt-5 grid grid-cols-2 gap-2.5">
         ${freqs().map((f) => {
@@ -427,7 +430,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           return `<button data-freq="${f.id}" aria-pressed="${on}" class="press text-left p-4 rounded-[20px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
             <div class="flex items-center justify-between gap-2"><span class="font-semibold text-[15px]">${f.name}</span>${f.discount ? `<span class="text-[11px] font-bold bg-lime text-ink px-1.5 py-0.5 rounded">−${Math.round(f.discount * 100)}%</span>` : ''}</div>
             <div class="text-[12.5px] text-muted">${f.sub}</div>
-            ${isQuote() ? '' : `<div class="mt-3 font-heading font-extrabold">${money(t.base * (1 - f.discount) + t.add + bathroomFee() + travelFee())}<span class="text-[11px] font-sans font-medium text-muted"> /visit${f.discount ? ' from 2nd' : ''}</span></div>`}
+            ${isQuote() || isAirbnb() ? '' : `<div class="mt-3 font-heading font-extrabold">${money(t.base * (1 - f.discount) + t.add + bathroomFee() + travelFee())}<span class="text-[11px] font-sans font-medium text-muted"> /visit${f.discount ? ' from 2nd' : ''}</span></div>`}
           </button>`;
         }).join('')}
       </div>`;
@@ -536,7 +539,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <div class="mt-5 card p-5 bk-review ${junkQuote() ? 'bk-junk-review' : ''}">
         <div class="space-y-2 text-[14px]">
           ${lines.map(([a, b]) => `<div class="flex justify-between gap-4"><span class="text-ink/80">${a}</span><span class="font-semibold">${b}</span></div>`).join('')}
-          ${!quote && f.id !== 'onetime' ? `<div class="flex justify-between"><span class="text-ink/80">${f.name}${f.discount ? `, −${Math.round(f.discount * 100)}% from 2nd visit` : ''}</span><span class="font-semibold">${money(t.repeat)}/visit</span></div>` : ''}
+          ${!quote && !isAirbnb() && f.id !== 'onetime' ? `<div class="flex justify-between"><span class="text-ink/80">${f.name}${f.discount ? `, −${Math.round(f.discount * 100)}% from 2nd visit` : ''}</span><span class="font-semibold">${money(t.repeat)}/visit</span></div>` : ''}
+          ${isAirbnb() ? `<div class="flex justify-between"><span class="text-ink/80">Turnover plan</span><span class="font-semibold">${f.name}</span></div>` : ''}
           ${quote && freqs().length > 1 ? `<div class="flex justify-between"><span class="text-ink/80">How often</span><span class="font-semibold">${f.name}</span></div>` : ''}
         </div>
         <div class="mt-4 pt-4 border-t border-line space-y-1.5 text-[13.5px]">
@@ -549,10 +553,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           <span class="text-[13.5px]">First time with LIVO? <b>${FT}% off</b></span>
         </button>` : ''}
         <div class="mt-4 pt-4 border-t border-line flex justify-between items-baseline">
-          <span class="font-semibold">${quote ? 'Price' : f.id !== 'onetime' ? 'First visit' : 'Total'}</span>
+          <span class="font-semibold">${quote ? 'Price' : !isAirbnb() && f.id !== 'onetime' ? 'First visit' : 'Total'}</span>
           <span class="font-heading font-extrabold text-2xl">${quote ? (junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total)}</span>
         </div>
-        <p class="mt-1 text-[12px] text-muted">${quote ? `Final price confirmed after we review your photos or visit${needBusiness() ? ', plus tax' : ''}. No obligation.` : f.id !== 'onetime' ? 'Your first visit is the regular price. You pay after each visit; skip or cancel anytime.' : 'You pay after the job.'}</p>
+        <p class="mt-1 text-[12px] text-muted">${quote ? `Final price confirmed after we review your photos or visit${needBusiness() ? ', plus tax' : ''}. No obligation.` : !isAirbnb() && f.id !== 'onetime' ? 'Your first visit is the regular price. You pay after each visit; skip or cancel anytime.' : 'You pay after the job.'}</p>
       </div>
       <p class="mt-3 text-[12px] text-muted">We use your details only for this ${quote ? 'quote' : 'booking'}${st.profile || st.save ? ' and your next ones' : ''}. <a href="/privacy" class="underline">Privacy Policy</a></p>
       <div id="bk-err" role="alert" tabindex="-1" class="mt-3 text-sm text-red-700 font-medium outline-none empty:hidden rounded-[12px] bg-red-50 p-3"></div>`;
@@ -796,7 +800,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         home: hasBathrooms() ? { tier: st.tier, fullBathrooms: fullBathrooms(), halfBathrooms: st.halfBathrooms, city: c.city } : undefined,
         items: [...items, ...(!quote && travelFee() ? [{ svcName: 'Travel fee', group: c.city, size: '', freq: f.name, price: travelFee() }] : [])], total: quote ? 0 : t.total, firstTime: discountOK() && st.firstTime,
         description: c.description.trim() || undefined,
-        notes: [travelFee() ? `Travel fee for ${c.city}: ${money(travelFee())}${quote ? ' to be included in quote' : ''}` : '', c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
+        notes: [travelFee() ? `Travel fee for ${c.city}: ${money(travelFee())}${quote ? ' to be included in quote' : ''}` : '', c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), isAirbnb() ? `Turnover plan: ${f.name}` : !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
         prep: (div() as any).prep ?? [],
         estimate: quote ? (junkQuote() ? junkEstimate() : tr.price) : null,
