@@ -54,6 +54,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           <span id="bk-total" class="font-heading font-extrabold text-2xl leading-none">$0</span>
           <span id="bk-was" class="text-sm text-muted line-through"></span>
         </div>
+        <div id="bk-travel" class="text-[11px] text-muted empty:hidden"></div>
         <div id="bk-bathrooms" class="text-[11px] text-muted empty:hidden"></div>
       </div>
       <button id="bk-next" class="sheen btn-lime px-8 disabled:opacity-40 disabled:shadow-none disabled:[&::after]:hidden">Continue</button>
@@ -73,26 +74,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     .bk-services [data-sub] > .flex-1 { flex-basis: calc(100% - 2rem); }
     .bk-services [data-sub] > .text-right { width: 100%; text-align: left; padding-left: 1.75rem; }
   }
-  /* Keep incomplete add-on rows centred without changing card widths. */
-  .bk-addons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .bk-addons > * { grid-column: span 2; }
-  .bk-addons > :last-child:nth-child(odd) { grid-column: 2 / span 2; }
   @media (min-width: 768px) {
-    .bk-addons { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-    .bk-addons > :last-child:nth-child(odd) { grid-column: span 2; }
-    .bk-addons > :last-child:nth-child(3n+1) { grid-column: 3 / span 2; }
-    .bk-addons > :nth-last-child(2):nth-child(3n+1) { grid-column: 2 / span 2; }
-    .bk-addons > :last-child:nth-child(3n+2) { grid-column: 4 / span 2; }
     .bk-services [data-sub]:has(img) > .flex-1 { flex-basis: calc(100% - 5.5rem); }
   }
-  .bk-items .bk-itemprice { flex-wrap: wrap; }
-  .bk-items .bk-itemprice > span:first-child { width: 100%; }
-  @media (min-width: 768px) {
-    #bk-view .bk-items { margin-top: .75rem; }
-    .bk-items .bk-addimg { aspect-ratio: 12 / 5; }
-  }
   @media (max-height: 720px) {
-    #bk-view .bk-items > div:not(:has(img)) { padding-block: .5rem; }
     #bk-view .bk-review { padding: .75rem; margin-top: .5rem; }
     #bk-view .bk-review .mt-4 { margin-top: .5rem; }
     #bk-view .bk-review .pt-4 { padding-top: .5rem; }
@@ -118,11 +103,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tightest #bk-view .mt-5, html.bk-tightest #bk-view .mt-4 { margin-top: .5rem; }
   html.bk-tightest #bk-view .p-5, html.bk-tightest #bk-view .p-4 { padding: .75rem; }
   html.bk-tightest #bk-view .pt-4 { padding-top: .5rem; }
-  html.bk-tightest #bk-view .bk-addimg, html.bk-tightest #bk-view .bk-addphoto { display: none; }
-  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 4px; }
-  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > :first-child { grid-column: 1 / -1; }
-  html.bk-tightest #bk-view .bk-addqty { margin-top: 0; padding: 0; box-shadow: none; }
-  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) .bk-addprice .text-muted { display: none; }
   html.bk-tighter #bk-view .mt-3 { margin-top: .4rem; }
   html.bk-tighter #bk-view textarea { height: 3rem; }
   html.bk-tighter #bk-view input:not([type=file]) { height: 2.5rem; }
@@ -130,20 +110,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tighter #bk-view .bk-addimg { aspect-ratio: 5 / 2; }
   html.bk-tighter #bk-view [data-tier], html.bk-tighter #bk-view [data-sub], html.bk-tighter #bk-view [data-time] { padding-top: .35rem; padding-bottom: .35rem; }
   html.bk-tighter #bk-view [data-date] { height: 2.1rem; }
-  .bk-addthumb { display: none; }
-  @media (max-width: 767px) {
-    html.bk-tightest #bk-view .bk-addcopy { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 6px; padding: 6px 8px; align-items: center; }
-    html.bk-tightest #bk-view .bk-addthumb { display: block; width: 32px; height: 32px; object-fit: cover; border-radius: 8px; grid-column: 1; grid-row: 1 / 3; }
-    html.bk-tightest #bk-view .bk-addcopy > .font-semibold { grid-column: 2; grid-row: 1; white-space: normal; font-size: 12px; line-height: 14px; }
-    html.bk-tightest #bk-view .bk-addcopy .bk-addprice { grid-column: 2; grid-row: 2; }
-    html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > .bk-addthumb { grid-row: 1; }
-    html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > .font-semibold { grid-column: 2; }
-    html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) .bk-addprice { grid-column: 1 / -1; grid-row: 2; justify-self: start; max-width: calc(100% - 100px); }
-    html.bk-tightest #bk-view .bk-addcopy .bk-addqty { grid-column: 2; grid-row: 2; justify-self: end; }
-  }
-  @media (max-width: 767px) and (max-height: 720px) {
-    html.bk-tightest #bk-view .bk-addcopy { padding-block: 2px; row-gap: 0; }
-  }
   html.bk-tightest #bk-view .bk-junk-photos .bk-photo-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   html.bk-tightest #bk-view .bk-junk-photos textarea { height: 2.5rem; }
   html.bk-tightest #bk-view .bk-junk-photos .bk-for-label { display: none; }
@@ -166,22 +132,23 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html #bk-view .bk-junk-photos h1 + p { display: block; font-size: 13px; line-height: 1.4; }
   #bk-view .bk-junk-photos .bk-photo-grid label > span { width: 100%; }
   html.bk-tightest #bk-view .bk-junk-photos .bk-photo-add-label { font-size: 11px; line-height: 12px; }
-  html #bk-view .bk-addphoto { display: none; }
-  html #bk-view .bk-addthumb { display: block; width: 40px; height: 40px; aspect-ratio: 1; object-fit: cover; border-radius: 12px; grid-column: auto; grid-row: auto; }
-  html #bk-view .bk-addcopy, html.bk-tightest #bk-view .bk-addcopy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 8px; }
-  html #bk-view .bk-addcopy > .font-semibold { white-space: normal; }
-  html #bk-view .bk-addqty { align-self: flex-end; }
   @media (max-width: 767px) and (max-height: 720px) {
-    html #bk-view .bk-addons { gap: 4px; }
     html #bk-view .bk-addons + p { font-size: 11px; line-height: 14px; margin-top: 4px; }
-    html #bk-view .bk-addcopy, html.bk-tightest #bk-view .bk-addcopy { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 6px; padding: 4px 6px; }
-    html #bk-view .bk-addcopy .bk-addthumb { grid-column: 1; grid-row: 1; }
-    html #bk-view .bk-addcopy > .font-semibold { grid-column: 2; grid-row: 1; font-size: 12px; line-height: 14px; }
-    html #bk-view .bk-addcopy .bk-addprice { grid-column: 1 / -1; grid-row: 2; max-width: none; font-size: 12px; }
-    html #bk-view .bk-addcopy:has(.bk-addqty) .bk-addprice { grid-column: 1; grid-row: 2; max-width: none; }
-    html #bk-view .bk-addcopy .bk-addqty { grid-column: 2; grid-row: 2; margin: 0; padding: 0; justify-self: end; }
-    html #bk-view .bk-addcopy .bk-addqty button { width: 32px; height: 32px; }
   }
+  html.bk-tighter #bk-view .bk-addon-step h1 + p { display: block; font-size: 12px; }
+  .bk-addons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .bk-addon-card { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; border: 2px solid var(--color-line); border-radius: 16px; background: white; min-width: 0; }
+  .bk-addon-card.is-selected { border-color: var(--color-purple); background: var(--color-purple-soft); }
+  .bk-addon-media { width: 64px; height: 64px; flex: none; border-radius: 12px; object-fit: cover; }
+  .bk-addon-icon { display: grid; place-items: center; background: var(--color-purple-soft); color: var(--color-purple); }
+  .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 16px; min-height: 32px; }
+  .bk-addon-price { font-size: 12px; line-height: 15px; min-height: 30px; }
+  .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: auto; }
+  .bk-addon-controls button { width: 44px; height: 44px; flex: none; border-radius: 999px; }
+  .bk-addon-controls output { font-size: 14px; font-weight: 700; }
+  .bk-addon-pages { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+  .bk-addon-pages button { min-height: 44px; padding-inline: 12px; }
+  html #bk-view .bk-addon-card { padding: 10px; }
 </style>
 
 <script>
@@ -199,7 +166,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const MAX_PHOTOS = 10;
   const JUNK_LOCATIONS = D.junkLocations;
 
-  const ALL_STEPS = ['service', 'size', 'bathrooms', 'addons', 'photos', 'freq', 'date', 'time', 'contact', 'address', 'review'] as const;
+  const ALL_STEPS = ['service', 'city', 'size', 'bathrooms', 'addons', 'photos', 'freq', 'date', 'time', 'contact', 'address', 'review'] as const;
   type Step = (typeof ALL_STEPS)[number];
 
   const q = new URLSearchParams(location.search);
@@ -211,6 +178,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     div: qDiv?.id ?? '',
     sub: q.get('s') ?? '',
     tier: q.get('t') ?? '',
+    addonPage: 0,
     fullBathrooms: null as number | null,
     halfBathrooms: 0,
     addons: {} as Record<string, number>,
@@ -241,7 +209,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const bathroomFee = () => hasBathrooms() ? Math.max(0, fullBathrooms() - includedBathrooms()) * D.bathroomPricing.full + st.halfBathrooms * D.bathroomPricing.half : 0;
   const bathroomSummary = () => `${fullBathrooms()} full, ${st.halfBathrooms} half`;
   const addons = (): Addon[] => sub()?.addons ?? [];
-  const freqs = (): Freq[] => sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }];
+  const outsideRecurringZone = () => st.div === 'house-cleaning' && !!st.c.city && !D.noFeeCities.includes(st.c.city);
+  const freqs = (): Freq[] => (sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }]).filter((f) => !outsideRecurringZone() || !['weekly', 'biweekly'].includes(f.id));
   const freq = () => freqs().find((f) => f.id === st.freq) ?? freqs()[0];
   const isQuote = () => !!sub()?.quote || (tier() != null && tier()!.price == null);
   const junkQuote = () => div().id === 'junk-removal' && isQuote();
@@ -253,7 +222,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const segment = (): Seg => junkQuote() ? 'residential' : (div().segment === 'commercial' || st.seg === 'commercial' || st.forBusiness ? 'commercial' : 'residential');
   const skipJunkSize = () => junkQuote() && sub()?.tiers.length === 1;
   const skipPricedSize = () => !isQuote() && sub()?.tiers.length === 1 && sub()!.tiers[0].price != null;
-  const serviceStart = (): Step => skipJunkSize() ? 'photos' : skipPricedSize() ? steps().find((step) => step !== 'service' && step !== 'size')! : 'size';
+  const serviceStart = (): Step => 'city';
   const discountOK = () => D.firstTime > 0 && !isQuote() && segment() === 'residential';
   const steps = () => ALL_STEPS.filter((x) =>
     (x !== 'size' || !(skipJunkSize() || skipPricedSize())) &&
@@ -261,7 +230,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     (x !== 'addons' || (!isQuote() && addons().length > 0)) &&
     (x !== 'photos' || isQuote()) &&
     (x !== 'freq' || freqs().length > 1));
-  const NAMES: Record<string, string> = { service: 'Service', size: 'Bedrooms', bathrooms: 'Bathrooms', addons: 'Add-ons', photos: 'Photos & details', freq: 'How often', date: 'Date', time: 'Time', contact: 'Your details', address: 'Address', review: 'Review' };
+  const NAMES: Record<string, string> = { service: 'Service', city: 'City', size: 'Bedrooms', bathrooms: 'Bathrooms', addons: 'Add-ons', photos: 'Photos & details', freq: 'How often', date: 'Date', time: 'Time', contact: 'Your details', address: 'Address', review: 'Review' };
   const stepName = (x: Step) => x === 'size' && isQuote() && sub()?.tiers.every((t) => t.price == null) ? 'How to quote' : x === 'date' && isQuote() ? 'Preferred date' : NAMES[x];
 
   if (!sub()) st.sub = '';
@@ -274,7 +243,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   });
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (sub()) st.freq = freq().id;
-  if (st.sub) st.step = sub()?.itemsRequired && Object.keys(st.addons).length ? 'addons' : serviceStart(); // Item links keep selections and open the items step; other links start at size.
+  if (st.sub) st.step = serviceStart(); // Item links keep their selections; every selected service starts with city.
   // back from sign-in: restore everything the customer already picked and continue at "Your details"
   const RESUME = 'livo-book-resume'; let resumed = false;
   if (q.get('resume')) {
@@ -351,6 +320,20 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       </div>`;
   }
 
+  function vCity() {
+    const places = (st.profile?.places ?? []).filter((p) => (p.segment === 'commercial') === biz());
+    return `${h1('Which city?', 'Choose where you need the service.')}
+      ${places.length ? `<div class="mt-5"><div class="text-[13px] text-ink/80">Use a saved ${biz() ? 'business' : 'place'}:</div>
+          <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Saved places">
+            ${places.map((p) => `<button data-place="${p.id}" aria-pressed="${st.placeId === p.id}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${st.placeId === p.id ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">${esc(p.label)}</button>`).join('')}
+            <button data-place="" aria-pressed="${!st.placeId}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${!st.placeId ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">+ New address</button>
+          </div></div>` : ''}
+      <div class="mt-5">
+        <label for="c-city" class="text-[13px] font-semibold">City</label><select id="c-city" required aria-describedby="e-city" class="mt-1 w-full h-12 px-3 rounded-[8px] border border-line bg-white"><option value="">Choose your city</option>${[...D.noFeeCities, ...D.otherCities].map(city => `<option ${st.c.city === city ? 'selected' : ''}>${city}</option>`).join('')}</select><p id="e-city" role="alert" class="text-sm text-red-700"></p><p class="mt-2 text-[12px] text-muted">No travel fee: ${D.noFeeCities.join(', ')}; the rest of Greater Vancouver: ${money(D.travelFee)}.</p>
+      </div>
+      ${outsideRecurringZone() ? '<p class="mt-4 text-sm text-purple">Recurring cleaning not available in your area yet.</p>' : ''}`;
+  }
+
   function vSize() {
     const s = sub()!; const allQuote = s.tiers.every((t) => t.price == null);
     return `${h1(allQuote ? 'How should we quote?' : s.tierLabel, s.name)}
@@ -376,45 +359,30 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <p class="mt-2 text-sm text-muted">Extra full bathroom: ${money(D.bathroomPricing.full)} · Half bathroom: ${money(D.bathroomPricing.half)}</p>`;
   }
 
+  const addonsPerPage = () => innerWidth < 768 && innerHeight < 800 ? 2 : 4;
   function vAddons() {
-    return `${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? `${money(tier()?.price ?? 0)} visit fee once per order · ${money(sub()?.minOrder ?? 0)} minimum.` : 'Optional. Tap to add.')}
-      <div class="mt-5 bk-addons gap-2 ${sub()?.itemsRequired ? 'bk-items' : ''}">
-        ${addons().map((a) => {
-          const n = st.addons[a.id] ?? 0; const on = n > 0;
-          if (a.img) return `<div class="press relative h-full flex flex-col overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
-            <button data-add="${a.id}" class="absolute inset-0 z-10 rounded-[18px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <div class="relative bk-addphoto">
-              <img src="${a.img}" alt="" class="bk-addimg w-full aspect-[4/3] object-cover bg-line" />
-              <span aria-hidden="true" class="absolute top-2 right-2 size-8 rounded-full grid place-items-center shadow-md transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-white text-ink'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-4')}</span>
-
+    const pageSize = addonsPerPage();
+    const pages = Math.ceil(addons().length / pageSize);
+    st.addonPage = Math.max(0, Math.min(st.addonPage, pages - 1));
+    const shown = addons().slice(st.addonPage * pageSize, (st.addonPage + 1) * pageSize);
+    return `<div class="bk-addon-step">${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? `${money(tier()?.price ?? 0)} visit fee once per order · ${money(sub()?.minOrder ?? 0)} minimum.` : 'Optional. Use + to add.')}
+      <div class="mt-4 bk-addons">
+        ${shown.map((a) => {
+          const n = st.addons[a.id] ?? 0;
+          return `<article class="bk-addon-card ${n ? 'is-selected' : ''}" data-addon-card="${a.id}" aria-label="${a.name}">
+            ${a.img ? `<img src="${a.img}" alt="" class="bk-addon-media" />` : `<div class="bk-addon-media bk-addon-icon" aria-hidden="true">${ic('<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>', 'size-7')}</div>`}
+            <div class="bk-addon-name">${a.name}</div>
+            <div class="bk-addon-price"><b>+${money(a.price)}</b> <span class="text-muted">${a.unit}</span></div>
+            <div class="bk-addon-controls">
+              <button data-dec="${a.id}" ${n === 0 ? 'disabled' : ''} class="press bg-cloud border border-line text-xl disabled:opacity-40" aria-label="One less ${a.name}">−</button>
+              <output aria-label="${a.name} quantity" aria-live="polite">${n}</output>
+              <button data-inc="${a.id}" ${!a.qty && n === 1 ? 'disabled' : ''} class="press bg-purple text-white text-xl disabled:opacity-40" aria-label="One more ${a.name}">+</button>
             </div>
-            <div class="bk-addcopy px-3 py-2 flex flex-col">
-              <img src="${a.img}" alt="" class="bk-addthumb" />
-              <div class="font-semibold text-[13.5px] leading-tight truncate">${a.name}</div>
-              <div class="bk-addprice text-[12.5px] truncate"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></div>
-              ${a.qty && on ? `<span class="bk-addqty relative z-20 mt-1 self-end flex items-center gap-1 rounded-full bg-white/95 shadow-md p-1">
-                <button data-dec="${a.id}" class="press size-9 rounded-full bg-cloud grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
-                <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
-                <button data-inc="${a.id}" class="press size-9 rounded-full bg-cloud grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
-            </div>
-          </div>`;
-          return `<div class="press relative px-3.5 py-3 rounded-[16px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
-            <button data-add="${a.id}" class="absolute inset-0 rounded-[16px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <div class="flex items-start justify-between gap-2">
-              <span class="font-semibold text-[13.5px] leading-tight">${a.name}</span>
-              <span aria-hidden="true" class="size-6 shrink-0 rounded-full grid place-items-center transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-cloud text-muted'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-3.5')}</span>
-            </div>
-            <div class="bk-itemprice mt-1 flex items-center justify-between gap-1">
-              <span class="text-[12.5px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
-              ${a.qty && on ? `<span class="relative flex items-center gap-1">
-                <button data-dec="${a.id}" class="press size-9 rounded-full bg-white border border-line grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
-                <span class="w-5 text-center font-bold text-sm" aria-live="polite">${n}</span>
-                <button data-inc="${a.id}" class="press size-9 rounded-full bg-white border border-line grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
-            </div>
-          </div>`;
+          </article>`;
         }).join('')}
       </div>
-      <p class="mt-2 text-[12px] text-muted">Appliance &amp; Detail item prices include GST. Added to a cleaning: no visit fee.</p><p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p>`;
+      ${pages > 1 ? `<nav class="bk-addon-pages" aria-label="Add-on pages"><button data-addon-page="${st.addonPage - 1}" ${st.addonPage === 0 ? 'disabled' : ''} class="press rounded-full bg-cloud text-sm disabled:opacity-40">Previous</button><span class="text-xs text-muted">${st.addonPage + 1} of ${pages}</span><button data-addon-page="${st.addonPage + 1}" ${st.addonPage === pages - 1 ? 'disabled' : ''} class="press rounded-full bg-purple-soft text-purple text-sm disabled:opacity-40">More add-ons</button></nav>` : ''}
+      <p class="mt-2 text-[12px] text-muted">Prices include GST.</p><p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p></div>`;
   }
 
   const needPhotos = () => isQuote() && (junkQuote() || st.tier !== 'visit');
@@ -451,7 +419,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   function vFreq() {
     const t = totals();
-    return `${h1('How often?', isQuote() ? 'We include it in your quote.' : 'Regular clients save on every visit.')}
+    return `${h1('How often?', isQuote() ? 'We include it in your quote.' : outsideRecurringZone() ? 'Choose monthly or one-time cleaning.' : 'Regular clients save on every visit.')}
+      ${outsideRecurringZone() ? '<p class="mt-3 text-sm text-purple">Recurring cleaning not available in your area yet.</p>' : ''}
       <div class="mt-5 grid grid-cols-2 gap-2.5">
         ${freqs().map((f) => {
           const on = st.freq === f.id;
@@ -538,15 +507,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   function vAddress() {
-    const places = (st.profile?.places ?? []).filter((p) => (p.segment === 'commercial') === biz());
     return `${h1(biz() ? 'Where is the business?' : 'Where should we come?', 'Only your crew sees the access notes.')}
-      ${places.length ? `<div class="mt-5"><div class="text-[13px] text-ink/80">Use a saved ${biz() ? 'business' : 'place'}:</div>
-          <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Saved places">
-            ${places.map((p) => `<button data-place="${p.id}" aria-pressed="${st.placeId === p.id}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${st.placeId === p.id ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">${esc(p.label)}</button>`).join('')}
-            <button data-place="" aria-pressed="${!st.placeId}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${!st.placeId ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">+ New address</button>
-          </div></div>` : ''}
       <div class="mt-5">
-        <label for="c-city" class="text-[13px] font-semibold">City</label><select id="c-city" required aria-describedby="e-city" class="mt-1 w-full h-12 px-3 rounded-[8px] border border-line bg-white"><option value="">Choose your city</option>${[...D.noFeeCities, ...D.otherCities].map(city => `<option ${st.c.city === city ? 'selected' : ''}>${city}</option>`).join('')}</select><p id="e-city" role="alert" class="text-sm text-red-700"></p><p class="mt-2 text-[12px] text-muted">No travel fee: ${D.noFeeCities.join(', ')}; the rest of Greater Vancouver: ${money(D.travelFee)}.</p>
         ${fld('address', biz() ? 'Business address' : 'Service address', 'text', 'street-address')}
         ${fld('access', biz() ? 'Access and hours' : 'Parking, entry and pets', 'text', 'off', '', false)}
         <div class="mt-3"><label for="c-notes" class="text-[13px] font-semibold text-ink/80">Notes <span class="font-normal text-muted">(optional)</span></label>
@@ -623,6 +585,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function canNext() {
     switch (st.step) {
       case 'service': return !!sub();
+      case 'city': return [...D.noFeeCities, ...D.otherCities].includes(st.c.city);
       case 'size': return !!tier();
       case 'bathrooms': case 'addons': case 'freq': case 'photos': return true;
       case 'date': return !!st.date;
@@ -644,7 +607,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     $('#bk-prog').setAttribute('aria-valuemax', String(steps().length));
     $('#bk-prog').setAttribute('aria-valuetext', `Step ${i + 1} of ${steps().length}: ${stepName(st.step as Step)}`);
     ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
-    v.innerHTML = ({ service: vService, size: vSize, bathrooms: vBathrooms, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
+    if (!freqs().some((f) => f.id === st.freq)) st.freq = freqs()[0].id;
+    v.innerHTML = ({ service: vService, city: vCity, size: vSize, bathrooms: vBathrooms, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
     const t = totals(); const tr = tier();
     const tot = !sub() ? '—' : isQuote() ? (junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
     $('#bk-totlabel').textContent = isQuote() ? (tr?.price == null ? 'Quote' : 'Price') : 'Total';
@@ -652,6 +616,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     $('#bk-bottom').classList.toggle('bk-junk-quote', junkQuote());
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
+    $('#bk-travel').textContent = travelFee() ? `Travel fee: +${money(travelFee())}` : '';
     $('#bk-bathrooms').textContent = hasBathrooms() ? `Bathrooms: +${money(bathroomFee())}${isQuote() ? ' in quote' : ''}` : '';
     $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
     const nx = $('#bk-next') as HTMLButtonElement;
@@ -671,10 +636,11 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   function applyPlace(p?: Place) {
     st.placeId = p?.id ?? '';
-    st.c.address = p?.address ?? ''; st.c.access = p?.access ?? '';
+    st.c.city = p?.home?.city ?? [...D.noFeeCities, ...D.otherCities].find((city) => p?.address.endsWith(', ' + city)) ?? '';
+    const address = p?.address ?? '';
+    st.c.address = st.c.city && address.endsWith(', ' + st.c.city) ? address.slice(0, -(st.c.city.length + 2)) : address; st.c.access = p?.access ?? '';
     if (p?.business) st.c.business = p.business;
     if (p?.home) {
-      st.c.city = p.home.city ?? '';
       if (sub()?.tiers.some((t) => t.id === p.home!.tier) && !q.get('t')) st.tier = p.home.tier;
       if (st.tier === p.home.tier) { st.fullBathrooms = p.home.fullBathrooms; st.halfBathrooms = p.home.halfBathrooms; }
     }
@@ -683,19 +649,20 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   $('#bk-view').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button') as HTMLButtonElement | null; if (!b || b.disabled) return;
     const ds = b.dataset;
-    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
+    if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addonPage = 0; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
     else if (ds.div) {
-      st.fullBathrooms = null; st.halfBathrooms = 0; st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
+      st.fullBathrooms = null; st.halfBathrooms = 0; st.div = ds.div; st.sub = ''; st.tier = ''; st.addonPage = 0; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
       const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.freq = freqs()[0].id; go(serviceStart()); return; }
       pickedDiv = true;
     }
     else if (ds.alldivs !== undefined) { pickedDiv = false; }
-    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
+    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.addonPage = 0; st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
     else if (ds.location !== undefined) { st.junkLocation = JUNK_LOCATIONS.find((choice) => choice.id === ds.location)?.id ?? ''; }
     else if (ds.tier) { if (st.tier !== ds.tier) st.fullBathrooms = null; st.tier = ds.tier; }
     else if (ds.bath) { const next = Math.max(0, Math.min(99, (ds.bath === 'full' ? fullBathrooms() : st.halfBathrooms) + Number(ds.delta))); if (ds.bath === 'full') st.fullBathrooms = next; else st.halfBathrooms = next; }
     else if (ds.add) { const a = addons().find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
-    else if (ds.inc) { st.addons[ds.inc] = (st.addons[ds.inc] ?? 0) + 1; }
+    else if (ds.addonPage !== undefined) { st.addonPage = Number(ds.addonPage); }
+    else if (ds.inc) { const a = addons().find((a) => a.id === ds.inc)!; st.addons[ds.inc] = a.qty ? (st.addons[ds.inc] ?? 0) + 1 : 1; }
     else if (ds.dec) { st.addons[ds.dec] = Math.max(0, (st.addons[ds.dec] ?? 0) - 1); }
     else if (ds.freq) { st.freq = ds.freq; }
     else if (ds.mon) { let { y, m } = st.month; m += +ds.mon; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } st.month = { y, m }; }
@@ -716,6 +683,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   $('#bk-view').addEventListener('input', (e) => {
     const el = e.target as HTMLInputElement; const k = el.id.replace('c-', '');
     if (k in st.c) (st.c as any)[k] = el.value;
+    if (k === 'city') { render(); $('#c-city')?.focus(); }
   });
   $('#bk-view').addEventListener('change', (e) => {
     const el = e.target as HTMLInputElement; if (el.id !== 'ph-input' || !el.files) return;
@@ -736,7 +704,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     root.classList.remove('bk-fitting');
   }
   new MutationObserver(() => requestAnimationFrame(fit)).observe($('#bk-view'), { childList: true });
-  addEventListener('resize', () => requestAnimationFrame(fit));
+  addEventListener('resize', () => { if (st.step === 'addons') render(); requestAnimationFrame(fit); });
   document.fonts?.ready.then(() => requestAnimationFrame(fit)); // fonts can change heights after first paint
   $('#bk-view').addEventListener('load', () => requestAnimationFrame(fit), true); // add-on photos
   $('#bk-back').addEventListener('click', () => { const i = steps().indexOf(st.step as Step); if (i > 0) go(steps()[i - 1]); });
@@ -745,8 +713,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (st.step === 'photos' && !checkPhotos()) return;
     if (st.step === 'addons' && !checkItems()) return;
     const i = steps().indexOf(st.step as Step);
-    if ((st.step === 'contact' || st.step === 'address') && !checkFields(st.step === 'contact' ? contactKeys() : ['address', 'city'])) return;
-    if (st.step === 'address' && recurringBlocked()) { $('#e-city').textContent = 'Recurring cleaning not available in your area yet.'; return; }
+    if (st.step === 'city' && !checkFields(['city'])) return;
+    if ((st.step === 'contact' || st.step === 'address') && !checkFields(st.step === 'contact' ? contactKeys() : ['address'])) return;
+    if (recurringBlocked()) { go('city'); return; }
     if (st.step === 'review') submit(); else go(steps()[i + 1]);
   });
 
@@ -800,13 +769,14 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   async function submit() {
     if (junkQuote() && (!validJunkLocation() || !st.photos.length)) { go('photos'); checkPhotos(); return; }
-    if (recurringBlocked()) { go('address'); $('#e-city').textContent = 'Recurring cleaning not available in your area yet.'; return; }
+    if (recurringBlocked()) { go('city'); return; }
     if (itemError()) { go('addons'); checkItems(); return; }
     const err = $('#bk-err'); const c = st.c;
     const phone = normPhone(c.phone);
     // fields live on earlier screens: send the customer back to the first one that needs fixing
     if (badFields(contactKeys()).length) { go('contact'); checkFields(contactKeys()); return; }
-    if (badFields(['address', 'city']).length) { go('address'); checkFields(['address', 'city']); return; }
+    if (badFields(['city']).length) { go('city'); checkFields(['city']); return; }
+    if (badFields(['address']).length) { go('address'); checkFields(['address']); return; }
 
     const d = div(), s = sub()!, tr = tier()!, f = freq(), t = totals(), quote = isQuote();
     const items = [
