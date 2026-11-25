@@ -36,8 +36,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     <p id="bk-testbar" hidden class="mt-2 self-start text-[11.5px] font-semibold rounded-full bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1">Test version: nothing is sent or charged. Try anything.</p>
 
     <div id="bk-live" class="sr-only" aria-live="polite"></div>
-    <!-- Each step is centred; the complete add-on list can scroll above the fixed Continue bar. -->
-    <div id="bk-stage" class="flex-1 flex flex-col justify-center py-4 md:py-5">
+    <!-- Steps start below the progress bar; the complete add-on list can scroll above the fixed Continue bar. -->
+    <div id="bk-stage" class="flex-1 flex flex-col justify-start py-4 md:py-5">
       <div id="bk-view"></div>
     </div>
     <div class="h-[96px] md:hidden" aria-hidden="true"></div>
@@ -143,6 +143,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   .bk-addon-icon { display: grid; place-items: center; background: var(--color-purple-soft); color: var(--color-purple); }
   .bk-addon-copy { min-width: 0; }
   .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 17px; }
+  .bk-addon-helper { margin-top: 3px; color: var(--color-muted); font-size: 11px; line-height: 14px; }
   .bk-addon-price { margin-top: 4px; font-size: 12px; line-height: 16px; }
   .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 112px; }
   .bk-addon-controls button { width: 44px; height: 44px; flex: none; border-radius: 999px; }
@@ -153,7 +154,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   import { TEST, sendRequest, signedIn, getProfile, normPhone, type Profile, type Place } from '../lib/api';
 
   type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
-  type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
+  type Addon = { helper?: string; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
   type Freq = { id: string; name: string; sub: string; discount: number };
   type SubD = { slug: string; img?: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; minOrder?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
   type Seg = 'residential' | 'commercial';
@@ -366,6 +367,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           return `<article class="bk-addon-card ${n ? 'is-selected' : ''}" data-addon-card="${a.id}" aria-label="${a.name}">
             ${a.img ? `<img src="${a.img}" alt="" class="bk-addon-media" />` : `<div class="bk-addon-media bk-addon-icon" aria-hidden="true">${ic('<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>', 'size-7')}</div>`}
             <div class="bk-addon-copy"><div class="bk-addon-name">${a.name}</div>
+            ${a.helper ? `<p class="bk-addon-helper">${a.helper}</p>` : ''}
             <div class="bk-addon-price"><b>+${money(a.price)}</b> <span class="text-muted">${a.unit}</span></div></div>
             <div class="bk-addon-controls">
               <button data-dec="${a.id}" ${n === 0 ? 'disabled' : ''} class="press bg-cloud border border-line text-xl disabled:opacity-40" aria-label="One less ${a.name}">−</button>

@@ -100,7 +100,7 @@ export const HERO_VIDEO: string | null = null;        // e.g. '/videos/hero.mp4'
 
 export type Segment = 'residential' | 'commercial';
 export type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
-export type Addon = { line?: string; before?: ImageMetadata; after?: ImageMetadata; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
+export type Addon = { helper?: string; line?: string; before?: ImageMetadata; after?: ImageMetadata; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
 export type Freq = { id: string; name: string; sub: string; discount: number };
 export type Faq = { q: string; a: string };
 export type Sub = {
@@ -179,9 +179,10 @@ const RECURRING: Freq[] = [
   { id: 'monthly', name: 'Monthly', sub: 'Same crew, booked automatically', discount: 0 },
 ];
 
+const STOVE_HELPER = 'Burnt-on grease, knobs off. Basic stovetop wipe is already included.';
 const DETAIL_ITEMS: Addon[] = [
   { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 45, unit: 'each', qty: true },
-  { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 20, unit: 'each', qty: true },
+  { line: STOVE_HELPER, helper: STOVE_HELPER, before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove deep degrease', sub: STOVE_HELPER, price: 20, unit: 'each', qty: true },
   { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 35, unit: 'each unit', qty: true },
   { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 40, unit: 'whole kitchen' },
   { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 8, unit: 'per blind', qty: true },
@@ -194,7 +195,9 @@ const HOUSE_ADDONS: Addon[] = [
   { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
 ];
 // Move-out already includes fridge, freezer, oven and cabinets — don't sell them twice
-const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['windows'].includes(a.id));
+const MOVE_ADDONS: Addon[] = HOUSE_ADDONS.filter((a) => a.id === 'windows').map((a) => ({
+  ...a, name: 'Interior windows: glass & sills', sub: 'Glass and sills', price: 30, helper: 'Window tracks are already included.',
+}));
 
 export const DIVISIONS: Division[] = [
   // ───────────────────────── HOUSE CLEANING ─────────────────────────

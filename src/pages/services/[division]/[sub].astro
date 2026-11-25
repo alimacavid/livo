@@ -66,7 +66,7 @@ const priceText = quote ? 'Free quote' : 'Price in booking';
                     <h3 class="font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
                     <p class="font-heading font-bold text-purple text-[13px] md:text-base whitespace-nowrap" data-item-price>Price in booking</p>
                   </div>
-                  <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{item.line ?? item.sub}</p>
+                  <p class={item.helper ? "mt-2 text-sm text-muted leading-relaxed max-w-[46ch]" : "mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]"}>{item.helper ?? item.line ?? item.sub}</p>
                   <a href={`${bookUrl}&a=${item.id}:1`} class="btn-ghost mt-3">Select in booking</a>
                 </div>
                 {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} aspect="aspect-[16/10]" class="detail-slider mt-4 md:mt-0 w-full" />}
