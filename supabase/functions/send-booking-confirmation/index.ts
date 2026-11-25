@@ -22,14 +22,23 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 interface Item { svcName: string; group: string; size: string; freq: string; price: number }
 interface Payload {
   kind?: "booking" | "quote"; segment?: "residential" | "commercial";
-  name: string; email: string; phone: string; business?: string;
+  name: string; email: string; phone: string; business?: string; propertyNickname?: string;
   address?: string; access?: string; date: string; time: string;
   div?: string; sub?: string; tier?: string; service?: string;
   items: Item[]; total: number; firstTime: boolean;
   description?: string; notes?: string;
   photos?: string[]; save?: boolean; placeId?: string; session?: string;
+  home?: { tier: string; fullBathrooms: number; halfBathrooms: number; city?: string };
   prep?: string[]; estimate?: number | null; location?: string;
 }
+// Optional structured home details, saved only with the customer's home.
+const homeOf = (p: Payload) => {
+  const h = p.home;
+  if (!h || !['studio', '1bed', '2bed', '3bed', '4bed'].includes(h.tier) ||
+      !Number.isInteger(h.fullBathrooms) || h.fullBathrooms < 0 || h.fullBathrooms > 99 ||
+      !Number.isInteger(h.halfBathrooms) || h.halfBathrooms < 0 || h.halfBathrooms > 99) return null;
+  return { tier: h.tier, fullBathrooms: h.fullBathrooms, halfBathrooms: h.halfBathrooms, city: clip(h.city, 80) };
+};
 // "Get ready for your crew" lines sent by the website (src/data/services.ts PREP); max 6, short text only
 const prepOf = (p: Payload) => (Array.isArray(p.prep) ? p.prep : []).map((x) => clip(x, 140)).filter(Boolean).slice(0, 6);
 
@@ -91,6 +100,7 @@ Deno.serve(async (req) => {
       const { data: s } = await db.from("customer_sessions").select("customer_id").eq("token_hash", await sha256(body.session)).gt("expires_at", new Date().toISOString()).maybeSingle();
       customerId = s?.customer_id ?? null;
     }
+    const authenticatedCustomerId = customerId;
     if (body.save || customerId) {
       if (!customerId) {
         const { data: existing } = await db.from("customers").select("id").eq("phone", body.phone).maybeSingle();
@@ -106,11 +116,11 @@ Deno.serve(async (req) => {
         const addr = clip(body.address, 300);
         const { data: own } = body.placeId ? await db.from("places").select("id").eq("id", body.placeId).eq("customer_id", customerId).maybeSingle() : { data: null };
         const { data: same } = own ? { data: own } : await db.from("places").select("id").eq("customer_id", customerId).ilike("address", addr).maybeSingle();
-        if (same) { placeId = same.id; if (body.access && body.session) await db.from("places").update({ access_notes: clip(body.access, 300) }).eq("id", placeId); }
+        if (same) { placeId = same.id; if (authenticatedCustomerId && (body.access || homeOf(body) || body.propertyNickname)) await db.from("places").update({ ...(body.propertyNickname ? { label: clip(body.propertyNickname, 60) } : {}), ...(body.access ? { access_notes: clip(body.access, 300) } : {}), ...(homeOf(body) ? { home_details: homeOf(body) } : {}) }).eq("id", placeId).eq("customer_id", customerId); }
         else if (addr) {
           const { count } = await db.from("places").select("id", { count: "exact", head: true }).eq("customer_id", customerId);
-          const label = clip(body.business, 60) || (segment === "commercial" ? "Business" : (count ?? 0) ? `Home ${(count ?? 0) + 1}` : "Home");
-          const { data: p } = await db.from("places").insert({ customer_id: customerId, label, address: addr, segment, business: clip(body.business, 120) || null, access_notes: clip(body.access, 300) || null }).select("id").single();
+          const label = clip(body.propertyNickname, 60) || clip(body.business, 60) || (segment === "commercial" ? "Business" : (count ?? 0) ? `Home ${(count ?? 0) + 1}` : "Home");
+          const { data: p } = await db.from("places").insert({ customer_id: customerId, label, address: addr, segment, business: clip(body.business, 120) || null, access_notes: clip(body.access, 300) || null, home_details: homeOf(body) }).select("id").single();
           placeId = p?.id ?? null;
         }
       }

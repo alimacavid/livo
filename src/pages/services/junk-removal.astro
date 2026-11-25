@@ -3,8 +3,9 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import BeforeAfter from '../../components/BeforeAfter.astro';
 import { Image } from 'astro:assets';
-import { getDivision, JUNK_CATEGORIES, minPrice, PHONE, PHONE_TEL } from '../../data/services';
+import { AUDIENCE_COPY, getDivision, JUNK_CATEGORIES, minPrice, PHONE, PHONE_TEL } from '../../data/services';
 const d = getDivision('junk-removal');
+const audience = AUDIENCE_COPY['junk-removal'];
 const rows = JUNK_CATEGORIES.map(row => ({ ...row, service: d.subs.find(s => s.slug === row.sub)! }));
 const money = (n: number | null) => n == null ? 'Free quote' : '$' + n.toLocaleString('en-CA');
 const quoteUrl = '/book?d=junk-removal';
@@ -18,6 +19,7 @@ const included = d.subs.find(s => s.slug === 'junk-removal-by-load')!.included;
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
       <a href="/services" class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
+        <p class="mb-2 inline-block rounded-[6px] bg-purple-ink/90 px-2 py-1 text-[11px] font-heading font-bold text-lime leading-snug">{audience.label}</p>
         <h1 class="text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight">{d.name}</h1>
         <p class="mt-1.5 text-white/85 text-[15px]">{d.tagline}</p>
         <a href={quoteUrl} class="hidden md:inline-flex btn-lime px-6 mt-4">Get a free quote</a>
@@ -25,6 +27,8 @@ const included = d.subs.find(s => s.slug === 'junk-removal-by-load')!.included;
     </div>
   </section>
   <div class="mx-auto max-w-6xl px-4 md:px-6">
+    <p class="mt-5 font-heading font-semibold text-base text-ink leading-relaxed">{audience.sub}</p>
+    <ul class="mt-5 space-y-2 text-sm text-ink/80" aria-label="Service benefits">{audience.benefits?.map((benefit) => <li class="flex gap-2"><Icon name="check" class="size-4 shrink-0 text-purple mt-0.5" /><span>{benefit.text}</span></li>)}</ul>
     <p class="mt-7 text-[15.5px] leading-relaxed text-ink/85">{d.intro}</p>
     <p class="mt-3 text-[15px] text-muted">Send a few photos and tell us where the junk is. Free quote, usually the same day.</p>
     <a href={quoteUrl} class="btn-lime px-6 mt-3">Get a free quote</a>
@@ -61,12 +65,12 @@ const included = d.subs.find(s => s.slug === 'junk-removal-by-load')!.included;
     </section>
     <section class="mt-10">
       <h2 class="text-xl font-extrabold">Questions</h2>
-      <div class="mt-2 divide-y divide-line border-y border-line">{d.faqs.map(f => <details class="group py-4"><summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary><p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p></details>)}</div>
+      <div class="mt-2 divide-y divide-line border-y border-line">{[...d.faqs, ...(audience.faqs ?? [])].map(f => <details class="group py-4"><summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary><p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p></details>)}</div>
     </section>
   </div>
   <div slot="after" class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-xl border-t border-line pb-safe" data-junk-quote-bar>
     <div class="flex items-center justify-between gap-3 px-4 min-h-[76px] py-3">
-      <div class="font-semibold text-[13px]">Junk removal · from {money(startingPrice)}</div>
+      <div><div class="font-heading font-extrabold text-base">Free quote</div><div class="text-[11px] text-muted mt-1">No obligation</div></div>
       <a href={quoteUrl} class="btn-lime px-4 text-[13px] shrink-0">Get a free quote</a>
     </div>
   </div>

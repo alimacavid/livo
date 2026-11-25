@@ -4,12 +4,14 @@ import Base from '../../../layouts/Base.astro';
 import Icon from '../../../components/Icon.astro';
 import BeforeAfter from '../../../components/BeforeAfter.astro';
 import { Image } from 'astro:assets';
-import { DIVISIONS, PHONE, PHONE_TEL, FIRST_TIME_DISCOUNT, subMin, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, type Division, type Sub } from '../../../data/services';
+import { AUDIENCE_COPY, DIVISIONS, PHONE, PHONE_TEL, FIRST_TIME_DISCOUNT, subMin, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, type Division, type Sub } from '../../../data/services';
 
 export function getStaticPaths() {
   return DIVISIONS.flatMap((d) => d.subs.map((s) => ({ params: { division: d.id, sub: s.slug }, props: { d, s } })));
 }
 const { d, s } = Astro.props as { d: Division; s: Sub };
+const audience = AUDIENCE_COPY[s.slug] ?? AUDIENCE_COPY[d.id];
+const faqs = [...d.faqs, ...(audience?.faqs ?? [])];
 const from = subMin(s);
 const quote = isQuoteSub(s);
 const firstOff = !quote && d.segment === 'residential' ? Math.round(FIRST_TIME_DISCOUNT * 100) : 0;
@@ -25,10 +27,10 @@ const addons = [...subAddons(d, s)].sort((a, b) => Number(!junk && !!ADDON_IMAGE
 const commercial = d.segment === 'commercial';
 const tax = commercial ? ' + tax' : '';
 const $ = (n: number) => '$' + n.toLocaleString('en-CA');
-const priceNote = s.minOrder != null ? `${$(s.tiers[0].price ?? 0)} visit fee + items · ${$(s.minOrder)} minimum` : s.unit;
-const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice != null ? 'From ' : ''}${$(from)}${tax}` : 'Free quote';
+const priceNote = quote ? 'No obligation' : 'Choose your options in booking';
+const priceText = quote ? 'Free quote' : 'Price in booking';
 ---
-<Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO in Coquitlam, Port Coquitlam and Port Moody. ${s.short} ${quote ? (from ? `From $${from}, final price after photos.` : 'Free quote, usually the same day.') : `Instant price from $${from}.`} Pay after the job.`} tabBar={false}>
+<Base title={`${s.name} in Coquitlam & Port Coquitlam`} description={`${s.name} by LIVO. ${s.short} Choose your options in booking or request a free quote.`} tabBar={false}>
 
   <!-- HERO -->
   <section class="px-3 md:px-6 pt-1 md:pt-6">
@@ -37,10 +39,11 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <div class="absolute inset-0 bg-gradient-to-t from-purple-ink/95 via-purple-ink/35 to-transparent"></div>
       <a href="/services" class="press absolute top-3 left-3 h-11 pl-3 pr-4 rounded-full bg-white/90 backdrop-blur inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink" aria-label="Back to all services"><Icon name="back" class="size-4" />Services</a>
       <div class="absolute bottom-0 inset-x-0 p-6 md:p-12">
-        <h1 class="rise text-white text-[1.9rem] md:text-5xl font-extrabold leading-tight" style="--i:0">{s.name}</h1>
-        <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{s.short}</p>
+        {audience && <p class="mb-2 inline-block rounded-[6px] bg-purple-ink/90 px-2 py-1 text-[11px] font-heading font-bold text-lime leading-snug">{audience.label}</p>}
+        <h1 class={`rise text-white ${d.id === 'move-cleaning' ? 'text-[1.55rem]' : s.slug === 'commercial-construction-cleaning' ? 'text-[1.65rem]' : 'text-[1.9rem]'} md:text-5xl font-extrabold leading-tight` } style="--i:0">{d.id === 'move-cleaning' ? <><span class="block whitespace-nowrap">Move-In / Move-Out</span>{' '}<span class="block">Cleaning</span></> : s.name}</h1>
+        {s.slug !== 'strata-cleaning' && <p class="rise mt-1.5 text-white/85 text-[15px]" style="--i:1">{hasItems ? d.tagline : s.short}</p>}
         <div class={hasItems ? "rise mt-3 inline-block max-w-full rounded-full bg-lime text-ink px-3.5 py-1.5 text-[12px] md:text-[13px] font-bold" : "rise mt-3 inline-flex items-center gap-2 rounded-full bg-lime text-ink px-3.5 py-1.5 text-[13px] font-bold"} style="--i:2">
-          {from ? <>From {$(from)}{tax} {!hasItems && <span class="font-medium">· {s.unit}</span>}</> : 'Free quote'}
+          {quote ? 'Free quote' : 'See your price'}
         </div>
         {s.minOrder != null && <p class="mt-2 text-[12px] text-white/80">{priceNote}</p>}
       </div>
@@ -49,6 +52,8 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
 
   <div class:list={["mx-auto max-w-6xl px-4 md:px-6", !hasItems && "md:grid md:grid-cols-[1fr_360px] md:gap-12"]}>
     <div>
+      {audience?.sub && <p class="mt-5 font-heading font-semibold text-base text-ink leading-relaxed">{audience.sub}</p>}
+      {audience?.benefits && <ul class="mt-5 space-y-2 text-sm text-ink/80" aria-label="Service benefits">{audience.benefits.map((benefit) => <li class="flex gap-2"><Icon name="check" class="size-4 shrink-0 text-purple mt-0.5" />{benefit.href ? <a href={benefit.href} class="underline underline-offset-2">{benefit.text}</a> : <span>{benefit.text}</span>}</li>)}</ul>}
       <!-- INTRO -->
       <p class:list={["mt-7 text-[15.5px] leading-relaxed text-ink/85", hasItems && "whitespace-pre-line"]}>{s.desc}</p>
 
@@ -64,10 +69,10 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
                   <div class="text-xs font-bold tracking-[.16em] text-purple" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
                   <div class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <h3 class="font-heading font-extrabold text-xl md:text-2xl">{item.name}</h3>
-                    <p class="font-heading font-bold text-purple text-[13px] md:text-base whitespace-nowrap" data-item-price>{$(item.price)} {item.unit.split(' (')[0]}</p>
+                    <p class="font-heading font-bold text-purple text-[13px] md:text-base whitespace-nowrap" data-item-price>Price in booking</p>
                   </div>
-                  <p class="mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]">{item.line ?? item.sub}</p>
-                  <DetailSelection item={item} />
+                  <p class={item.helper ? "mt-2 text-sm text-muted leading-relaxed max-w-[46ch]" : "mt-3 text-base text-ink/75 leading-relaxed max-w-[46ch]"}>{item.helper ?? item.line ?? item.sub}</p>
+                  <a href={`${bookUrl}&a=${item.id}:1`} class="btn-ghost mt-3">Select in booking</a>
                 </div>
                 {item.before && item.after && <BeforeAfter before={item.before} after={item.after} alt={item.name} aspect="aspect-[16/10]" class="detail-slider mt-4 md:mt-0 w-full" />}
               </article>;
@@ -115,7 +120,7 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
       <section class="mt-10">
         <h2 class="text-xl font-extrabold">Questions</h2>
         <div class="mt-2 divide-y divide-line border-y border-line">
-          {d.faqs.map((f) => (
+          {faqs.map((f) => (
             <details class="group py-4">
               <summary class="flex items-center justify-between gap-4 cursor-pointer list-none font-semibold text-[15px] min-h-11">{f.q}<Icon name="plus" class="size-5 shrink-0 text-muted transition duration-300 group-open:rotate-45 group-open:text-purple" /></summary>
               <p class="mt-2 text-sm text-muted leading-relaxed">{f.a}</p>
@@ -148,15 +153,14 @@ const priceText = from != null ? `${quote || s.tiers.length > 1 || s.fromPrice !
   <div slot="after" style="view-transition-name: tab-bar" data-default-bookbar class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/92 backdrop-blur-xl border-t border-line pb-safe">
     <div class="flex items-center gap-3 px-4 h-[76px]">
       <div class="flex-1 min-w-0">
-        {priceText === 'Free quote' && <div class="text-[12px] text-muted mb-1">Quote</div>}
-        <div class={`font-heading font-extrabold leading-none whitespace-nowrap ${tax ? 'text-[17px]' : 'text-xl'}`}>{priceText === 'Free quote' ? 'Free' : priceText}</div>
-        <div class={s.minOrder != null ? "text-[10.5px] text-muted leading-tight mt-1" : "text-[12px] text-muted truncate mt-1"}>{priceNote}</div>
+        <div class="font-heading font-extrabold text-base leading-tight whitespace-nowrap">{quote ? 'Free quote' : 'Instant price'}</div>
+        <div class="text-[11px] text-muted leading-4 mt-1 whitespace-nowrap">{quote ? 'No obligation' : 'Takes about a minute'}</div>
       </div>
       <a href={`tel:${PHONE_TEL}`} aria-label={`Call ${PHONE}`} class="press size-12 rounded-full bg-cloud grid place-items-center"><Icon name="phone" class="size-5" /></a>
-      <a href={bookUrl} class={quote ? "sheen btn-lime px-4 text-[13px] shrink-0" : "sheen btn-lime px-7"}>{cta}</a>
+      <a href={bookUrl} class={quote ? "sheen btn-lime px-4 text-[13px] shrink-0" : "sheen btn-lime px-7 shrink-0"}>{cta}</a>
     </div>
   </div>
-  {hasItems && <DetailSelection items={itemRows} visitFee={s.tiers[0].price ?? 0} minOrder={s.minOrder ?? 0} bookUrl={bookUrl} />}
+
   <div class={hasItems ? "h-24" : "md:hidden h-24"}></div>
 </Base>
 

@@ -15,7 +15,7 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
       <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent"></div>
       <div class="absolute inset-x-0 bottom-0 p-3.5 md:p-5 text-white">
         <div class="font-heading font-bold text-[15px] md:text-lg leading-tight">{c.name}</div>
-        <div class="mt-1 text-[12px] md:text-sm text-white/85">{c.price != null ? <>From <b class="text-lime">${c.price.toLocaleString('en-CA')}</b>{c.tax && <span class="text-white/75"> + tax</span>}</> : <b class="text-lime font-semibold">Free quote</b>}</div>
+        <div class="mt-1 text-[12px] md:text-sm text-white/85"><b class="text-lime font-semibold">{c.price != null ? 'Price in booking' : 'Free quote'}</b></div>
       </div>
     </a>
   ))}
@@ -31,7 +31,7 @@ const cards = HOME_CARDS.map((c) => ({ ...c, division: getDivision(c.divisionId)
         const price = subMin(s);
         return <a href={`/services/${c.divisionId}/${s.slug}`} class="press flex items-center gap-3 rounded-[16px] border border-line p-2.5 hover:bg-cloud min-h-20">
           <Image src={s.image} alt="" class={`size-10 shrink-0 rounded-[10px] object-cover ${s.pos ?? ''}`} widths={[80, 160]} sizes="40px" quality={85} />
-          <span class="flex-1 min-w-0"><span class="block text-sm font-semibold leading-snug">{s.name}</span><span class="block text-[12px] text-muted mt-1">{price != null ? `from $${price.toLocaleString('en-CA')}${c.tax ? ' + tax' : ''}` : 'Free quote'}</span></span>
+          <span class="flex-1 min-w-0"><span class="block text-sm font-semibold leading-snug">{s.name}</span><span class="block text-[12px] text-muted mt-1">{price != null ? 'Price in booking' : 'Free quote'}</span></span>
           <Icon name="chevron" class="size-4 shrink-0 text-purple" />
         </a>;
       })}

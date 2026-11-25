@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getImage } from 'astro:assets';
-import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, PREP, JUNK_LOCATIONS } from '../data/services';
+import { DIVISIONS, FIRST_TIME_DISCOUNT, PHONE, PHONE_TEL, isQuoteSub, subFreqs, subAddons, ADDON_IMAGES, PREP, JUNK_LOCATIONS, NO_FEE_CITIES, OTHER_CITIES, TRAVEL_FEE, BATHROOM_PRICING } from '../data/services';
 
 // small photos for the add-on cards (junk 'fridge' = disposal, so no cleaning photo there)
 const ADDON_SRC: Record<string, string> = {};
@@ -23,7 +23,7 @@ const data = DIVISIONS.map((d) => ({
 const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', 'construction-cleaning', 'junk-removal'];
 ---
 <Base title="Book a Service or Get a Quote" description="Book house cleaning, move out cleaning, Airbnb cleaning or junk removal online, or send photos for a free commercial cleaning quote. LIVO Property Services, Coquitlam." tabBar={false} footer={false}>
-  <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, junkLocations: JUNK_LOCATIONS, commercialDivs: COMMERCIAL_DIVS, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
+  <script type="application/json" id="livo-data" set:html={JSON.stringify({ divisions: data, junkLocations: JUNK_LOCATIONS, commercialDivs: COMMERCIAL_DIVS, bathroomPricing: BATHROOM_PRICING, noFeeCities: NO_FEE_CITIES, otherCities: OTHER_CITIES, travelFee: TRAVEL_FEE, firstTime: FIRST_TIME_DISCOUNT, phone: PHONE, tel: PHONE_TEL })} />
 
   <div id="bk-wrap" class="mx-auto max-w-xl px-4 pt-2 md:pt-6 flex flex-col min-h-[calc(100dvh-66px)]">
     <!-- progress -->
@@ -36,8 +36,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     <p id="bk-testbar" hidden class="mt-2 self-start text-[11.5px] font-semibold rounded-full bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1">Test version: nothing is sent or charged. Try anything.</p>
 
     <div id="bk-live" class="sr-only" aria-live="polite"></div>
-    <!-- each step is centred in the screen; long steps are split so nothing needs scrolling -->
-    <div id="bk-stage" class="flex-1 flex flex-col justify-center py-4 md:py-5">
+    <!-- Steps start below the progress bar; the complete add-on list can scroll above the fixed Continue bar. -->
+    <div id="bk-stage" class="flex-1 flex flex-col justify-start py-4 md:py-5">
       <div id="bk-view"></div>
     </div>
     <div class="h-[96px] md:hidden" aria-hidden="true"></div>
@@ -54,6 +54,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           <span id="bk-total" class="font-heading font-extrabold text-2xl leading-none">$0</span>
           <span id="bk-was" class="text-sm text-muted line-through"></span>
         </div>
+        <div id="bk-travel" class="text-[11px] text-muted empty:hidden"></div>
+        <div id="bk-bathrooms" class="text-[11px] text-muted empty:hidden"></div>
       </div>
       <button id="bk-next" class="sheen btn-lime px-8 disabled:opacity-40 disabled:shadow-none disabled:[&::after]:hidden">Continue</button>
     </div>
@@ -72,26 +74,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     .bk-services [data-sub] > .flex-1 { flex-basis: calc(100% - 2rem); }
     .bk-services [data-sub] > .text-right { width: 100%; text-align: left; padding-left: 1.75rem; }
   }
-  /* Keep incomplete add-on rows centred without changing card widths. */
-  .bk-addons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .bk-addons > * { grid-column: span 2; }
-  .bk-addons > :last-child:nth-child(odd) { grid-column: 2 / span 2; }
   @media (min-width: 768px) {
-    .bk-addons { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-    .bk-addons > :last-child:nth-child(odd) { grid-column: span 2; }
-    .bk-addons > :last-child:nth-child(3n+1) { grid-column: 3 / span 2; }
-    .bk-addons > :nth-last-child(2):nth-child(3n+1) { grid-column: 2 / span 2; }
-    .bk-addons > :last-child:nth-child(3n+2) { grid-column: 4 / span 2; }
     .bk-services [data-sub]:has(img) > .flex-1 { flex-basis: calc(100% - 5.5rem); }
   }
-  .bk-items .bk-itemprice { flex-wrap: wrap; }
-  .bk-items .bk-itemprice > span:first-child { width: 100%; }
-  @media (min-width: 768px) {
-    #bk-view .bk-items { margin-top: .75rem; }
-    .bk-items .bk-addimg { aspect-ratio: 12 / 5; }
-  }
   @media (max-height: 720px) {
-    #bk-view .bk-items > div:not(:has(img)) { padding-block: .5rem; }
     #bk-view .bk-review { padding: .75rem; margin-top: .5rem; }
     #bk-view .bk-review .mt-4 { margin-top: .5rem; }
     #bk-view .bk-review .pt-4 { padding-top: .5rem; }
@@ -117,11 +103,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tightest #bk-view .mt-5, html.bk-tightest #bk-view .mt-4 { margin-top: .5rem; }
   html.bk-tightest #bk-view .p-5, html.bk-tightest #bk-view .p-4 { padding: .75rem; }
   html.bk-tightest #bk-view .pt-4 { padding-top: .5rem; }
-  html.bk-tightest #bk-view .bk-addimg, html.bk-tightest #bk-view .bk-addphoto { display: none; }
-  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 4px; }
-  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > :first-child { grid-column: 1 / -1; }
-  html.bk-tightest #bk-view .bk-addqty { margin-top: 0; padding: 0; box-shadow: none; }
-  html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) .bk-addprice .text-muted { display: none; }
   html.bk-tighter #bk-view .mt-3 { margin-top: .4rem; }
   html.bk-tighter #bk-view textarea { height: 3rem; }
   html.bk-tighter #bk-view input:not([type=file]) { height: 2.5rem; }
@@ -129,20 +110,6 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html.bk-tighter #bk-view .bk-addimg { aspect-ratio: 5 / 2; }
   html.bk-tighter #bk-view [data-tier], html.bk-tighter #bk-view [data-sub], html.bk-tighter #bk-view [data-time] { padding-top: .35rem; padding-bottom: .35rem; }
   html.bk-tighter #bk-view [data-date] { height: 2.1rem; }
-  .bk-addthumb { display: none; }
-  @media (max-width: 767px) {
-    html.bk-tightest #bk-view .bk-addcopy { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 6px; padding: 6px 8px; align-items: center; }
-    html.bk-tightest #bk-view .bk-addthumb { display: block; width: 32px; height: 32px; object-fit: cover; border-radius: 8px; grid-column: 1; grid-row: 1 / 3; }
-    html.bk-tightest #bk-view .bk-addcopy > .font-semibold { grid-column: 2; grid-row: 1; white-space: normal; font-size: 12px; line-height: 14px; }
-    html.bk-tightest #bk-view .bk-addcopy .bk-addprice { grid-column: 2; grid-row: 2; }
-    html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > .bk-addthumb { grid-row: 1; }
-    html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) > .font-semibold { grid-column: 2; }
-    html.bk-tightest #bk-view .bk-addcopy:has(.bk-addqty) .bk-addprice { grid-column: 1 / -1; grid-row: 2; justify-self: start; max-width: calc(100% - 100px); }
-    html.bk-tightest #bk-view .bk-addcopy .bk-addqty { grid-column: 2; grid-row: 2; justify-self: end; }
-  }
-  @media (max-width: 767px) and (max-height: 720px) {
-    html.bk-tightest #bk-view .bk-addcopy { padding-block: 2px; row-gap: 0; }
-  }
   html.bk-tightest #bk-view .bk-junk-photos .bk-photo-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   html.bk-tightest #bk-view .bk-junk-photos textarea { height: 2.5rem; }
   html.bk-tightest #bk-view .bk-junk-photos .bk-for-label { display: none; }
@@ -165,24 +132,40 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   html #bk-view .bk-junk-photos h1 + p { display: block; font-size: 13px; line-height: 1.4; }
   #bk-view .bk-junk-photos .bk-photo-grid label > span { width: 100%; }
   html.bk-tightest #bk-view .bk-junk-photos .bk-photo-add-label { font-size: 11px; line-height: 12px; }
+  @media (max-width: 767px) and (max-height: 720px) {
+    html #bk-view .bk-addons + p { font-size: 11px; line-height: 14px; margin-top: 4px; }
+  }
+  html.bk-tighter #bk-view .bk-addon-step h1 + p { display: block; font-size: 12px; }
+  .bk-addons { display: grid; gap: 8px; }
+  .bk-addon-card { display: grid; grid-template-columns: 56px minmax(0, 1fr) 112px; align-items: center; gap: 8px; padding: 10px; border: 2px solid var(--color-line); border-radius: 16px; background: white; min-width: 0; }
+  .bk-addon-card.is-selected { border-color: var(--color-purple); background: var(--color-purple-soft); }
+  .bk-addon-media { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
+  .bk-addon-icon { display: grid; place-items: center; background: var(--color-purple-soft); color: var(--color-purple); }
+  .bk-addon-copy { min-width: 0; }
+  .bk-addon-name { font-size: 13px; font-weight: 600; line-height: 17px; }
+  .bk-addon-helper { margin-top: 3px; color: var(--color-muted); font-size: 12px; line-height: 16px; }
+  .bk-addon-price { margin-top: 4px; font-size: 12px; line-height: 16px; }
+  .bk-addon-controls { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 112px; }
+  .bk-addon-controls button { width: 44px; height: 44px; flex: none; border-radius: 999px; }
+  .bk-addon-controls output { min-width: 16px; text-align: center; font-size: 14px; font-weight: 700; }
 </style>
 
 <script>
   import { TEST, sendRequest, signedIn, getProfile, normPhone, type Profile, type Place } from '../lib/api';
 
   type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
-  type Addon = { id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
+  type Addon = { helper?: string; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean; img?: string };
   type Freq = { id: string; name: string; sub: string; discount: number };
   type SubD = { slug: string; img?: string; name: string; short: string; unit: string; tierLabel: string; tiers: Tier[]; quoteNote: string; fromPrice?: number; minOrder?: number; itemsRequired: boolean; pos?: string; quote: boolean; freqs: Freq[]; addons: Addon[] };
   type Seg = 'residential' | 'commercial';
   type Div = { id: string; name: string; short: string; icon: string; segment: Seg; subs: SubD[]; times: { id: string; sub: string }[] };
 
-  const D = JSON.parse(document.getElementById('livo-data')!.textContent!) as { divisions: Div[]; junkLocations: { id: string; name: string; fee: number }[]; commercialDivs: string[]; firstTime: number; phone: string; tel: string };
+  const D = JSON.parse(document.getElementById('livo-data')!.textContent!) as { divisions: Div[]; junkLocations: { id: string; name: string; fee: number }[]; commercialDivs: string[]; bathroomPricing: { included: Record<string, number>; full: number; half: number }; noFeeCities: string[]; otherCities: string[]; travelFee: number; firstTime: number; phone: string; tel: string };
   const FT = Math.round(D.firstTime * 100);
   const MAX_PHOTOS = 10;
   const JUNK_LOCATIONS = D.junkLocations;
 
-  const ALL_STEPS = ['service', 'size', 'addons', 'photos', 'freq', 'date', 'time', 'contact', 'address', 'review'] as const;
+  const ALL_STEPS = ['service', 'city', 'size', 'bathrooms', 'addons', 'photos', 'freq', 'date', 'time', 'contact', 'address', 'review'] as const;
   type Step = (typeof ALL_STEPS)[number];
 
   const q = new URLSearchParams(location.search);
@@ -194,6 +177,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     div: qDiv?.id ?? '',
     sub: q.get('s') ?? '',
     tier: q.get('t') ?? '',
+    fullBathrooms: null as number | null,
+    halfBathrooms: 0,
     addons: {} as Record<string, number>,
     freq: 'onetime',
     date: '',
@@ -202,7 +187,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     month: (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })(),
     firstTime: true,
     photos: [] as { file: File; url: string }[],
-    c: { name: '', phone: '', email: '', business: '', address: '', access: '', description: '', notes: '' },
+    c: { name: '', phone: '', email: '', propertyNickname: '', checkoutTime: '', checkinTime: '', entryMethod: '', entryInstructions: '', strataPlan: '', floors: '', siteContact: '', sitePhone: '', moveRole: '', business: '', city: '', address: '', access: '', description: '', notes: '' },
     save: true,
     placeId: q.get('place') ?? '',
     profile: null as Profile | null,
@@ -216,8 +201,17 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const sub = () => subsFor(div()).find((s) => s.slug === st.sub);
   const tier = () => sub()?.tiers.find((t) => t.id === st.tier);
   // add-ons and "how often" options belong to the chosen service (e.g. Deep Cleaning is one-time only)
+  const hasBathrooms = () => ['house-cleaning', 'deep-cleaning', 'move-cleaning', 'airbnb-cleaning'].includes(st.div) && !!tier() && st.tier in D.bathroomPricing.included;
+  const includedBathrooms = () => D.bathroomPricing.included[st.tier] ?? 0;
+  const fullBathrooms = () => st.fullBathrooms ?? includedBathrooms();
+  const bathroomFee = () => hasBathrooms() ? Math.max(0, fullBathrooms() - includedBathrooms()) * D.bathroomPricing.full + st.halfBathrooms * D.bathroomPricing.half : 0;
+  const bathroomSummary = () => `${fullBathrooms()} full, ${st.halfBathrooms} half`;
   const addons = (): Addon[] => sub()?.addons ?? [];
-  const freqs = (): Freq[] => sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }];
+  const isStrata = () => st.sub === 'strata-cleaning';
+  const isMove = () => st.div === 'move-cleaning';
+  const isAirbnb = () => st.div === 'airbnb-cleaning';
+  const outsideRecurringZone = () => st.div === 'house-cleaning' && !!st.c.city && !D.noFeeCities.includes(st.c.city);
+  const freqs = (): Freq[] => (sub()?.freqs ?? [{ id: 'onetime', name: 'One-Time', sub: 'Single visit', discount: 0 }]).filter((f) => !outsideRecurringZone() || !['weekly', 'biweekly'].includes(f.id));
   const freq = () => freqs().find((f) => f.id === st.freq) ?? freqs()[0];
   const isQuote = () => !!sub()?.quote || (tier() != null && tier()!.price == null);
   const junkQuote = () => div().id === 'junk-removal' && isQuote();
@@ -229,15 +223,16 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const segment = (): Seg => junkQuote() ? 'residential' : (div().segment === 'commercial' || st.seg === 'commercial' || st.forBusiness ? 'commercial' : 'residential');
   const skipJunkSize = () => junkQuote() && sub()?.tiers.length === 1;
   const skipPricedSize = () => !isQuote() && sub()?.tiers.length === 1 && sub()!.tiers[0].price != null;
-  const serviceStart = (): Step => skipJunkSize() ? 'photos' : skipPricedSize() ? steps().find((step) => step !== 'service' && step !== 'size')! : 'size';
+  const serviceStart = (): Step => 'city';
   const discountOK = () => D.firstTime > 0 && !isQuote() && segment() === 'residential';
   const steps = () => ALL_STEPS.filter((x) =>
     (x !== 'size' || !(skipJunkSize() || skipPricedSize())) &&
+    (x !== 'bathrooms' || hasBathrooms()) &&
     (x !== 'addons' || (!isQuote() && addons().length > 0)) &&
     (x !== 'photos' || isQuote()) &&
     (x !== 'freq' || freqs().length > 1));
-  const NAMES: Record<string, string> = { service: 'Service', size: 'Size', addons: 'Add-ons', photos: 'Photos & details', freq: 'How often', date: 'Date', time: 'Time', contact: 'Your details', address: 'Address', review: 'Review' };
-  const stepName = (x: Step) => x === 'size' && isQuote() && sub()?.tiers.every((t) => t.price == null) ? 'How to quote' : x === 'date' && isQuote() ? 'Preferred date' : NAMES[x];
+  const NAMES: Record<string, string> = { service: 'Service', city: 'City', size: 'Bedrooms', bathrooms: 'Bathrooms', addons: 'Add-ons', photos: 'Photos & details', freq: 'How often', date: 'Date', time: 'Time', contact: 'Your details', address: 'Address', review: 'Review' };
+  const stepName = (x: Step) => x === 'freq' && isAirbnb() ? 'Turnover plan' : x === 'size' && isQuote() && sub()?.tiers.every((t) => t.price == null) ? 'How to quote' : x === 'date' && isQuote() ? 'Preferred date' : NAMES[x];
 
   if (!sub()) st.sub = '';
   if (st.seg === 'commercial') st.forBusiness = true;
@@ -249,14 +244,14 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   });
   if (sub() && !tier()) st.tier = (sub()!.tiers.find((t) => t.popular) ?? sub()!.tiers[0]).id;
   if (sub()) st.freq = freq().id;
-  if (st.sub) st.step = sub()?.itemsRequired && Object.keys(st.addons).length ? 'addons' : serviceStart(); // Item links keep selections and open the items step; other links start at size.
+  if (st.sub) st.step = serviceStart(); // Item links keep their selections; every selected service starts with city.
   // back from sign-in: restore everything the customer already picked and continue at "Your details"
   const RESUME = 'livo-book-resume'; let resumed = false;
   if (q.get('resume')) {
     try {
       const saved = JSON.parse(sessionStorage.getItem(RESUME) ?? 'null');
       if (saved) {
-        for (const k of ['seg', 'forBusiness', 'div', 'sub', 'tier', 'addons', 'freq', 'date', 'time', 'month', 'firstTime', 'save', 'placeId', 'junkLocation']) if (k in saved) (st as any)[k] = saved[k];
+        for (const k of ['seg', 'forBusiness', 'div', 'sub', 'tier', 'fullBathrooms', 'halfBathrooms', 'addons', 'freq', 'date', 'time', 'month', 'firstTime', 'save', 'placeId', 'junkLocation']) if (k in saved) (st as any)[k] = saved[k];
         Object.assign(st.c, saved.c ?? {});
         st.step = 'contact'; resumed = true;
       }
@@ -274,12 +269,14 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
   const money = (n: number) => '$' + Math.round(n).toLocaleString('en-CA');
 
+  const travelFee = () => st.c.city && !D.noFeeCities.includes(st.c.city) ? D.travelFee : 0;
+  const recurringBlocked = () => st.div === 'house-cleaning' && ['weekly', 'biweekly'].includes(st.freq) && !!st.c.city && !D.noFeeCities.includes(st.c.city);
   function totals() {
     const base = tier()?.price ?? 0;
     const add = isQuote() ? 0 : addons().reduce((s, a) => s + (st.addons[a.id] ?? 0) * a.price, 0);
     // first visit = regular price; recurring discount starts on the 2nd visit and applies to the service only, not add-ons
-    const sub = base + add;
-    const repeat = Math.round(base * (1 - freq().discount) + add);
+    const sub = base + add + bathroomFee() + travelFee();
+    const repeat = Math.round(base * (1 - freq().discount) + add + bathroomFee() + travelFee());
     const total = discountOK() && st.firstTime ? sub * (1 - D.firstTime) : sub;
     return { base, add, sub: Math.round(sub), total: Math.round(total), repeat };
   }
@@ -324,6 +321,20 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       </div>`;
   }
 
+  function vCity() {
+    const places = (st.profile?.places ?? []).filter((p) => (p.segment === 'commercial') === biz());
+    return `${h1('Which city?', 'Choose where you need the service.')}
+      ${places.length ? `<div class="mt-5"><div class="text-[13px] text-ink/80">Use a saved ${biz() ? 'business' : 'place'}:</div>
+          <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Saved places">
+            ${places.map((p) => `<button data-place="${p.id}" aria-pressed="${st.placeId === p.id}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${st.placeId === p.id ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">${esc(p.label)}</button>`).join('')}
+            <button data-place="" aria-pressed="${!st.placeId}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${!st.placeId ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">+ New address</button>
+          </div></div>` : ''}
+      <div class="mt-5">
+        <label for="c-city" class="text-[13px] font-semibold">City</label><select id="c-city" required aria-describedby="e-city" class="mt-1 w-full h-12 px-3 rounded-[8px] border border-line bg-white"><option value="">Choose your city</option>${[...D.noFeeCities, ...D.otherCities].map(city => `<option ${st.c.city === city ? 'selected' : ''}>${city}</option>`).join('')}</select><p id="e-city" role="alert" class="text-sm text-red-700"></p><p class="mt-2 text-[12px] text-muted">No travel fee: ${D.noFeeCities.join(', ')}; the rest of Greater Vancouver: ${money(D.travelFee)}.</p>
+      </div>
+      ${outsideRecurringZone() ? '<p class="mt-4 text-sm text-purple">Recurring cleaning not available in your area yet.</p>' : ''}`;
+  }
+
   function vSize() {
     const s = sub()!; const allQuote = s.tiers.every((t) => t.price == null);
     return `${h1(allQuote ? 'How should we quote?' : s.tierLabel, s.name)}
@@ -335,45 +346,40 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       ${s.quoteNote ? `<p class="mt-4 text-[13px] text-muted">${s.quoteNote}</p>` : ''}`;
   }
 
-  function vAddons() {
-    return `${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? 'Choose at least one. One visit fee per order.' : 'Optional. Tap to add.')}
-      <div class="mt-5 bk-addons gap-2 ${sub()?.itemsRequired ? 'bk-items' : ''}">
-        ${addons().map((a) => {
-          const n = st.addons[a.id] ?? 0; const on = n > 0;
-          if (a.img) return `<div class="press relative h-full flex flex-col overflow-hidden rounded-[18px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft' : 'border-transparent bg-cloud hover:border-line'}">
-            <button data-add="${a.id}" class="absolute inset-0 z-10 rounded-[18px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <div class="relative bk-addphoto">
-              <img src="${a.img}" alt="" class="bk-addimg w-full aspect-[4/3] object-cover bg-line" />
-              <span aria-hidden="true" class="absolute top-2 right-2 size-8 rounded-full grid place-items-center shadow-md transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-white text-ink'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-4')}</span>
+  function vBathrooms() {
+    const row = (id: string, label: string, helper: string, count: number) => `<div class="card p-4 flex items-center justify-between gap-3">
+      <div><h2 class="font-heading text-base font-bold">${label}</h2><p class="mt-1 text-sm text-muted">${helper}</p></div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button data-bath="${id}" data-delta="-1" ${count === 0 ? 'disabled' : ''} aria-label="One fewer ${label.toLowerCase()}" class="press size-12 rounded-full bg-cloud border border-line text-2xl disabled:opacity-40">−</button>
+        <output class="w-5 text-center font-bold" aria-label="${label}" aria-live="polite">${count}</output>
+        <button data-bath="${id}" data-delta="1" ${count === 99 ? 'disabled' : ''} aria-label="One more ${label.toLowerCase()}" class="press size-12 rounded-full bg-purple text-white text-2xl">+</button>
+      </div></div>`;
+    return `${h1('Bathrooms', 'Tell us about your home.')}
+      <div class="mt-5 grid gap-3">${row('full', 'Full bathrooms', 'Shower or bathtub', fullBathrooms())}${row('half', 'Half bathrooms', 'Toilet and sink only', st.halfBathrooms)}</div>
+      <p class="mt-4 text-sm text-muted">Your price includes ${includedBathrooms()} bathrooms. Each extra adds to your total.</p>
+      <p class="mt-2 text-sm text-muted">Extra full bathroom: ${money(D.bathroomPricing.full)} · Half bathroom: ${money(D.bathroomPricing.half)}</p>`;
+  }
 
+  function vAddons() {
+    return `<div class="bk-addon-step ${isAirbnb() ? 'bk-airbnb' : ''}">${h1(sub()?.itemsRequired ? 'Pick your items' : 'Add anything else?', sub()?.itemsRequired ? `${money(tier()?.price ?? 0)} visit fee once per order · ${money(sub()?.minOrder ?? 0)} minimum.` : 'Optional. Use + to add.')}
+      ${isAirbnb() ? '<p class="mt-3 text-sm text-muted"><b>Included:</b> Sheets, towels and restocking are already included.</p>' : ''}
+      <div class="mt-4 bk-addons">
+        ${addons().map((a) => {
+          const n = st.addons[a.id] ?? 0;
+          return `<article class="bk-addon-card ${n ? 'is-selected' : ''}" data-addon-card="${a.id}" aria-label="${a.name}">
+            ${a.img ? `<img src="${a.img}" alt="" class="bk-addon-media" />` : `<div class="bk-addon-media bk-addon-icon" aria-hidden="true">${ic('<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>', 'size-7')}</div>`}
+            <div class="bk-addon-copy"><div class="bk-addon-name">${a.name}</div>
+            ${a.helper ? `<p class="bk-addon-helper">${a.helper}</p>` : ''}
+            <div class="bk-addon-price"><b>+${money(a.price)}</b> <span class="text-muted">${a.unit}</span></div></div>
+            <div class="bk-addon-controls">
+              <button data-dec="${a.id}" ${n === 0 ? 'disabled' : ''} class="press bg-cloud border border-line text-xl disabled:opacity-40" aria-label="One less ${a.name}">−</button>
+              <output aria-label="${a.name} quantity" aria-live="polite">${n}</output>
+              <button data-inc="${a.id}" ${!a.qty && n === 1 ? 'disabled' : ''} class="press bg-purple text-white text-xl disabled:opacity-40" aria-label="One more ${a.name}">+</button>
             </div>
-            <div class="bk-addcopy px-3 py-2 flex flex-col">
-              <img src="${a.img}" alt="" class="bk-addthumb" />
-              <div class="font-semibold text-[13.5px] leading-tight truncate">${a.name}</div>
-              <div class="bk-addprice text-[12.5px] truncate"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></div>
-              ${a.qty && on ? `<span class="bk-addqty relative z-20 mt-1 self-end flex items-center gap-1 rounded-full bg-white/95 shadow-md p-1">
-                <button data-dec="${a.id}" class="press size-9 rounded-full bg-cloud grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
-                <span class="w-4 text-center font-bold text-sm" aria-live="polite">${n}</span>
-                <button data-inc="${a.id}" class="press size-9 rounded-full bg-cloud grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
-            </div>
-          </div>`;
-          return `<div class="press relative px-3.5 py-3 rounded-[16px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
-            <button data-add="${a.id}" class="absolute inset-0 rounded-[16px]" aria-pressed="${on}" aria-label="${a.name} (${a.sub}), plus ${money(a.price)} ${a.unit}"></button>
-            <div class="flex items-start justify-between gap-2">
-              <span class="font-semibold text-[13.5px] leading-tight">${a.name}</span>
-              <span aria-hidden="true" class="size-6 shrink-0 rounded-full grid place-items-center transition duration-300 ${on ? 'bg-purple text-white rotate-[360deg]' : 'bg-cloud text-muted'}">${ic(on ? CHECK : '<path d="M12 5v14M5 12h14"/>', 'size-3.5')}</span>
-            </div>
-            <div class="bk-itemprice mt-1 flex items-center justify-between gap-1">
-              <span class="text-[12.5px]"><b>+${money(a.price)}</b> <span class="text-muted text-[11px]">${a.unit}</span></span>
-              ${a.qty && on ? `<span class="relative flex items-center gap-1">
-                <button data-dec="${a.id}" class="press size-9 rounded-full bg-white border border-line grid place-items-center" aria-label="One less ${a.name}">${ic('<path d="M5 12h14"/>', 'size-4')}</button>
-                <span class="w-5 text-center font-bold text-sm" aria-live="polite">${n}</span>
-                <button data-inc="${a.id}" class="press size-9 rounded-full bg-white border border-line grid place-items-center" aria-label="One more ${a.name}">${ic('<path d="M12 5v14M5 12h14"/>', 'size-4')}</button></span>` : ''}
-            </div>
-          </div>`;
+          </article>`;
         }).join('')}
       </div>
-      <p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p>`;
+      <p class="mt-2 text-[12px] text-muted">Prices include GST.</p><p id="e-items" role="alert" tabindex="-1" class="mt-2 text-sm text-red-700 empty:hidden outline-none"></p></div>`;
   }
 
   const needPhotos = () => isQuote() && (junkQuote() || st.tier !== 'visit');
@@ -403,21 +409,22 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         </div>
         <p id="e-photos" class="mt-1 text-[13px] text-red-700 empty:hidden"></p>
       </div>
-      ${needBusiness() && !junkQuote() ? fld('business', 'Business name', 'text', 'organization', '', true) : ''}
+      ${needBusiness() && !junkQuote() ? fld('business', isStrata() ? 'Building name' : 'Business name', 'text', 'organization', '', true) : ''}
       <div class="mt-4"><label for="c-description" class="text-[13px] font-semibold text-ink/80">Tell us about the job <span class="font-normal text-muted">(optional)</span></label>
         <textarea id="c-description" rows="3" placeholder="${needBusiness() ? 'Size of the space, how often, opening hours…' : 'Rooms, how much dust or debris, deadline…'}" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.description)}</textarea></div></div>`;
   }
 
   function vFreq() {
     const t = totals();
-    return `${h1('How often?', isQuote() ? 'We include it in your quote.' : 'Regular clients save on every visit.')}
+    return `${h1(isAirbnb() ? 'One turnover or ongoing?' : 'How often?', isAirbnb() ? 'The price is the same for both.' : isQuote() ? 'We include it in your quote.' : outsideRecurringZone() ? 'Choose monthly or one-time cleaning.' : 'Regular clients save on every visit.')}
+      ${outsideRecurringZone() ? '<p class="mt-3 text-sm text-purple">Recurring cleaning not available in your area yet.</p>' : ''}
       <div class="mt-5 grid grid-cols-2 gap-2.5">
         ${freqs().map((f) => {
           const on = st.freq === f.id;
           return `<button data-freq="${f.id}" aria-pressed="${on}" class="press text-left p-4 rounded-[20px] border-2 transition-colors ${on ? 'border-purple bg-purple-soft/60' : 'border-line bg-white hover:border-gray'}">
             <div class="flex items-center justify-between gap-2"><span class="font-semibold text-[15px]">${f.name}</span>${f.discount ? `<span class="text-[11px] font-bold bg-lime text-ink px-1.5 py-0.5 rounded">−${Math.round(f.discount * 100)}%</span>` : ''}</div>
             <div class="text-[12.5px] text-muted">${f.sub}</div>
-            ${isQuote() ? '' : `<div class="mt-3 font-heading font-extrabold">${money(t.base * (1 - f.discount) + t.add)}<span class="text-[11px] font-sans font-medium text-muted"> /visit${f.discount ? ' from 2nd' : ''}</span></div>`}
+            ${isQuote() || isAirbnb() ? '' : `<div class="mt-3 font-heading font-extrabold">${money(t.base * (1 - f.discount) + t.add + bathroomFee() + travelFee())}<span class="text-[11px] font-sans font-medium text-muted"> /visit${f.discount ? ' from 2nd' : ''}</span></div>`}
           </button>`;
         }).join('')}
       </div>`;
@@ -479,9 +486,38 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         <p id="e-${id}" class="mt-1 text-[13px] text-red-700 empty:hidden"></p></div>`;
   }
 
+  const ENTRY_METHODS = ['Lockbox', 'Smart lock', 'Key pickup', 'Someone on site'];
+  const MOVE_ROLES = ['Tenant', 'Landlord or property manager', 'Realtor'];
+  function choiceField(id: string, label: string, options: string[], required = true) {
+    return `<div class="mt-3"><label for="c-${id}" class="text-[13px] font-semibold text-ink/80">${label}${required ? '' : ' <span class="font-normal text-muted">(optional)</span>'}</label>
+      <select id="c-${id}" ${required ? 'required aria-required="true"' : ''} aria-describedby="e-${id}" class="mt-1 w-full h-12 px-4 rounded-[8px] border border-line bg-white text-[16px]"><option value="">Choose an option</option>${options.map(value => `<option ${value === (st.c as any)[id] ? 'selected' : ''}>${esc(value)}</option>`).join('')}</select><p id="e-${id}" class="mt-1 text-[13px] text-red-700 empty:hidden"></p></div>`;
+  }
+  function serviceFields() {
+    if (isAirbnb()) return `<section aria-label="Property details" class="mt-4">
+      ${fld('propertyNickname', 'Property nickname', 'text', 'off', '', true, 'For example: Main St 2B')}
+      ${fld('checkoutTime', 'Guest checkout time', 'time')}
+      ${fld('checkinTime', 'Next check-in time', 'time', '', '', false)}
+      ${choiceField('entryMethod', 'Entry method', ENTRY_METHODS)}
+      ${fld('entryInstructions', 'Entry instructions', 'text', 'off')}
+    </section>`;
+    if (isStrata()) return `<section aria-label="Building details" class="mt-4">
+      ${fld('strataPlan', 'Strata plan number', 'text', 'off', '', false)}
+      ${fld('floors', 'Number of floors', 'number', 'off', 'numeric')}
+      ${fld('siteContact', 'On-site contact name', 'text', 'off', '', false)}
+      ${fld('sitePhone', 'On-site contact phone', 'tel', 'off', 'tel', false)}
+    </section>`;
+    return isMove() ? choiceField('moveRole', 'I am a', MOVE_ROLES, false) : '';
+  }
+  function serviceNotes() {
+    if (isAirbnb()) return [['Property nickname', st.c.propertyNickname], ['Guest checkout time', st.c.checkoutTime], ['Next check-in time', st.c.checkinTime], ['Entry method', st.c.entryMethod], ['Entry instructions', st.c.entryInstructions]];
+    if (isStrata()) return [['Building name', st.c.business], ['Strata plan number', st.c.strataPlan], ['Number of floors', st.c.floors], ['On-site contact name', st.c.siteContact], ['On-site contact phone', st.c.sitePhone]];
+    return isMove() && st.c.moveRole ? [['I am a', st.c.moveRole]] : [];
+  }
+
   const biz = () => needBusiness();
   function vContact() {
     return `${h1('Your details', 'So we can confirm your ' + (isQuote() ? 'quote.' : 'booking.'))}
+      ${serviceFields()}
       ${st.profile ? `<div class="mt-5 rounded-[16px] bg-purple-soft/70 p-3.5 text-[13px] font-semibold text-purple">Signed in · ${esc(st.profile.customer.phone)}</div>`
         : `<a data-signin href="/my-livo?next=${encodeURIComponent('/book?resume=1')}" class="press mt-5 flex items-center gap-3.5 rounded-[18px] bg-purple-ink text-white p-4 hover:bg-purple transition-colors">
             <span class="size-11 shrink-0 rounded-full bg-lime text-ink grid place-items-center">${ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'size-5')}</span>
@@ -497,16 +533,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   }
 
   function vAddress() {
-    const places = (st.profile?.places ?? []).filter((p) => (p.segment === 'commercial') === biz());
     return `${h1(biz() ? 'Where is the business?' : 'Where should we come?', 'Only your crew sees the access notes.')}
-      ${places.length ? `<div class="mt-5"><div class="text-[13px] text-ink/80">Use a saved ${biz() ? 'business' : 'place'}:</div>
-          <div class="mt-2 flex flex-wrap gap-2" role="group" aria-label="Saved places">
-            ${places.map((p) => `<button data-place="${p.id}" aria-pressed="${st.placeId === p.id}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${st.placeId === p.id ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">${esc(p.label)}</button>`).join('')}
-            <button data-place="" aria-pressed="${!st.placeId}" class="press min-h-11 px-4 rounded-full text-[13px] font-semibold border-2 transition-colors ${!st.placeId ? 'border-purple bg-white text-purple' : 'border-line bg-white text-ink'}">+ New address</button>
-          </div></div>` : ''}
       <div class="mt-5">
         ${fld('address', biz() ? 'Business address' : 'Service address', 'text', 'street-address')}
-        ${fld('access', biz() ? 'Access and hours' : 'Parking, entry and pets', 'text', 'off', '', false)}
+        ${isAirbnb() ? '' : fld('access', biz() ? 'Access notes' : 'Parking, entry and pets', 'text', 'off', '', false)}
         <div class="mt-3"><label for="c-notes" class="text-[13px] font-semibold text-ink/80">Notes <span class="font-normal text-muted">(optional)</span></label>
           <textarea id="c-notes" rows="2" class="resize-none mt-1 w-full px-4 py-3 rounded-[8px] border border-line bg-white text-[16px] outline-none focus:border-purple focus:ring-4 focus:ring-purple/15">${esc(st.c.notes)}</textarea></div>
       </div>
@@ -520,7 +550,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const t = totals(); const s = sub()!; const tr = tier()!; const f = freq(); const quote = isQuote();
     const lines = [
       [`${s.name} · ${tr.name}`, junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr.price != null ? `${quote ? 'from ' : ''}${money(tr.price)}` : 'Free quote'],
+      ...(hasBathrooms() ? [[`Bathrooms · ${bathroomSummary()}`, money(bathroomFee()) + (quote ? ' in quote' : '')]] : []),
+      ...(travelFee() ? [['Travel fee · ' + esc(st.c.city), money(travelFee()) + (quote ? ' in quote' : '')]] : []),
       ...(quote ? [] : addons().filter((a) => st.addons[a.id]).map((a) => [`${a.name}${st.addons[a.id] > 1 ? ' × ' + st.addons[a.id] : ''}`, money(a.price * st.addons[a.id])])),
+      ...serviceNotes().filter(([, value]) => value.trim()).map(([label, value]) => [label, esc(value)]),
       ...(junkLocationNote() ? [[esc(junkLocationNote()), '']] : []),
       ...(junkRoughPriceNote() ? [[esc(junkRoughPriceNote()), '']] : []),
       ...(quote && st.photos.length ? [[`${st.photos.length} photo${st.photos.length > 1 ? 's' : ''} attached`, '']] : []),
@@ -530,12 +563,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       <div class="mt-5 card p-5 bk-review ${junkQuote() ? 'bk-junk-review' : ''}">
         <div class="space-y-2 text-[14px]">
           ${lines.map(([a, b]) => `<div class="flex justify-between gap-4"><span class="text-ink/80">${a}</span><span class="font-semibold">${b}</span></div>`).join('')}
-          ${!quote && f.id !== 'onetime' ? `<div class="flex justify-between"><span class="text-ink/80">${f.name}${f.discount ? `, −${Math.round(f.discount * 100)}% from 2nd visit` : ''}</span><span class="font-semibold">${money(t.repeat)}/visit</span></div>` : ''}
+          ${!quote && !isAirbnb() && f.id !== 'onetime' ? `<div class="flex justify-between"><span class="text-ink/80">${f.name}${f.discount ? `, −${Math.round(f.discount * 100)}% from 2nd visit` : ''}</span><span class="font-semibold">${money(t.repeat)}/visit</span></div>` : ''}
+          ${isAirbnb() ? `<div class="flex justify-between"><span class="text-ink/80">Turnover plan</span><span class="font-semibold">${f.name}</span></div>` : ''}
           ${quote && freqs().length > 1 ? `<div class="flex justify-between"><span class="text-ink/80">How often</span><span class="font-semibold">${f.name}</span></div>` : ''}
         </div>
         <div class="mt-4 pt-4 border-t border-line space-y-1.5 text-[13.5px]">
           <div class="flex justify-between gap-4"><span class="text-muted">${quote ? 'Preferred' : 'When'}</span><span class="font-semibold text-right">${when} · ${esc(st.time)}</span></div>
-          <div class="flex justify-between gap-4"><span class="text-muted">Where</span><span class="font-semibold text-right">${esc(st.c.address)}</span></div>
+          <div class="flex justify-between gap-4"><span class="text-muted">Where</span><span class="font-semibold text-right">${esc(st.c.address)}, ${esc(st.c.city)}</span></div>
           <div class="flex justify-between gap-4"><span class="text-muted">Contact</span><span class="font-semibold text-right">${esc(st.c.name)} · ${esc(st.c.phone)}</span></div>
         </div>
         ${discountOK() ? `<button id="ft" role="checkbox" aria-checked="${st.firstTime}" class="press mt-4 w-full flex items-center gap-3 p-3 min-h-12 rounded-[12px] transition-colors ${st.firstTime ? 'bg-lime-soft' : 'bg-cloud'} text-left">
@@ -543,10 +577,10 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
           <span class="text-[13.5px]">First time with LIVO? <b>${FT}% off</b></span>
         </button>` : ''}
         <div class="mt-4 pt-4 border-t border-line flex justify-between items-baseline">
-          <span class="font-semibold">${quote ? 'Price' : f.id !== 'onetime' ? 'First visit' : 'Total'}</span>
+          <span class="font-semibold">${quote ? 'Price' : !isAirbnb() && f.id !== 'onetime' ? 'First visit' : 'Total'}</span>
           <span class="font-heading font-extrabold text-2xl">${quote ? (junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr.price != null ? `from ${money(tr.price)}` : 'Free quote') : money(t.total)}</span>
         </div>
-        <p class="mt-1 text-[12px] text-muted">${quote ? `Final price confirmed after we review your photos or visit${needBusiness() ? ', plus tax' : ''}. No obligation.` : f.id !== 'onetime' ? 'Your first visit is the regular price. You pay after each visit; skip or cancel anytime.' : 'You pay after the job.'}</p>
+        <p class="mt-1 text-[12px] text-muted">${quote ? `Final price confirmed after we review your photos or visit${needBusiness() ? ', plus tax' : ''}. No obligation.` : !isAirbnb() && f.id !== 'onetime' ? 'Your first visit is the regular price. You pay after each visit; skip or cancel anytime.' : 'You pay after the job.'}</p>
       </div>
       <p class="mt-3 text-[12px] text-muted">We use your details only for this ${quote ? 'quote' : 'booking'}${st.profile || st.save ? ' and your next ones' : ''}. <a href="/privacy" class="underline">Privacy Policy</a></p>
       <div id="bk-err" role="alert" tabindex="-1" class="mt-3 text-sm text-red-700 font-medium outline-none empty:hidden rounded-[12px] bg-red-50 p-3"></div>`;
@@ -579,8 +613,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function canNext() {
     switch (st.step) {
       case 'service': return !!sub();
+      case 'city': return [...D.noFeeCities, ...D.otherCities].includes(st.c.city);
       case 'size': return !!tier();
-      case 'addons': case 'freq': case 'photos': return true;
+      case 'bathrooms': case 'addons': case 'freq': case 'photos': return true;
       case 'date': return !!st.date;
       case 'time': return !!st.time;
       case 'contact': case 'address': return true;
@@ -600,7 +635,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     $('#bk-prog').setAttribute('aria-valuemax', String(steps().length));
     $('#bk-prog').setAttribute('aria-valuetext', `Step ${i + 1} of ${steps().length}: ${stepName(st.step as Step)}`);
     ($('#bk-back') as HTMLButtonElement).disabled = i === 0;
-    v.innerHTML = ({ service: vService, size: vSize, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
+    if (!freqs().some((f) => f.id === st.freq)) st.freq = freqs()[0].id;
+    v.innerHTML = ({ service: vService, city: vCity, size: vSize, bathrooms: vBathrooms, addons: vAddons, photos: vPhotos, freq: vFreq, date: vDate, time: vTime, contact: vContact, address: vAddress, review: vReview } as any)[st.step]();
     const t = totals(); const tr = tier();
     const tot = !sub() ? '—' : isQuote() ? (junkQuote() ? (junkEstimate() != null ? `from ${money(junkEstimate()!)}` : 'Free quote') : tr?.price != null ? `from ${money(tr.price)}` : 'Free') : money(t.total);
     $('#bk-totlabel').textContent = isQuote() ? (tr?.price == null ? 'Quote' : 'Price') : 'Total';
@@ -608,6 +644,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     $('#bk-bottom').classList.toggle('bk-junk-quote', junkQuote());
     const te = $('#bk-total');
     if (te.textContent !== tot) { te.textContent = tot; te.classList.remove('bump'); void te.offsetWidth; te.classList.add('bump'); }
+    $('#bk-travel').textContent = travelFee() ? `Travel fee: +${money(travelFee())}` : '';
+    $('#bk-bathrooms').textContent = bathroomFee() > 0 ? `Bathrooms: +${money(bathroomFee())}${isQuote() ? ' in quote' : ''}` : '';
     $('#bk-was').textContent = !isQuote() && t.total !== t.sub ? money(t.sub) : '';
     const nx = $('#bk-next') as HTMLButtonElement;
     nx.disabled = !canNext();
@@ -626,8 +664,19 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   function applyPlace(p?: Place) {
     st.placeId = p?.id ?? '';
-    st.c.address = p?.address ?? ''; st.c.access = p?.access ?? '';
+    st.c.city = p?.home?.city ?? [...D.noFeeCities, ...D.otherCities].find((city) => p?.address.endsWith(', ' + city)) ?? '';
+    const address = p?.address ?? '';
+    st.c.address = st.c.city && address.endsWith(', ' + st.c.city) ? address.slice(0, -(st.c.city.length + 2)) : address; st.c.access = p?.access ?? '';
     if (p?.business) st.c.business = p.business;
+    if (p && isAirbnb()) {
+      st.c.propertyNickname = p.label;
+      const method = ENTRY_METHODS.find((value) => p.access?.startsWith(value + ': '));
+      if (method) { st.c.entryMethod = method; st.c.entryInstructions = p.access!.slice(method.length + 2); }
+    }
+    if (p?.home) {
+      if (sub()?.tiers.some((t) => t.id === p.home!.tier) && !q.get('t')) st.tier = p.home.tier;
+      if (st.tier === p.home.tier) { st.fullBathrooms = p.home.fullBathrooms; st.halfBathrooms = p.home.halfBathrooms; }
+    }
   }
 
   $('#bk-view').addEventListener('click', (e) => {
@@ -635,16 +684,17 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     const ds = b.dataset;
     if (ds.seg) { pickedDiv = false; st.seg = ds.seg as Seg; st.forBusiness = st.seg === 'commercial'; st.div = divsFor(st.seg)[0].id; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = ''; }
     else if (ds.div) {
-      st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
-      const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.freq = freqs()[0].id; go(serviceStart()); return; }
+      st.fullBathrooms = null; st.halfBathrooms = 0; st.div = ds.div; st.sub = ''; st.tier = ''; st.addons = {}; st.junkLocation = ''; st.freq = 'onetime'; st.time = '';
+      const only = subsFor(div()); if (only.length === 1) { st.sub = only[0].slug; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.freq = freqs()[0].id; go(serviceStart()); return; }
       pickedDiv = true;
     }
     else if (ds.alldivs !== undefined) { pickedDiv = false; }
-    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
+    else if (ds.sub) { st.sub = ds.sub; const s = sub()!; st.tier = (s.tiers.find((t) => t.id === st.profile?.places.find((p) => p.id === st.placeId)?.home?.tier) ?? s.tiers.find((t) => t.popular) ?? s.tiers[0]).id; if (st.placeId) applyPlace(st.profile?.places.find((p) => p.id === st.placeId)); st.addons = {}; st.junkLocation = ''; st.freq = freqs()[0].id; render(); setTimeout(() => go(serviceStart()), 160); return; }
     else if (ds.location !== undefined) { st.junkLocation = JUNK_LOCATIONS.find((choice) => choice.id === ds.location)?.id ?? ''; }
-    else if (ds.tier) { st.tier = ds.tier; }
+    else if (ds.tier) { if (st.tier !== ds.tier) st.fullBathrooms = null; st.tier = ds.tier; }
+    else if (ds.bath) { const next = Math.max(0, Math.min(99, (ds.bath === 'full' ? fullBathrooms() : st.halfBathrooms) + Number(ds.delta))); if (ds.bath === 'full') st.fullBathrooms = next; else st.halfBathrooms = next; }
     else if (ds.add) { const a = addons().find((x) => x.id === ds.add)!; st.addons[a.id] = st.addons[a.id] ? 0 : 1; }
-    else if (ds.inc) { st.addons[ds.inc] = (st.addons[ds.inc] ?? 0) + 1; }
+    else if (ds.inc) { const a = addons().find((a) => a.id === ds.inc)!; st.addons[ds.inc] = a.qty ? (st.addons[ds.inc] ?? 0) + 1 : 1; }
     else if (ds.dec) { st.addons[ds.dec] = Math.max(0, (st.addons[ds.dec] ?? 0) - 1); }
     else if (ds.freq) { st.freq = ds.freq; }
     else if (ds.mon) { let { y, m } = st.month; m += +ds.mon; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } st.month = { y, m }; }
@@ -659,12 +709,13 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     else return;
     const key = Object.keys(ds)[0]; const sel = b.id ? `#${b.id}` : key ? `[data-${key.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())}="${ds[key]}"]` : '';
     render();
-    if (sel) $('#bk-view').querySelector<HTMLElement>(sel)?.focus({ preventScroll: true });
+    if (sel) $('#bk-view').querySelector<HTMLElement>(ds.bath ? `[data-bath="${ds.bath}"][data-delta="${ds.delta}"]` : sel)?.focus({ preventScroll: true });
     if (ds.rmphoto !== undefined) $('#bk-view').querySelector<HTMLElement>('#ph-input')?.focus();
   });
   $('#bk-view').addEventListener('input', (e) => {
     const el = e.target as HTMLInputElement; const k = el.id.replace('c-', '');
     if (k in st.c) (st.c as any)[k] = el.value;
+    if (k === 'city') { render(); $('#c-city')?.focus(); }
   });
   $('#bk-view').addEventListener('change', (e) => {
     const el = e.target as HTMLInputElement; if (el.id !== 'ph-input' || !el.files) return;
@@ -676,7 +727,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
   function fit() {
     const root = document.documentElement;
     const over = () => root.scrollHeight > innerHeight + 1;
-    if (st.step === 'done') { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
+    if (st.step === 'done' || st.step === 'addons' || (st.step === 'contact' && (isAirbnb() || isStrata()))) { root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest'); return; }
     // Measure final field heights; height transitions otherwise report the previous step's compact size.
     root.classList.add('bk-fitting');
     root.classList.remove('bk-tight', 'bk-tighter', 'bk-tightest');
@@ -694,14 +745,16 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (st.step === 'photos' && !checkPhotos()) return;
     if (st.step === 'addons' && !checkItems()) return;
     const i = steps().indexOf(st.step as Step);
+    if (st.step === 'city' && !checkFields(['city'])) return;
     if ((st.step === 'contact' || st.step === 'address') && !checkFields(st.step === 'contact' ? contactKeys() : ['address'])) return;
+    if (recurringBlocked()) { go('city'); return; }
     if (st.step === 'review') submit(); else go(steps()[i + 1]);
   });
 
   function itemError() {
     if (sub()?.itemsRequired && !addons().some((a) => (st.addons[a.id] ?? 0) > 0)) return 'Pick at least one item to continue.';
     const minimum = sub()?.minOrder;
-    if (minimum != null && totals().total < minimum) return `Minimum order is ${money(minimum)}. Add another item.`;
+    if (minimum != null && totals().base + totals().add < minimum) return `Minimum order is ${money(minimum)}. Add another item.`;
     return '';
   }
 
@@ -725,7 +778,7 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
       document.getElementById('junk-location')?.setAttribute('aria-invalid', String(missing));
       if (missing) ok = false;
     }
-    if (needBusiness() && !junkQuote() && !st.c.business.trim()) { if (eb) eb.textContent = 'Enter the business name.'; document.getElementById('c-business')?.setAttribute('aria-invalid', 'true'); ok = false; }
+    if (needBusiness() && !junkQuote() && !st.c.business.trim()) { if (eb) eb.textContent = isStrata() ? 'Enter the building name.' : 'Enter the business name.'; document.getElementById('c-business')?.setAttribute('aria-invalid', 'true'); ok = false; }
     if (!ok) {
       (locationError?.textContent ? locationError : document.querySelector<HTMLElement>('#e-photos:not(:empty)') ? document.getElementById('ph-input') : document.getElementById('c-business'))?.focus({ preventScroll: true });
       fit();
@@ -733,9 +786,9 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     return ok;
   }
 
-  const contactKeys = () => ['name', 'phone', 'email'];
-  const MSG: Record<string, string> = { business: 'Enter the business name.', name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', address: 'Enter the address where we should come.' };
-  const badFields = (keys: string[]) => keys.filter((k) => k === 'business' ? !st.c.business.trim() : k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
+  const contactKeys = () => ['name', 'phone', 'email', ...(isAirbnb() ? ['propertyNickname', 'checkoutTime', 'checkinTime', 'entryMethod', 'entryInstructions'] : []), ...(isStrata() ? ['floors', 'sitePhone'] : [])];
+  const MSG: Record<string, string> = { business: 'Enter the business name.', name: 'Enter your name.', phone: 'Enter a 10-digit mobile number.', email: 'Enter an email like name@example.com.', propertyNickname: 'Enter a property nickname.', checkoutTime: 'Enter the guest checkout time.', checkinTime: 'Enter a valid check-in time.', entryMethod: 'Choose an entry method.', entryInstructions: 'Enter entry instructions.', floors: 'Enter a whole number of floors above zero.', sitePhone: 'Enter a 10-digit on-site contact phone.', city: 'Choose your city.', address: 'Enter the address where we should come.' };
+  const badFields = (keys: string[]) => keys.filter((k) => k === 'propertyNickname' || k === 'entryInstructions' ? !(st.c as any)[k].trim() : k === 'checkoutTime' ? !/^([01]\d|2[0-3]):[0-5]\d$/.test(st.c.checkoutTime) : k === 'checkinTime' ? !!st.c.checkinTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(st.c.checkinTime) : k === 'entryMethod' ? !ENTRY_METHODS.includes(st.c.entryMethod) : k === 'floors' ? !/^\d+$/.test(st.c.floors) || Number(st.c.floors) < 1 : k === 'sitePhone' ? !!st.c.sitePhone.trim() && !normPhone(st.c.sitePhone) : k === 'city' ? ![...D.noFeeCities, ...D.otherCities].includes(st.c.city) : k === 'business' ? !st.c.business.trim() : k === 'name' ? !st.c.name.trim() : k === 'phone' ? !normPhone(st.c.phone) : k === 'email' ? !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.c.email.trim()) : !st.c.address.trim());
   function checkFields(keys: string[]) {
     const bad = badFields(keys);
     keys.forEach((k) => {
@@ -748,16 +801,19 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
 
   async function submit() {
     if (junkQuote() && (!validJunkLocation() || !st.photos.length)) { go('photos'); checkPhotos(); return; }
+    if (recurringBlocked()) { go('city'); return; }
     if (itemError()) { go('addons'); checkItems(); return; }
     const err = $('#bk-err'); const c = st.c;
     const phone = normPhone(c.phone);
     // fields live on earlier screens: send the customer back to the first one that needs fixing
     if (badFields(contactKeys()).length) { go('contact'); checkFields(contactKeys()); return; }
+    if (badFields(['city']).length) { go('city'); checkFields(['city']); return; }
     if (badFields(['address']).length) { go('address'); checkFields(['address']); return; }
 
     const d = div(), s = sub()!, tr = tier()!, f = freq(), t = totals(), quote = isQuote();
     const items = [
       { svcName: d.name, group: s.name, size: tr.name, freq: f.name, price: quote ? 0 : Math.round(tr.price ?? 0) },
+      ...(hasBathrooms() ? [{ svcName: d.name, group: 'Bathrooms', size: bathroomSummary(), freq: f.name, price: bathroomFee() }] : []),
       ...(quote ? [] : addons().filter((a) => st.addons[a.id]).map((a) => ({ svcName: d.name, group: 'Add-on: ' + a.name, size: `× ${st.addons[a.id]}`, freq: f.name, price: Math.round(a.price * st.addons[a.id]) }))),
     ];
     st.sending = true; render(); err.textContent = '';
@@ -766,12 +822,14 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
         kind: quote ? 'quote' : 'booking', segment: segment(),
         name: c.name.trim(), email: c.email.trim(), phone,
         business: needBusiness() ? c.business.trim() : undefined,
-        address: c.address.trim(), access: c.access.trim() || undefined,
+        address: c.address.trim() + ', ' + c.city, access: isAirbnb() ? `${c.entryMethod}: ${c.entryInstructions.trim()}` : c.access.trim() || undefined,
+        propertyNickname: isAirbnb() ? c.propertyNickname.trim() : undefined,
         date: st.date, time: st.time,
         div: d.id, sub: s.slug, tier: tr.id, service: s.name,
-        items, total: quote ? 0 : t.total, firstTime: discountOK() && st.firstTime,
+        home: hasBathrooms() ? { tier: st.tier, fullBathrooms: fullBathrooms(), halfBathrooms: st.halfBathrooms, city: c.city } : undefined,
+        items: [...items, ...(!quote && travelFee() ? [{ svcName: 'Travel fee', group: c.city, size: '', freq: f.name, price: travelFee() }] : [])], total: quote ? 0 : t.total, firstTime: discountOK() && st.firstTime,
         description: c.description.trim() || undefined,
-        notes: [c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
+        notes: [...serviceNotes().filter(([, value]) => value.trim()).map(([label, value]) => `${label}: ${value.trim()}`), travelFee() ? `Travel fee for ${c.city}: ${money(travelFee())}${quote ? ' to be included in quote' : ''}` : '', c.notes.trim(), junkLocationNote(), junkRoughPriceNote(), isAirbnb() ? `Turnover plan: ${f.name}` : !quote && f.id !== 'onetime' ? `${f.name}: first visit ${money(t.total)}, then ${money(t.repeat)}/visit from the 2nd visit.` : ''].filter(Boolean).join(' · ') || undefined,
         save: !!st.profile || st.save, placeId: st.placeId || undefined,
         prep: (div() as any).prep ?? [],
         estimate: quote ? (junkQuote() ? junkEstimate() : tr.price) : null,
@@ -801,8 +859,8 @@ const COMMERCIAL_DIVS = ['commercial-cleaning', 'restaurant-kitchen-cleaning', '
     if (p.customer.company) st.c.business ||= p.customer.company;
     if (p.history.some((h) => h.kind === 'booking')) st.firstTime = false;
     const pre = p.places.find((x) => x.id === st.placeId);
-    if (pre) { applyPlace(pre); if (pre.segment === 'commercial') st.forBusiness = true; }
+    if (pre) { if (!resumed) applyPlace(pre); if (pre.segment === 'commercial') st.forBusiness = true; }
     else st.placeId = '';
-    if (st.step === 'contact' || st.step === 'address') render();
+    if (st.step !== 'done') render();
   });
 </script>

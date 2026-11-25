@@ -28,7 +28,7 @@ const csPrice = csSub && !isQuoteSub(csSub) ? subMin(csSub) : null;
       <div class="min-w-0 flex-1">
         <div class="font-heading font-bold text-[15px] leading-snug">{cs.title}</div>
         <div class="text-[13px] text-ink/75 leading-snug mt-0.5">{cs.line}</div>
-        <div class="mt-1 text-[13px] font-semibold text-lime-ink">{csSub.name}{csPrice ? ` · from $${csPrice}` : ' · free quote'}</div>
+        <div class="mt-1 text-[13px] font-semibold text-lime-ink">{csSub.name}{csPrice ? ' · price in booking' : ' · free quote'}</div>
       </div>
       <Icon name="chevron" class="size-5 text-ink/60 group-hover:translate-x-0.5 transition shrink-0" />
     </a>

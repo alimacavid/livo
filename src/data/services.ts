@@ -73,7 +73,7 @@ import moveCrew from '../assets/photos/move-crew.jpg';
 
 // Photos shown on add-on cards (service pages). Add more here as they arrive.
 export const ADDON_IMAGES: Record<string, ImageMetadata> = {
-  fridge: fridgeCleaning, oven: ovenCleaning, cabinets: cabinetCleaning, windows: windowCleaning, bath: houseToilet, stove: stovetopAfter, blinds: blindsAfter, grout: groutAfter, carpet: carpetAfter,
+  fridge: fridgeAfter, oven: ovenAfter, cabinets: cabinetAfter, stove: stovetopAfter, blinds: blindsAfter, grout: groutAfter, carpet: carpetAfter,
 };
 
 export const JUNK_LOCATIONS = [
@@ -89,6 +89,10 @@ export const PHONE_TEL = '+18888025486';
 // 2026-11-17 (Ali): first-booking discount removed — at the new prices it would
 // drop most home jobs under the 30% margin floor. 0 = off everywhere.
 export const FIRST_TIME_DISCOUNT = 0;
+export const NO_FEE_CITIES = ['Port Coquitlam', 'Coquitlam', 'Port Moody', 'Burnaby', 'New Westminster', 'Maple Ridge', 'Pitt Meadows'];
+export const OTHER_CITIES = ['Vancouver', 'North Vancouver', 'West Vancouver', 'Richmond', 'Surrey', 'Delta', 'Langley', 'White Rock', 'Bowen Island', 'Lions Bay', 'Anmore', 'Belcarra'];
+export const TRAVEL_FEE = 35;
+export const BATHROOM_PRICING = { included: { studio: 1, '1bed': 1, '2bed': 2, '3bed': 2, '4bed': 3 }, full: 40, half: 20 };
 
 // Short muted video loops. Put the file in /public/videos/ and set the path here.
 // null = no video yet → the photo is shown.
@@ -96,7 +100,7 @@ export const HERO_VIDEO: string | null = null;        // e.g. '/videos/hero.mp4'
 
 export type Segment = 'residential' | 'commercial';
 export type Tier = { id: string; name: string; sub?: string; price: number | null; popular?: boolean };
-export type Addon = { line?: string; before?: ImageMetadata; after?: ImageMetadata; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
+export type Addon = { helper?: string; line?: string; before?: ImageMetadata; after?: ImageMetadata; id: string; name: string; sub: string; price: number; unit: string; qty?: boolean };
 export type Freq = { id: string; name: string; sub: string; discount: number };
 export type Faq = { q: string; a: string };
 export type Sub = {
@@ -145,17 +149,17 @@ export type Division = {
   crossSell?: { div: string; sub: string; title: string; line: string };
 };
 
-// Home sizes. Extra bathrooms are an add-on. Prices: [studio, 1 bed, 2 bed, 3 bed, 4+ bed]
+// Home sizes. Choose your full and half bathrooms in booking. Prices: [studio, 1 bed, 2 bed, 3 bed, 4+ bed]
 const HOME_SIZES = (p: [number, number, number, number, number | null], popular = 1): Tier[] => [
   { id: 'studio', name: 'Studio', sub: 'Bachelor · 1 bath', price: p[0] },
   { id: '1bed', name: '1 Bedroom', sub: '1 bed · 1 bath', price: p[1] },
   { id: '2bed', name: '2 Bedroom', sub: 'Up to 2 baths', price: p[2] },
   { id: '3bed', name: '3 Bedroom', sub: 'Up to 2 baths', price: p[3] },
-  { id: '4bed', name: '4+ Bedroom', sub: 'Up to 2,500 sq ft', price: p[4] },
+  { id: '4bed', name: '4+ Bedroom', sub: 'Up to 2,500 sq ft · 3 baths', price: p[4] },
 ].map((t, i) => ({ ...t, popular: i === popular }));
 
 const QUOTE_TIERS: Tier[] = [
-  { id: 'photos', name: 'Send Photos', sub: 'Quote back same day', price: null, popular: true },
+  { id: 'photos', name: 'Send Photos', sub: 'Quote after photo review', price: null, popular: true },
   { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null },
 ];
 const SITE_VISIT: Tier = { id: 'visit', name: 'Free Site Visit', sub: 'We come and assess', price: null };
@@ -172,26 +176,28 @@ const ONE_TIME: Freq[] = [{ id: 'onetime', name: 'One-Time', sub: 'Single visit'
 const RECURRING: Freq[] = [
   { id: 'weekly', name: 'Weekly', sub: 'Every week', discount: 0.15 },
   { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Most popular', discount: 0.1 },
-  { id: 'monthly', name: 'Monthly', sub: 'Regular price', discount: 0 },
+  { id: 'monthly', name: 'Monthly', sub: 'Same crew, booked automatically', discount: 0 },
 ];
 
+const STOVE_HELPER = 'Burnt-on grease, knobs off. Basic stovetop wipe is already included.';
 const DETAIL_ITEMS: Addon[] = [
-  { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 49, unit: 'each', qty: true },
-  { line: 'We degrease the cooktop, burners or glass top, knobs and front panel. Sticky spills and burnt spots come off.', before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove top & knobs', sub: 'Accessible stove top and knobs', price: 35, unit: 'each', qty: true },
-  { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 65, unit: 'each', qty: true },
-  { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 39, unit: 'whole kitchen' },
-  { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 12, unit: 'per blind', qty: true },
-  { line: 'We scrub dark grout lines back to their clean colour with steam and a brush. Price is per area up to 50 sq ft, about one bathroom floor.', before: groutBefore, after: groutAfter, id: 'grout', name: 'Grout', sub: 'One area up to 50 sq ft', price: 79, unit: 'per area', qty: true },
-  { line: 'We treat stains and traffic marks and lift them with a hot-water carpet machine. Price is per room up to 200 sq ft. Some old stains may not come out fully.', before: carpetBefore, after: carpetAfter, id: 'carpet', name: 'Carpet Stain Removal', sub: 'Stains and traffic marks, up to 200 sq ft per room', price: 59, unit: 'per room', qty: true },
+  { line: 'We remove baked-on grease from the walls, racks and door glass. Your oven looks and smells fresh again. Please let it cool before we arrive.', before: ovenBefore, after: ovenAfter, id: 'oven', name: 'Oven', sub: 'Racks, walls and door glass', price: 45, unit: 'each', qty: true },
+  { line: STOVE_HELPER, helper: STOVE_HELPER, before: stovetopBefore, after: stovetopAfter, id: 'stove', name: 'Stove deep degrease', sub: STOVE_HELPER, price: 20, unit: 'each', qty: true },
+  { line: 'We wash every shelf, drawer and door seal inside the fridge and freezer. Please empty it before we arrive.', before: fridgeBefore, after: fridgeAfter, id: 'fridge', name: 'Fridge & Freezer', sub: 'Empty the fridge and freezer before we arrive', price: 35, unit: 'each unit', qty: true },
+  { line: 'We vacuum crumbs and wipe every shelf and door inside your kitchen cabinets. Please empty them first.', before: cabinetBefore, after: cabinetAfter, id: 'cabinets', name: 'Inside Cabinets', sub: 'Empty your kitchen cabinets before we arrive', price: 40, unit: 'whole kitchen' },
+  { line: 'We dust and wipe each slat by hand, right on the window. No taking down, no mess.', before: blindsBefore, after: blindsAfter, id: 'blinds', name: 'Blinds', sub: 'Accessible blinds, cleaned in place', price: 8, unit: 'per blind', qty: true },
+  { line: 'We scrub dark grout lines back to their clean colour with steam and a brush. Price is per area up to 40 sq ft, about one bathroom floor.', before: groutBefore, after: groutAfter, id: 'grout', name: 'Grout', sub: 'One area up to 40 sq ft', price: 45, unit: 'per area', qty: true },
+  { line: 'We treat stains and traffic marks and lift them with a hot-water carpet machine. Price is per room up to 200 sq ft. Some old stains may not come out fully.', before: carpetBefore, after: carpetAfter, id: 'carpet', name: 'Carpet Stain Removal', sub: 'Stains and traffic marks, up to 200 sq ft per room', price: 60, unit: 'per room', qty: true },
 ];
 
 const HOUSE_ADDONS: Addon[] = [
   ...DETAIL_ITEMS,
-  { id: 'bath', name: 'Extra Bathroom', sub: 'Beyond your home size', price: 39, unit: 'per bathroom', qty: true },
   { id: 'windows', name: 'Interior Windows', sub: 'Glass, sills, tracks', price: 40, unit: 'per 5 windows', qty: true },
 ];
 // Move-out already includes fridge, freezer, oven and cabinets — don't sell them twice
-const MOVE_ADDONS = HOUSE_ADDONS.filter((a) => ['bath', 'windows'].includes(a.id));
+const MOVE_ADDONS: Addon[] = HOUSE_ADDONS.filter((a) => a.id === 'windows').map((a) => ({
+  ...a, name: 'Interior windows: glass & sills', sub: 'Glass and sills', price: 30, helper: 'Window tracks are already included.',
+}));
 
 export const DIVISIONS: Division[] = [
   // ───────────────────────── HOUSE CLEANING ─────────────────────────
@@ -274,7 +280,7 @@ export const DIVISIONS: Division[] = [
           { id: '3bed', name: '3 Bedroom', sub: 'Up to 2 baths', price: 479 },
           { id: '4bed', name: '4+ Bedroom', sub: 'Send photos for a quote', price: null },
         ],
-        priceNote: 'Home must be empty. Extra bathrooms are an add-on.',
+        priceNote: 'Home must be empty. Choose your full and half bathrooms in booking.',
         included: [
           'Inside all cabinets, drawers and closets',
           'Inside fridge, freezer and oven',
@@ -316,36 +322,35 @@ export const DIVISIONS: Division[] = [
         slug: 'turnover-cleaning',
         name: 'Airbnb Turnover Cleaning',
         short: 'Reset between guests, on time.',
-        desc: 'Checkout to check-in, handled. Beds remade with your linens, bathrooms sanitized, kitchen reset, garbage out and photos sent so you know it is guest-ready.',
+        desc: 'Checkout to check-in, handled. Beds remade with your clean linens, fresh towels set out, your supplies restocked and completion photos sent so you know it is guest-ready.',
         image: airbnbAfter,
         before: airbnbBefore,
         after: airbnbAfter,
         unit: 'per turnover',
         tierLabel: 'Unit size',
         tiers: HOME_SIZES([129, 149, 189, 235, 315]),
-        priceNote: 'Bed sheets, laundry, deodorizing and restocking are add-ons. Over 3 bathrooms: quote.',
+        priceNote: 'Sheets, towels and restocking are included. On-site laundry and same-day turnaround are optional add-ons.',
         included: [
           'Beds stripped and remade with your clean linens',
+          'Fresh towels set out',
           'Bathrooms cleaned and sanitized',
           'Kitchen and dishes reset',
           'Floors vacuumed and mopped',
           'Garbage and recycling out',
+          'Your supplies restocked (you buy, we put out)',
+          'Damage and left-item check',
           'Completion photos sent to you',
         ],
         goodFor: ['Airbnb and Vrbo hosts', 'Property managers', 'Back-to-back bookings'],
       },
     ],
     addons: [
-      { id: 'sheets', name: 'Change Bed Sheets', sub: 'Your clean sheets, beds made', price: 25, unit: 'per bed', qty: true },
-      { id: 'deodorize', name: 'Deodorize & Sanitize', sub: 'Whole unit', price: 85, unit: 'each' },
-      { id: 'laundry', name: 'Laundry', sub: 'Your washer + dryer', price: 25, unit: 'per load', qty: true },
-      { id: 'restock', name: 'Guest Essentials Restock', sub: 'You supply the items', price: 15, unit: 'per visit' },
-      { id: 'rush', name: 'Same-Day Turnaround', sub: 'Priority slot', price: 35, unit: 'each' },
+      { id: 'laundry', name: 'Laundry (on-site machines)', sub: 'Your washer + dryer', price: 25, unit: 'per load', qty: true },
+      { id: 'rush', name: 'Same-Day Turnaround', sub: 'Subject to availability', helper: 'Subject to availability; confirmed with your booking.', price: 35, unit: 'each' },
     ],
     freqs: [
-      { id: 'onetime', name: 'Single Turnover', sub: 'Just this checkout', discount: 0 },
-      { id: 'every', name: 'Every Checkout', sub: 'Synced to your calendar', discount: 0 },
-      { id: 'occasional', name: 'A Few a Month', sub: 'When you need us', discount: 0 },
+      { id: 'onetime', name: 'One turnover', sub: 'Just this checkout', discount: 0 },
+      { id: 'every', name: 'Ongoing', sub: 'Every checkout, same crew, scheduled around your bookings', discount: 0 },
     ],
     times: [
       { id: 'Early Turnover', sub: '10:00 am – 1:00 pm' },
@@ -353,11 +358,11 @@ export const DIVISIONS: Division[] = [
       { id: 'Late Turnover', sub: '1:00 – 4:00 pm' },
     ],
     faqs: [
-      { q: 'Can you work with my check-in times?', a: 'Yes. We schedule inside your checkout and check-in window, and offer a same-day priority slot for back-to-back bookings.' },
+      { q: 'Can you work with my check-in times?', a: 'Tell us your checkout and next check-in times. We confirm the timing and availability with you.' },
       { q: 'Do you report damage or missing items?', a: 'Yes. You get completion photos and we flag anything broken or missing right away.' },
-      { q: 'Do you do the laundry?', a: 'Yes, as an add-on, using the washer and dryer in your unit. Agree linens, restocking and check-in time with us when you book.' },
+      { q: 'Do you do the laundry?', a: 'Yes, as an add-on, using the washer and dryer in your unit. Swapping beds with your prepared clean linens, setting out fresh towels and putting out your supplies are included. Washing and drying laundry in your on-site machines is optional.' },
     ],
-    notIncluded: ['Off-site laundry', 'Repairs', 'Buying supplies (you supply, we restock)'],
+    notIncluded: ['Off-site laundry', 'Buying supplies', 'Repairs'],
     crossSell: { div: 'detail-cleaning', sub: 'appliance-detail-cleaning', title: 'Need appliance detail?', line: 'Pick the appliances and detail work your listing needs.' },
   },
 
@@ -381,18 +386,18 @@ export const DIVISIONS: Division[] = [
       image: ovenCleaning,
       unit: 'visit fee + items',
       tierLabel: 'One visit fee',
-      tiers: [{ id: 'visit', name: 'Visit fee', sub: 'Travel and setup, once per order', price: 59 }],
-      fromPrice: 99,
-      minOrder: 99,
+      tiers: [{ id: 'visit', name: 'Visit fee', sub: 'Setup, once per order', price: 60 }],
+      fromPrice: 100,
+      minOrder: 100,
       itemsRequired: true,
-      included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One travel and setup fee per order'],
+      included: ['Cleaning of the items you select', 'Cleaning supplies and equipment', 'One visit and setup fee per order'],
       goodFor: ['Homes and rentals', 'Airbnb hosts', 'Single-item deep cleaning'],
     }],
     addons: DETAIL_ITEMS,
     freqs: ONE_TIME,
     times: DAY_TIMES,
     faqs: [
-      { q: 'Can I book just one item?', a: 'Yes, as long as your order reaches the $99 minimum. The $59 visit fee covers travel and setup once per order, then we add the selected items. Add another item if the total is below $99.' },
+      { q: 'Can I book just one item?', a: 'Yes. Choose items in booking to see the visit fee and minimum. Added to a cleaning, you pay only the item prices with no visit fee.' },
       { q: 'What should I empty first?', a: 'Empty any fridge, freezer or cabinets you book. Clear counters and leave access to the items.' },
       { q: 'Do you repair appliances or grout?', a: 'No. This is cleaning only. We do not move heavy appliances, repair faults, remove mould, seal grout or re-grout.' },
     ],
@@ -571,7 +576,7 @@ export const DIVISIONS: Division[] = [
         quote: true,
         tiers: [{ id: 'photos', name: 'Send photos', price: null }],
         quoteNote: JUNK_QUOTE_NOTE,
-        included: ['Loading and hauling', 'After-hours pickup available', 'Donation and recycling where possible', 'Area swept after'],
+        included: ['Loading and hauling', 'Pickup time confirmed with your quote', 'Donation and recycling where possible', 'Area swept after'],
         goodFor: ['Office moves', 'End of lease', 'Property managers'],
       },
     ],
@@ -579,7 +584,7 @@ export const DIVISIONS: Division[] = [
       { id: 'heavy', name: 'Heavy / Bulky Item', sub: 'Over 150 lb', price: 45, unit: 'per item', qty: true },
       { id: 'mattress', name: 'Mattress or Box Spring', sub: 'Recycling fee', price: 25, unit: 'per piece', qty: true },
       { id: 'fridge', name: 'Fridge or Freezer', sub: 'Refrigerant disposal', price: 49, unit: 'each', qty: true },
-      { id: 'rush', name: 'Same-Day Pickup', sub: 'Booked and gone today', price: 89, unit: 'each' },
+      { id: 'rush', name: 'Same-Day Pickup', sub: 'Subject to availability', price: 89, unit: 'each' },
       { id: 'donate', name: 'Donation Drop-Off', sub: 'Usable items donated', price: 35, unit: 'each' },
     ],
     freqs: ONE_TIME,
@@ -600,7 +605,7 @@ export const DIVISIONS: Division[] = [
     name: 'Office & Strata Cleaning',
     short: 'Commercial',
     tagline: 'Offices and strata common areas.',
-    intro: 'Office cleaning, strata cleaning and commercial cleaning in Coquitlam, Port Coquitlam and Port Moody, scheduled before opening or after hours.',
+    intro: 'Office cleaning, strata cleaning and commercial cleaning in Coquitlam, Port Coquitlam and Port Moody, scheduled by agreement with your team.',
     seoTitle: 'Office & Strata Cleaning in Coquitlam',
     keyword: 'office cleaning Coquitlam',
     segment: 'commercial',
@@ -611,7 +616,7 @@ export const DIVISIONS: Division[] = [
         slug: 'office-cleaning',
         name: 'Office Cleaning',
         short: 'Desks, floors, washrooms and break rooms.',
-        desc: 'Desks, meeting rooms, kitchens, washrooms and floors cleaned on a schedule that suits your business, including evenings and weekends. We agree tasks, hours and the visit schedule with you.',
+        desc: 'Desks, meeting rooms, kitchens, washrooms and floors cleaned on a schedule that suits your business. We agree tasks, hours and the visit schedule with you.',
         image: officeCleaning,
         unit: 'per visit',
         tierLabel: 'Office size',
@@ -621,7 +626,7 @@ export const DIVISIONS: Division[] = [
           { id: 'larger', name: 'Larger office', sub: 'From $0.11 per sq ft per visit', price: null },
           SITE_VISIT,
         ],
-        quoteNote: 'After-hours and weekend visits add $30. Final price confirmed after photos or a free site visit.',
+        quoteNote: 'Visit time and final price confirmed after photos or a free site visit.',
         included: [
           'Desks and surfaces wiped and sanitized',
           'Staff kitchen and break room',
@@ -636,7 +641,7 @@ export const DIVISIONS: Division[] = [
         slug: 'strata-cleaning',
         name: 'Strata Common-Area Cleaning',
         short: 'Lobbies, halls, stairs, elevators and amenities.',
-        desc: 'Strata cleaning for the shared spaces in strata and rental buildings: lobbies, hallways, elevators, stairwells and amenity rooms. Shared areas only; we agree the visit schedule with your council or manager.',
+        desc: 'Shared areas only; we agree the visit schedule with your council or manager.',
         image: strataAfter,
         before: strataBefore,
         after: strataAfter,
@@ -666,14 +671,10 @@ export const DIVISIONS: Division[] = [
       { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Quoted per visit', discount: 0 },
       { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
     ],
-    times: [
-      { id: 'Before Opening', sub: '6:00 – 9:00 am' },
-      { id: 'Daytime', sub: '9:00 am – 5:00 pm' },
-      { id: 'After Hours', sub: '6:00 – 10:00 pm' },
-    ],
+    times: [{ id: 'Agree a visit time', sub: 'We confirm a suitable time with your quote' }],
     faqs: [
-      { q: 'Can you clean after hours?', a: 'Yes. Most commercial cleaning happens before opening or after closing so your business is not disturbed.' },
-      { q: 'How do you price commercial work?', a: 'Offices up to 1,500 sq ft start at $165 per visit and small strata buildings at $200 per visit, plus tax. Send photos and we confirm the price, usually the same day. If photos are not enough, we book a free site visit.' },
+      { q: 'Can you work around our team?', a: 'We agree visit times with you when we confirm your quote.' },
+      { q: 'How do you price commercial work?', a: 'Send photos for a free quote and we confirm the price, usually the same day. If photos are not enough, we book a free site visit.' },
       { q: 'Is the date I pick confirmed?', a: 'It is your preferred date. We confirm the date and the scope with you when we send the quote.' },
     ],
     notIncluded: ['Carpet extraction', 'Outside window washing', 'Construction debris (see Renovation Waste)'],
@@ -686,7 +687,7 @@ export const DIVISIONS: Division[] = [
     name: 'Restaurant & Kitchen Cleaning',
     short: 'Restaurant',
     tagline: 'Industrial steam-cleaned commercial kitchens.',
-    intro: 'Commercial kitchen cleaning and restaurant cleaning in Coquitlam and across Greater Vancouver, done before opening, after close or on your closed day.',
+    intro: 'Commercial kitchen cleaning and restaurant cleaning in Coquitlam and across Greater Vancouver, scheduled around your service hours.',
     seoTitle: 'Commercial Kitchen & Restaurant Cleaning in Coquitlam',
     keyword: 'commercial kitchen cleaning Coquitlam',
     segment: 'commercial',
@@ -705,13 +706,8 @@ export const DIVISIONS: Division[] = [
         unit: 'per visit',
         tierLabel: 'Type of clean',
         quote: true,
-        tiers: [
-          { id: 'regular', name: 'Regular kitchen clean', sub: 'Up to 500 sq ft · weekly or monthly, plus tax', price: 650, popular: true },
-          { id: 'deep', name: 'Kitchen deep clean', sub: 'Up to 500 sq ft · one-time, plus tax', price: 1050 },
-          { id: 'larger', name: 'Larger kitchen or dining room only', sub: 'Quoted after a walkthrough', price: null },
-          SITE_VISIT,
-        ],
-        quoteNote: 'Final price after a walkthrough. Larger kitchens from $1.30 per sq ft (regular) or $2.10 per sq ft (deep). Hoods, exhaust ducts and grease traps are not included.',
+        tiers: QUOTE_TIERS,
+        quoteNote: 'Free quote after a walkthrough. Hoods, exhaust ducts and grease traps are not included.',
         included: [
           'Industrial steam cleaning',
           'Cooking line, fryers and grills (exterior)',
@@ -730,15 +726,11 @@ export const DIVISIONS: Division[] = [
       { id: 'biweekly', name: 'Every 2 Weeks', sub: 'Quoted per visit', discount: 0 },
       { id: 'monthly', name: 'Monthly', sub: 'Quoted per visit', discount: 0 },
     ],
-    times: [
-      { id: 'Before Opening', sub: '5:00 – 9:00 am' },
-      { id: 'After Closing', sub: '10:00 pm – 2:00 am' },
-      { id: 'Closed Day', sub: 'Full day' },
-    ],
+    times: [{ id: 'Agree a visit time', sub: 'We confirm a suitable time with your quote' }],
     faqs: [
       { q: 'Do you clean hoods and exhaust ducts?', a: 'No. Hood, duct and grease trap cleaning is a specialist fire-safety service. We clean the kitchen, equipment exteriors, walls and floors.' },
-      { q: 'How much does it cost?', a: 'A deep clean of a kitchen up to 500 sq ft starts at $1,050, and regular cleaning at $650 per visit, plus tax. We confirm the price after a walkthrough.' },
-      { q: 'Will you work around our hours?', a: 'Yes. We clean before opening, after closing or on your closed day.' },
+      { q: 'How much does it cost?', a: 'Request a free quote. We confirm the scope and price after a walkthrough.' },
+      { q: 'Will you work around our hours?', a: 'We agree the visit time with you around your service hours.' },
       { q: 'What equipment do you use?', a: 'Industrial steam cleaners and commercial degreasers. Our crew arrives with everything in a branded LIVO van.' },
     ],
     notIncluded: ['Hood and exhaust duct cleaning', 'Grease trap pumping', 'Equipment repairs'],
@@ -832,7 +824,7 @@ export const PREP: Record<string, string[]> = {
     'Send us the checkout time and door code before the visit.',
     'Leave clean sheets and towels where we can find them.',
     'Tell us about any damage you already know about.',
-    'Booked a restock? Leave the supplies out.',
+    'Leave toilet paper, soap, coffee and other restock supplies out.',
   ],
   'detail-cleaning': [
     'Empty any fridge, freezer and cabinets you book.',
@@ -864,4 +856,57 @@ export const PREP: Record<string, string[]> = {
     'Share keys or alarm code and where we can dump water.',
     'Tell us about equipment we must not move.',
   ],
+};
+
+// Audience copy is shared by service pages; prices remain in booking.
+export type AudienceCopy = { label: string; sub?: string; benefits?: { text: string; href?: string }[]; faqs?: Faq[] };
+export const AUDIENCE_COPY: Record<string, AudienceCopy> = {
+  'house-cleaning': { label: 'For homeowners & families' },
+  'airbnb-cleaning': {
+    label: 'For hosts, co-hosts & STR managers',
+    sub: 'Guest-ready between checkout and check-in, with photos after every turnover.',
+    benefits: [{ text: 'Same crew for each property' }, { text: 'Completion photos plus a damage and left-item report' }, { text: 'Save every property in My LIVO and rebook in one tap' }],
+    faqs: [
+      { q: 'Can you handle several properties?', a: 'Yes. Save each property in My LIVO and book its turnovers. Ongoing properties keep the same crew.' },
+      { q: 'How do you get in?', a: 'Lockbox, smart lock or key pickup. Add entry instructions when you book. We never share your codes.' },
+      { q: 'What if a guest left damage?', a: 'We photograph it and send it with your completion photos, before the next guest arrives.' },
+    ],
+  },
+  'strata-cleaning': {
+    label: 'For strata managers & councils',
+    sub: 'Lobbies, hallways, elevators and amenity rooms on a set schedule, with a photo report after every visit.',
+    benefits: [{ text: 'Same checklist every visit' }, { text: 'Photo report you can forward to council' }, { text: 'One contact for your building' }],
+    faqs: [
+      { q: 'Can you work around residents?', a: 'Yes. We set visit times that suit your building.' },
+      { q: 'How do you get building access?', a: 'Tell us the fob or key arrangement when you request a quote.' },
+      { q: 'Can you quote several buildings?', a: 'Yes. Send the list and we quote each one.' },
+    ],
+  },
+  'move-cleaning': {
+    label: 'For property managers, landlords & tenants',
+    sub: 'Empty units cleaned inspection-ready, with photos for your condition record.',
+    benefits: [{ text: 'Inside oven, fridge and cabinets included' }, { text: 'Photos sent after the clean' }, { text: 'Add junk removal for anything left behind', href: '/services/junk-removal' }],
+  },
+  'junk-removal': {
+    label: 'For homeowners, realtors & property managers',
+    sub: 'Clear a home before listing photos or a new tenant. We load, haul and donate what we can.',
+    benefits: [{ text: 'Loading and hauling handled' }, { text: 'Donation and recycling where possible' }, { text: 'Send photos for a load quote' }],
+    faqs: [{ q: 'Tenant left things behind?', a: 'Send photos and we quote the load.' }, { q: 'Need it gone before listing photos?', a: 'Pick a date before your photo day when you book.' }],
+  },
+  'detail-cleaning': {
+    label: 'For homeowners & realtors', sub: 'Oven, fridge, grout and carpet stains done item by item — ready for a showing.',
+    benefits: [{ text: 'Choose the items you need cleaned' }, { text: 'Cleaning supplies and equipment included' }, { text: 'One visit and setup fee per order' }],
+  },
+  'construction-cleaning': {
+    label: 'For builders, renovators & homeowners', sub: 'Construction dust gone, ready for handover or move-in.',
+    benefits: [{ text: 'Dust and residue removed' }, { text: 'Final clean for handover' }, { text: 'Scope confirmed in your quote' }],
+  },
+  'office-cleaning': {
+    label: 'For office managers', sub: 'A clean office on a schedule that suits your team.',
+    benefits: [{ text: 'Desks and shared surfaces cleaned' }, { text: 'Staff kitchens and washrooms reset' }, { text: 'Floors vacuumed and mopped' }],
+  },
+  'restaurant-kitchen-cleaning': {
+    label: 'For restaurant owners & kitchen managers', sub: 'Kitchen deep cleaning by quote, scheduled around your service hours.',
+    benefits: [{ text: 'Industrial steam cleaning' }, { text: 'Cooking equipment exteriors degreased' }, { text: 'Scope confirmed after a walkthrough' }],
+  },
 };

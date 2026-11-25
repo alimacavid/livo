@@ -19,7 +19,8 @@ const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 export const LIVE = typeof location !== 'undefined' && ['livoland.com', 'www.livoland.com'].includes(location.hostname);
 export const TEST = !LIVE;
 
-export type Place = { id: string; label: string; address: string; segment: 'residential' | 'commercial'; business?: string; size?: string; access?: string };
+export type HomeDetails = { tier: string; fullBathrooms: number; halfBathrooms: number; city?: string };
+export type Place = { id: string; label: string; address: string; segment: 'residential' | 'commercial'; business?: string; size?: string; access?: string; home?: HomeDetails };
 export type Customer = { name: string; phone: string; email: string; company?: string };
 export type PastJob = { ref: string; date: string; service: string; div: string; sub: string; tier: string; total: number | null; kind: 'booking' | 'quote'; placeId?: string };
 export type Profile = { customer: Customer; places: Place[]; history: PastJob[] };
@@ -29,6 +30,7 @@ export type RequestPayload = {
   segment: 'residential' | 'commercial';
   name: string; email: string; phone: string;
   business?: string;
+  propertyNickname?: string;
   address: string; access?: string;
   date: string; time: string;
   div: string; sub: string; tier: string; service: string;
@@ -37,6 +39,7 @@ export type RequestPayload = {
   description?: string;
   notes?: string;
   save: boolean;           // customer ticked "Save my details"
+  home?: HomeDetails;
   placeId?: string;        // existing saved place used
   prep?: string[];         // "get ready" checklist for the confirmation text + email
 };
@@ -115,9 +118,11 @@ function saveDemo(p: RequestPayload, ref: string) {
   acc.customer = { name: p.name, phone: p.phone, email: p.email, company: p.business || acc.customer.company };
   let place = acc.places.find((x) => x.id === p.placeId) ?? acc.places.find((x) => x.address.toLowerCase() === p.address.toLowerCase());
   if (!place) {
-    place = { id: rid().slice(0, 10), label: p.business || (p.segment === 'commercial' ? 'Business' : acc.places.length ? `Home ${acc.places.length + 1}` : 'Home'), address: p.address, segment: p.segment, business: p.business, access: p.access };
+    place = { id: rid().slice(0, 10), label: p.propertyNickname?.trim().slice(0, 60) || p.business || (p.segment === 'commercial' ? 'Business' : acc.places.length ? `Home ${acc.places.length + 1}` : 'Home'), address: p.address, segment: p.segment, business: p.business, access: p.access };
     acc.places.push(place);
   } else if (p.access) place.access = p.access;
+  if (p.propertyNickname) place.label = p.propertyNickname.trim().slice(0, 60);
+  if (p.home) place.home = p.home;
   acc.history.unshift({ ref, date: p.date, service: p.service, div: p.div, sub: p.sub, tier: p.tier, total: p.kind === 'quote' ? null : p.total, kind: p.kind, placeId: place.id });
   store.set(DEMO_KEY, acc);
   store.set(SESSION_KEY, 'test-session');
