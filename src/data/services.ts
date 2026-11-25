@@ -641,7 +641,7 @@ export const DIVISIONS: Division[] = [
         slug: 'strata-cleaning',
         name: 'Strata Common-Area Cleaning',
         short: 'Lobbies, halls, stairs, elevators and amenities.',
-        desc: 'Strata cleaning for the shared spaces in strata and rental buildings: lobbies, hallways, elevators, stairwells and amenity rooms. Shared areas only; we agree the visit schedule with your council or manager.',
+        desc: 'Shared areas only; we agree the visit schedule with your council or manager.',
         image: strataAfter,
         before: strataBefore,
         after: strataAfter,
