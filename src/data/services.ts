@@ -427,9 +427,9 @@ export const DIVISIONS: Division[] = [
         tierLabel: 'Space size',
         quote: true,
         tiers: [
-          { id: 's700', name: 'Up to 700 sq ft', sub: 'Studio or 1 bedroom', price: 415 },
-          { id: 's1200', name: '701 – 1,200 sq ft', sub: 'Most condos and townhomes', price: 559, popular: true },
-          { id: 's1800', name: '1,201 – 1,800 sq ft', sub: 'Larger homes', price: 759 },
+          { id: 's700', name: 'Up to 700 sq ft', sub: 'Studio or 1 bedroom', price: null },
+          { id: 's1200', name: '701 – 1,200 sq ft', sub: 'Most condos and townhomes', price: null, popular: true },
+          { id: 's1800', name: '1,201 – 1,800 sq ft', sub: 'Larger homes', price: null },
           { id: 'large', name: 'Over 1,800 sq ft', sub: 'Quoted after photos or a visit', price: null },
           SITE_VISIT,
         ],
@@ -622,8 +622,8 @@ export const DIVISIONS: Division[] = [
         tierLabel: 'Office size',
         quote: true,
         tiers: [
-          { id: 'small', name: 'Up to 1,500 sq ft', sub: 'Per visit, plus tax', price: 165, popular: true },
-          { id: 'larger', name: 'Larger office', sub: 'From $0.11 per sq ft per visit', price: null },
+          { id: 'small', name: 'Up to 1,500 sq ft', sub: 'Quoted after photos or a visit', price: null, popular: true },
+          { id: 'larger', name: 'Larger office', sub: 'Quoted after photos or a visit', price: null },
           SITE_VISIT,
         ],
         quoteNote: 'Visit time and final price confirmed after photos or a free site visit.',
